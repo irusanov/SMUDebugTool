@@ -141,7 +141,6 @@ namespace ZenStatesDebugTool
 
             textBoxCMD.Text = "0x1";
             textBoxARG0.Text = "0x0";
-            textBoxARG1.Text = "0x0";
         }
 
         private void InitForm()
@@ -220,7 +219,7 @@ namespace ZenStatesDebugTool
             return res;
         }
 
-        private bool SmuWrite(uint msg, uint arg0, uint arg1)
+        private bool SmuWrite(uint msg, uint value)
         {
             bool res;
 
@@ -236,11 +235,11 @@ namespace ZenStatesDebugTool
             if (res)
             {
                 // Write data
-                res = SmuWriteReg(SMU_ADDR_ARG0, arg0);
+                res = SmuWriteReg(SMU_ADDR_ARG0, value);
 
                 if (res)
                 {
-                    SmuWriteReg(SMU_ADDR_ARG1, arg1);
+                    SmuWriteReg(SMU_ADDR_ARG1, 0);
                 }
                 // Send message
                 res = SmuWriteReg(SMU_ADDR_MSG, msg);
@@ -274,16 +273,14 @@ namespace ZenStatesDebugTool
 
                 uint command = Convert.ToUInt32(textBoxCMD.Text, 16);
                 uint arg0 = Convert.ToUInt32(textBoxARG0.Text, 16);
-                uint arg1 = Convert.ToUInt32(textBoxARG1.Text, 16);
 
                 Console.WriteLine("MSG Address:  0x" + Convert.ToString(SMU_ADDR_MSG, 16).ToUpper());
                 Console.WriteLine("RSP Address:  0x" + Convert.ToString(SMU_ADDR_RSP, 16).ToUpper());
                 Console.WriteLine("ARG0 Address: 0x" + Convert.ToString(SMU_ADDR_ARG0, 16).ToUpper());
                 Console.WriteLine("ARG1 Address: 0x" + Convert.ToString(SMU_ADDR_ARG0, 16).ToUpper());
                 Console.WriteLine("ARG0        : 0x" + Convert.ToString(arg0, 16).ToUpper());
-                Console.WriteLine("ARG1        : 0x" + Convert.ToString(arg1, 16).ToUpper());
 
-                if (SmuWrite(command, arg0, arg1))
+                if (SmuWrite(command, arg0))
                 {
                     // Read response
                     uint data = 0;

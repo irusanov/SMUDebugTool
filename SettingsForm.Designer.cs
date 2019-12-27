@@ -37,9 +37,7 @@
             this.textBoxCMDAddress = new System.Windows.Forms.TextBox();
             this.textBoxRSPAddress = new System.Windows.Forms.TextBox();
             this.labelARG0 = new System.Windows.Forms.Label();
-            this.labelARG1 = new System.Windows.Forms.Label();
             this.textBoxARG0 = new System.Windows.Forms.TextBox();
-            this.textBoxARG1 = new System.Windows.Forms.TextBox();
             this.labelCMD = new System.Windows.Forms.Label();
             this.textBoxCMD = new System.Windows.Forms.TextBox();
             this.labelARGAddress = new System.Windows.Forms.Label();
@@ -67,9 +65,7 @@
             this.tableLayoutPanel1.Controls.Add(this.textBoxCMDAddress, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.textBoxRSPAddress, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.labelARG0, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.labelARG1, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.textBoxARG0, 1, 4);
-            this.tableLayoutPanel1.Controls.Add(this.textBoxARG1, 1, 5);
             this.tableLayoutPanel1.Controls.Add(this.labelCMD, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.textBoxCMD, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.labelARGAddress, 0, 2);
@@ -78,14 +74,13 @@
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(5);
-            this.tableLayoutPanel1.RowCount = 6;
+            this.tableLayoutPanel1.RowCount = 5;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(252, 166);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(252, 140);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // labelCMDAddress
@@ -141,20 +136,8 @@
             this.labelARG0.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
             this.labelARG0.Size = new System.Drawing.Size(77, 26);
             this.labelARG0.TabIndex = 4;
-            this.labelARG0.Text = "Argument 0";
+            this.labelARG0.Text = "Argument";
             this.labelARG0.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // labelARG1
-            // 
-            this.labelARG1.AutoSize = true;
-            this.labelARG1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelARG1.Location = new System.Drawing.Point(8, 135);
-            this.labelARG1.Name = "labelARG1";
-            this.labelARG1.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.labelARG1.Size = new System.Drawing.Size(77, 26);
-            this.labelARG1.TabIndex = 5;
-            this.labelARG1.Text = "Argument 1";
-            this.labelARG1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // textBoxARG0
             // 
@@ -165,16 +148,6 @@
             this.textBoxARG0.Name = "textBoxARG0";
             this.textBoxARG0.Size = new System.Drawing.Size(153, 20);
             this.textBoxARG0.TabIndex = 6;
-            // 
-            // textBoxARG1
-            // 
-            this.textBoxARG1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxARG1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBoxARG1.HideSelection = false;
-            this.textBoxARG1.Location = new System.Drawing.Point(91, 138);
-            this.textBoxARG1.Name = "textBoxARG1";
-            this.textBoxARG1.Size = new System.Drawing.Size(153, 20);
-            this.textBoxARG1.TabIndex = 7;
             // 
             // labelCMD
             // 
@@ -223,7 +196,7 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.labelStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 208);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 182);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(252, 22);
             this.statusStrip1.SizingGrip = false;
@@ -250,7 +223,7 @@
             this.tableLayoutPanel2.Controls.Add(this.buttonApply, 3, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonDefaults, 2, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 169);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 143);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.Padding = new System.Windows.Forms.Padding(5);
             this.tableLayoutPanel2.RowCount = 1;
@@ -295,7 +268,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(252, 230);
+            this.ClientSize = new System.Drawing.Size(252, 204);
             this.Controls.Add(this.tableLayoutPanel2);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.tableLayoutPanel1);
@@ -329,9 +302,7 @@
         private System.Windows.Forms.Button buttonApply;
         private System.Windows.Forms.Button buttonProbe;
         private System.Windows.Forms.Label labelARG0;
-        private System.Windows.Forms.Label labelARG1;
         private System.Windows.Forms.TextBox textBoxARG0;
-        private System.Windows.Forms.TextBox textBoxARG1;
         private System.Windows.Forms.Label labelCMD;
         private System.Windows.Forms.TextBox textBoxCMD;
         private System.Windows.Forms.Label labelARGAddress;
