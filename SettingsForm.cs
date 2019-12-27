@@ -25,11 +25,6 @@ namespace ZenStatesDebugTool
         private uint SMU_ADDR_ARG0 = 0;
         private uint SMU_ADDR_ARG1 = 0;
 
-        [DllImportAttribute("user32.dll")]
-        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
-        [DllImportAttribute("user32.dll")]
-        public static extern bool ReleaseCapture();
-
         public SettingsForm()
         {
             InitializeComponent();
@@ -46,7 +41,6 @@ namespace ZenStatesDebugTool
                 MessageBox.Show(ex.Message, "Error");
                 this.Dispose();
                 Application.Exit();
-                return;
             }
 
             // CPU Check. Compare family, model, ext family, ext model. Ignore stepping/revision
@@ -273,8 +267,6 @@ namespace ZenStatesDebugTool
         {
             try
             {
-                bool res = false;
-
                 SMU_ADDR_MSG = Convert.ToUInt32(textBoxCMDAddress.Text, 16);
                 SMU_ADDR_RSP = Convert.ToUInt32(textBoxRSPAddress.Text, 16);
                 SMU_ADDR_ARG0 = Convert.ToUInt32(textBoxARGAddress.Text, 16);

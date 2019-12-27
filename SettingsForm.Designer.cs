@@ -15,6 +15,8 @@
         {
             if (disposing && (components != null))
             {
+                ols.Dispose();
+                hMutexPci.Dispose();
                 components.Dispose();
             }
             base.Dispose(disposing);
