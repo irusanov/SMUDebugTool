@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -50,7 +50,7 @@ namespace ZenStatesDebugTool
                 case 0x00800F00: // CPU \ Zen \ Summit Ridge \ ZP - A0 \ 14nm
                     this.cpuType = SMU.CPUType.SummitRidge;
                     break;
-                case 0x00800F80: // CPU \ Zen + \ Pinnacle Ridge \ 12nm
+                case 0x00800F80: // CPU \ Zen + \ Pinnacle Ridge \ Colfax 12nm
                     this.cpuType = SMU.CPUType.PinnacleRidge;
                     break;
                 case 0x00810F80: // APU \ Zen + \ Picasso \ 12nm
