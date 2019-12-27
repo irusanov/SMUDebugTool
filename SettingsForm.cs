@@ -295,7 +295,8 @@ namespace ZenStatesDebugTool
                         Console.WriteLine("CMD Status: " + responseString);
 
                         SmuReadReg(SMU_ADDR_ARG0, ref data);
-                        responseString = "0x" + Convert.ToString(data, 16).ToUpper();
+                        responseString = $"HEX: 0x{Convert.ToString(data, 16).ToUpper()}\n" +
+                                         $"INT: {Convert.ToString(data, 10).ToUpper()}";
                         Console.WriteLine("Response: " + responseString);
                         MessageBox.Show(responseString, "Response");
                     }
