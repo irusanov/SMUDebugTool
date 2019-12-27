@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -14,11 +14,11 @@ namespace ZenStatesDebugTool
 {
     public partial class SettingsForm : Form, IDisposable
     {
-        private static int Threads = Convert.ToInt32(Environment.GetEnvironmentVariable("NUMBER_OF_PROCESSORS"));
+        private static readonly int Threads = Convert.ToInt32(Environment.GetEnvironmentVariable("NUMBER_OF_PROCESSORS"));
         public Ols ols;
         private SMU.CPUType cpuType = SMU.CPUType.Unsupported;
         private SMU smu;
-        Mutex hMutexPci;
+        readonly Mutex hMutexPci;
 
         private uint SMU_ADDR_MSG = 0;
         private uint SMU_ADDR_RSP = 0;
@@ -133,7 +133,7 @@ namespace ZenStatesDebugTool
             return 0;
         }
 
-        private void SetFields(SMU smuSettings)
+        private void ResetFields(SMU smuSettings)
         {
             textBoxCMDAddress.Text = this.cpuType > SMU.CPUType.DEBUG ? "0x" + Convert.ToString(smuSettings.SMU_ADDR_MSG, 16).ToUpper() : "0x0";
             textBoxRSPAddress.Text = this.cpuType > SMU.CPUType.DEBUG ? "0x" + Convert.ToString(smuSettings.SMU_ADDR_RSP, 16).ToUpper() : "0x0";
@@ -148,7 +148,7 @@ namespace ZenStatesDebugTool
         {
             this.smu = GetMaintainedSettings.GetByType(this.cpuType);
             this.labelStatus.Text = Convert.ToString(this.cpuType) + ". Ready.";
-            SetFields(smu);
+            ResetFields(smu);
         }
 
         private bool SmuWriteReg(UInt32 addr, UInt32 data)
