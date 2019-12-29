@@ -38,17 +38,17 @@ namespace ZenStatesDebugTool
             SMC_MSG_GetSmuVersion = 0x2;
         }
 
-        public UInt32 SMU_PCI_ADDR { get; protected set; }
-        public UInt32 SMU_OFFSET_ADDR { get; protected set; }
-        public UInt32 SMU_OFFSET_DATA { get; protected set; }
+        public uint SMU_PCI_ADDR { get; protected set; }
+        public uint SMU_OFFSET_ADDR { get; protected set; }
+        public uint SMU_OFFSET_DATA { get; protected set; }
 
-        public UInt32 SMU_ADDR_MSG { get; protected set; }
-        public UInt32 SMU_ADDR_RSP { get; protected set; }
-        public UInt32 SMU_ADDR_ARG0 { get; protected set; }
-        public UInt32 SMU_ADDR_ARG1 { get; protected set; }
+        public uint SMU_ADDR_MSG { get; protected set; }
+        public uint SMU_ADDR_RSP { get; protected set; }
+        public uint SMU_ADDR_ARG0 { get; protected set; }
+        public uint SMU_ADDR_ARG1 { get; protected set; }
 
-        public UInt32 SMC_MSG_TestMessage { get; protected set; }
-        public UInt32 SMC_MSG_GetSmuVersion { get; protected set; }
+        public uint SMC_MSG_TestMessage { get; protected set; }
+        public uint SMC_MSG_GetSmuVersion { get; protected set; }
     }
 
     // inherit the base class and define the new values in ctor
