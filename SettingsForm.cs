@@ -1,8 +1,8 @@
-﻿using OpenLibSys;
+using OpenLibSys;
 using System;
+using System.ComponentModel;
 using System.Management;
 using System.Threading;
-using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace ZenStatesDebugTool
@@ -38,7 +38,7 @@ namespace ZenStatesDebugTool
             try
             {
                 CheckOlsStatus();
-            } 
+            }
             catch (ApplicationException ex)
             {
                 MessageBox.Show(ex.Message, "Error");
@@ -385,12 +385,11 @@ namespace ZenStatesDebugTool
                     {
                         SetCmdStatus("Error reading response");
                     }
-                } 
+                }
                 else
                 {
                     SetCmdStatus("Error SMU write");
                 }
-
             }
             catch (Exception ex)
             {
@@ -446,7 +445,7 @@ namespace ZenStatesDebugTool
             ShowResult(data);
         }
 
-        private void ButtonPciRead_Click(object sender, EventArgs e)
+        private void HandlePciReadBtnClick()
         {
             try
             {
@@ -464,6 +463,19 @@ namespace ZenStatesDebugTool
                 buttonPciRead.Enabled = true;
                 textBoxPciAddress.Enabled = true;
                 HandleError(ex);
+            }
+        }
+
+        private void ButtonPciRead_Click(object sender, EventArgs e)
+        {
+            HandlePciReadBtnClick();
+        }
+
+        private void TextBoxPciAddress_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                HandlePciReadBtnClick();
             }
         }
     }

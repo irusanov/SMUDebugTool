@@ -51,6 +51,10 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPageSmu = new System.Windows.Forms.TabPage();
             this.tabPagePci = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.label5 = new System.Windows.Forms.Label();
+            this.textBoxPciAddress = new System.Windows.Forms.TextBox();
+            this.buttonPciRead = new System.Windows.Forms.Button();
             this.tabPageInfo = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.smuInfoLabel = new System.Windows.Forms.Label();
@@ -63,19 +67,15 @@
             this.cpuInfoLabel = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.mbModelInfoLabel = new System.Windows.Forms.Label();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.label5 = new System.Windows.Forms.Label();
-            this.textBoxPciAddress = new System.Windows.Forms.TextBox();
-            this.buttonPciRead = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageSmu.SuspendLayout();
             this.tabPagePci.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
             this.tabPageInfo.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -328,6 +328,60 @@
             this.tabPagePci.Text = "PCI";
             this.tabPagePci.UseVisualStyleBackColor = true;
             // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.AutoSize = true;
+            this.tableLayoutPanel4.ColumnCount = 3;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.Controls.Add(this.label5, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.textBoxPciAddress, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.buttonPciRead, 2, 0);
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
+            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(308, 39);
+            this.tableLayoutPanel4.TabIndex = 0;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label5.Location = new System.Drawing.Point(3, 5);
+            this.label5.Name = "label5";
+            this.label5.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
+            this.label5.Size = new System.Drawing.Size(70, 29);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "PCI Address";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // textBoxPciAddress
+            // 
+            this.textBoxPciAddress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxPciAddress.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxPciAddress.Location = new System.Drawing.Point(80, 9);
+            this.textBoxPciAddress.Margin = new System.Windows.Forms.Padding(4);
+            this.textBoxPciAddress.Name = "textBoxPciAddress";
+            this.textBoxPciAddress.Size = new System.Drawing.Size(138, 20);
+            this.textBoxPciAddress.TabIndex = 1;
+            this.textBoxPciAddress.Text = "0x0";
+            this.textBoxPciAddress.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxPciAddress_KeyDown);
+            // 
+            // buttonPciRead
+            // 
+            this.buttonPciRead.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonPciRead.Location = new System.Drawing.Point(225, 8);
+            this.buttonPciRead.Name = "buttonPciRead";
+            this.buttonPciRead.Size = new System.Drawing.Size(75, 23);
+            this.buttonPciRead.TabIndex = 2;
+            this.buttonPciRead.Text = "Read";
+            this.buttonPciRead.UseVisualStyleBackColor = true;
+            this.buttonPciRead.Click += new System.EventHandler(this.ButtonPciRead_Click);
+            // 
             // tabPageInfo
             // 
             this.tabPageInfo.Controls.Add(this.tableLayoutPanel3);
@@ -493,59 +547,6 @@
             this.mbModelInfoLabel.Text = "-";
             this.mbModelInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // tableLayoutPanel4
-            // 
-            this.tableLayoutPanel4.AutoSize = true;
-            this.tableLayoutPanel4.ColumnCount = 3;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.Controls.Add(this.label5, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.textBoxPciAddress, 1, 0);
-            this.tableLayoutPanel4.Controls.Add(this.buttonPciRead, 2, 0);
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 3);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.tableLayoutPanel4.RowCount = 1;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(308, 39);
-            this.tableLayoutPanel4.TabIndex = 0;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label5.Location = new System.Drawing.Point(3, 5);
-            this.label5.Name = "label5";
-            this.label5.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.label5.Size = new System.Drawing.Size(70, 29);
-            this.label5.TabIndex = 0;
-            this.label5.Text = "PCI Address";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // textBoxPciAddress
-            // 
-            this.textBoxPciAddress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxPciAddress.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBoxPciAddress.Location = new System.Drawing.Point(80, 9);
-            this.textBoxPciAddress.Margin = new System.Windows.Forms.Padding(4);
-            this.textBoxPciAddress.Name = "textBoxPciAddress";
-            this.textBoxPciAddress.Size = new System.Drawing.Size(138, 20);
-            this.textBoxPciAddress.TabIndex = 1;
-            this.textBoxPciAddress.Text = "0x0";
-            // 
-            // buttonPciRead
-            // 
-            this.buttonPciRead.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonPciRead.Location = new System.Drawing.Point(225, 8);
-            this.buttonPciRead.Name = "buttonPciRead";
-            this.buttonPciRead.Size = new System.Drawing.Size(75, 23);
-            this.buttonPciRead.TabIndex = 2;
-            this.buttonPciRead.Text = "Read";
-            this.buttonPciRead.UseVisualStyleBackColor = true;
-            this.buttonPciRead.Click += new System.EventHandler(this.ButtonPciRead_Click);
-            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -569,12 +570,12 @@
             this.tabPageSmu.PerformLayout();
             this.tabPagePci.ResumeLayout(false);
             this.tabPagePci.PerformLayout();
+            this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel4.PerformLayout();
             this.tabPageInfo.ResumeLayout(false);
             this.tabPageInfo.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
-            this.tableLayoutPanel4.ResumeLayout(false);
-            this.tableLayoutPanel4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
