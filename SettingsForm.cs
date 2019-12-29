@@ -418,9 +418,22 @@ namespace ZenStatesDebugTool
 
         private void BackgroundWorkerReadPci_DoWork(object sender, DoWorkEventArgs e)
         {
-            uint address = Convert.ToUInt32(textBoxPciAddress.Text.Trim(), 16);
-            uint data = ReadDword(address);
-            e.Result = data;
+            try
+            {
+                uint address = Convert.ToUInt32(textBoxPciAddress.Text.Trim(), 16);
+                uint data = ReadDword(address);
+                e.Result = data;
+            }
+            catch
+            {
+                this.Invoke(new MethodInvoker(delegate ()
+                {
+                    buttonPciRead.Enabled = true;
+                    textBoxPciAddress.Enabled = true;
+                    SetCmdStatus("Error");
+                }));
+                e.Result = 0;
+            }
         }
 
         private void BackgroundWorkerReadPci_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -447,8 +460,10 @@ namespace ZenStatesDebugTool
             }
             catch (Exception ex)
             {
-                HandleError(ex);
                 SetCmdStatus("Error");
+                buttonPciRead.Enabled = true;
+                textBoxPciAddress.Enabled = true;
+                HandleError(ex);
             }
         }
     }
