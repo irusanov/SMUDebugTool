@@ -275,7 +275,7 @@ namespace ZenStatesDebugTool
         private uint ReadDword(uint value)
         {
             ols.WritePciConfigDword(smu.SMU_PCI_ADDR, (byte)smu.SMU_OFFSET_ADDR, value);
-            Thread.Sleep(5000);
+            // Thread.Sleep(5000);
             return ols.ReadPciConfigDword(smu.SMU_PCI_ADDR, (byte)smu.SMU_OFFSET_DATA);
         }
 
@@ -341,11 +341,13 @@ namespace ZenStatesDebugTool
             MessageBox.Show(ex.Message, title);
         }
 
-        private void ShowResult(uint data)
+        private void ShowResultMessageBox(uint data)
         {
-            string responseString = $"HEX: 0x{Convert.ToString(data, 16).ToUpper()}\n" +
-                                    $"INT: {Convert.ToString(data, 10).ToUpper()}";
-            Console.WriteLine($"Response: {responseString}");
+            string responseString = 
+                $"HEX: 0x{Convert.ToString(data, 16).ToUpper()}" +
+                Environment.NewLine +
+                $"INT: {Convert.ToString(data, 10).ToUpper()}";
+            Console.WriteLine($"Response: {Environment.NewLine}{responseString}");
             MessageBox.Show(responseString, "Response");
         }
 
@@ -393,7 +395,7 @@ namespace ZenStatesDebugTool
                         Console.WriteLine("CMD Status: " + responseString);
 
                         SmuReadReg(SMU_ADDR_ARG0, ref data);
-                        ShowResult(data);
+                        ShowResultMessageBox(data);
                     }
                     else
                     {
@@ -434,8 +436,7 @@ namespace ZenStatesDebugTool
             try
             {
                 uint address = Convert.ToUInt32(textBoxPciAddress.Text.Trim(), 16);
-                uint data = ReadDword(address);
-                e.Result = data;
+                e.Result = ReadDword(address);
             }
             catch
             {
