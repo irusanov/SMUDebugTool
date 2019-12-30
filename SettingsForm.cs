@@ -349,6 +349,20 @@ namespace ZenStatesDebugTool
             MessageBox.Show(responseString, "Response");
         }
 
+        private void ShowPciResult(uint data)
+        {
+            string responseString =
+                $"REG: {textBoxPciAddress.Text.Trim()}" +
+                Environment.NewLine +
+                $"HEX: 0x{Convert.ToString(data, 16).ToUpper()}" + 
+                Environment.NewLine +
+                $"INT: {Convert.ToString(data, 10).ToUpper()}" +
+                Environment.NewLine +
+                Environment.NewLine;
+            Console.WriteLine($"Response: {responseString}");
+            textBoxPciResult.Text = responseString + textBoxPciResult.Text;
+        }
+
         private void ApplySettings()
         {
             try
@@ -429,6 +443,7 @@ namespace ZenStatesDebugTool
                 {
                     buttonPciRead.Enabled = true;
                     textBoxPciAddress.Enabled = true;
+                    textBoxPciResult.Enabled = true;
                     SetCmdStatus("Error");
                 }));
                 e.Result = 0;
@@ -441,8 +456,9 @@ namespace ZenStatesDebugTool
 
             buttonPciRead.Enabled = true;
             textBoxPciAddress.Enabled = true;
+            textBoxPciResult.Enabled = true;
             SetCmdStatus("OK");
-            ShowResult(data);
+            ShowPciResult(data);
         }
 
         private void HandlePciReadBtnClick()
@@ -452,6 +468,7 @@ namespace ZenStatesDebugTool
                 SetCmdStatus("Reading, please wait...");
                 buttonPciRead.Enabled = false;
                 textBoxPciAddress.Enabled = false;
+                textBoxPciResult.Enabled = false;
                 backgroundWorker1 = new BackgroundWorker();
                 backgroundWorker1.DoWork += new DoWorkEventHandler(BackgroundWorkerReadPci_DoWork);
                 backgroundWorker1.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorkerReadPci_RunWorkerCompleted);
@@ -462,6 +479,7 @@ namespace ZenStatesDebugTool
                 SetCmdStatus("Error");
                 buttonPciRead.Enabled = true;
                 textBoxPciAddress.Enabled = true;
+                textBoxPciResult.Enabled = true;
                 HandleError(ex);
             }
         }

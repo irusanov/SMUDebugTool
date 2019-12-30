@@ -67,6 +67,7 @@
             this.cpuInfoLabel = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.mbModelInfoLabel = new System.Windows.Forms.Label();
+            this.textBoxPciResult = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -319,6 +320,7 @@
             // 
             // tabPagePci
             // 
+            this.tabPagePci.Controls.Add(this.textBoxPciResult);
             this.tabPagePci.Controls.Add(this.tableLayoutPanel4);
             this.tabPagePci.Location = new System.Drawing.Point(4, 22);
             this.tabPagePci.Name = "tabPagePci";
@@ -547,6 +549,19 @@
             this.mbModelInfoLabel.Text = "-";
             this.mbModelInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // textBoxPciResult
+            // 
+            this.textBoxPciResult.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxPciResult.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxPciResult.Location = new System.Drawing.Point(3, 42);
+            this.textBoxPciResult.Margin = new System.Windows.Forms.Padding(5);
+            this.textBoxPciResult.Multiline = true;
+            this.textBoxPciResult.Name = "textBoxPciResult";
+            this.textBoxPciResult.ReadOnly = true;
+            this.textBoxPciResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBoxPciResult.Size = new System.Drawing.Size(308, 111);
+            this.textBoxPciResult.TabIndex = 1;
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -619,6 +634,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBoxPciAddress;
         private System.Windows.Forms.Button buttonPciRead;
+        private System.Windows.Forms.TextBox textBoxPciResult;
     }
 }
 
