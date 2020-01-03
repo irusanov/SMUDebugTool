@@ -59,5 +59,24 @@ namespace ZenStatesDebugTool.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        internal static string Error {
+            get {
+                return ResourceManager.GetString("Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon ZenStates {
+            get {
+                object obj = ResourceManager.GetObject("ZenStates", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }

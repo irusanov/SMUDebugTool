@@ -5,6 +5,7 @@ using System.Text;
 
 namespace ZenStatesDebugTool
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "<Pending>")]
     public abstract class SMU
     {
         public enum CPUType 
@@ -21,8 +22,18 @@ namespace ZenStatesDebugTool
             Renoir          = 9 
         };
 
+        public enum Status : int
+        {
+            OK                      = 0x1,
+            FAILED                  = 0xFF,
+            UNKNOWN_CMD             = 0xFE,
+            CMD_REJECTED_PREREQ     = 0xFD,
+            CMD_REJECTED_BUSY       = 0xFC
+        }
+
         public SMU()
         {
+            Version = 0;
             // SMU
             SMU_PCI_ADDR = 0x00000000;
             SMU_OFFSET_ADDR = 0xB8;
@@ -38,6 +49,7 @@ namespace ZenStatesDebugTool
             SMC_MSG_GetSmuVersion = 0x2;
         }
 
+        public uint Version { get; set; }
         public uint SMU_PCI_ADDR { get; protected set; }
         public uint SMU_OFFSET_ADDR { get; protected set; }
         public uint SMU_OFFSET_DATA { get; protected set; }
@@ -45,6 +57,7 @@ namespace ZenStatesDebugTool
         public uint SMU_ADDR_MSG { get; protected set; }
         public uint SMU_ADDR_RSP { get; protected set; }
         public uint SMU_ADDR_ARG0 { get; protected set; }
+
         public uint SMU_ADDR_ARG1 { get; protected set; }
 
         public uint SMC_MSG_TestMessage { get; protected set; }
@@ -97,7 +110,7 @@ namespace ZenStatesDebugTool
     // CastlePeak (Threadripper 3000 series) shares the same CPUID as the server counterpart Rome
     public static class GetMaintainedSettings
     {
-        static Dictionary<SMU.CPUType, SMU> settings = new Dictionary<SMU.CPUType, SMU>()
+        private static readonly Dictionary<SMU.CPUType, SMU> settings = new Dictionary<SMU.CPUType, SMU>()
         {
             { SMU.CPUType.SummitRidge, new SummitRidgeSettings() },
             { SMU.CPUType.RavenRidge, new RavenRidgeSettings() },
@@ -110,8 +123,7 @@ namespace ZenStatesDebugTool
 
         public static SMU GetByType(SMU.CPUType type)
         {
-            SMU output;
-            if (!settings.TryGetValue(type, out output))
+            if (!settings.TryGetValue(type, out SMU output))
             {
                 throw new NotImplementedException();
             }
@@ -121,19 +133,18 @@ namespace ZenStatesDebugTool
 
     public static class GetSMUStatus
     {
-        static Dictionary<uint, String> status = new Dictionary<uint, string>()
+        private static readonly Dictionary<SMU.Status, String> status = new Dictionary<SMU.Status, string>()
         {
-            { 0x1, "OK" },
-            { 0xFF, "Failed" },
-            { 0xFE, "Unknown Command" },
-            { 0xFD, "CMD Rejected Prereq" },
-            { 0xFC, "CMD Rejected Busy" }
+            { SMU.Status.OK, "OK" },
+            { SMU.Status.FAILED, "Failed" },
+            { SMU.Status.UNKNOWN_CMD, "Unknown Command" },
+            { SMU.Status.CMD_REJECTED_PREREQ, "CMD Rejected Prereq" },
+            { SMU.Status.CMD_REJECTED_BUSY, "CMD Rejected Busy" }
         };
 
-        public static string GetByType(uint type)
+        public static string GetByType(SMU.Status type)
         {
-            string output;
-            if (!status.TryGetValue(type, out output))
+            if (!status.TryGetValue(type, out string output))
             {
                 return "Unknown Status";
             }
