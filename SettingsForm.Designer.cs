@@ -52,9 +52,12 @@
             this.tabPageSmu = new System.Windows.Forms.TabPage();
             this.tabPagePci = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.buttonPciWrite = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.textBoxPciAddress = new System.Windows.Forms.TextBox();
             this.buttonPciRead = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.textBoxPciValue = new System.Windows.Forms.TextBox();
             this.tabPageInfo = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.smuInfoLabel = new System.Windows.Forms.Label();
@@ -120,6 +123,7 @@
             this.labelCMDAddress.AutoSize = true;
             this.labelCMDAddress.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelCMDAddress.Location = new System.Drawing.Point(3, 5);
+            this.labelCMDAddress.MinimumSize = new System.Drawing.Size(77, 28);
             this.labelCMDAddress.Name = "labelCMDAddress";
             this.labelCMDAddress.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
             this.labelCMDAddress.Size = new System.Drawing.Size(77, 28);
@@ -132,6 +136,7 @@
             this.labelRSP.AutoSize = true;
             this.labelRSP.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelRSP.Location = new System.Drawing.Point(3, 33);
+            this.labelRSP.MinimumSize = new System.Drawing.Size(77, 28);
             this.labelRSP.Name = "labelRSP";
             this.labelRSP.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
             this.labelRSP.Size = new System.Drawing.Size(77, 28);
@@ -166,6 +171,7 @@
             this.labelARG0.AutoSize = true;
             this.labelARG0.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelARG0.Location = new System.Drawing.Point(3, 117);
+            this.labelARG0.MinimumSize = new System.Drawing.Size(77, 28);
             this.labelARG0.Name = "labelARG0";
             this.labelARG0.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
             this.labelARG0.Size = new System.Drawing.Size(77, 28);
@@ -189,6 +195,7 @@
             this.labelCMD.AutoSize = true;
             this.labelCMD.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelCMD.Location = new System.Drawing.Point(3, 89);
+            this.labelCMD.MinimumSize = new System.Drawing.Size(77, 28);
             this.labelCMD.Name = "labelCMD";
             this.labelCMD.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
             this.labelCMD.Size = new System.Drawing.Size(77, 28);
@@ -212,6 +219,7 @@
             this.labelARGAddress.AutoSize = true;
             this.labelARGAddress.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelARGAddress.Location = new System.Drawing.Point(3, 61);
+            this.labelARGAddress.MinimumSize = new System.Drawing.Size(77, 28);
             this.labelARGAddress.Name = "labelARGAddress";
             this.labelARGAddress.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
             this.labelARGAddress.Size = new System.Drawing.Size(77, 28);
@@ -332,7 +340,7 @@
             this.tabPagePci.Location = new System.Drawing.Point(4, 22);
             this.tabPagePci.Name = "tabPagePci";
             this.tabPagePci.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPagePci.Size = new System.Drawing.Size(283, 203);
+            this.tabPagePci.Size = new System.Drawing.Size(283, 156);
             this.tabPagePci.TabIndex = 1;
             this.tabPagePci.Text = "PCI";
             this.tabPagePci.UseVisualStyleBackColor = true;
@@ -344,38 +352,54 @@
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.Controls.Add(this.buttonPciWrite, 2, 1);
             this.tableLayoutPanel4.Controls.Add(this.label5, 0, 0);
             this.tableLayoutPanel4.Controls.Add(this.textBoxPciAddress, 1, 0);
             this.tableLayoutPanel4.Controls.Add(this.buttonPciRead, 2, 0);
+            this.tableLayoutPanel4.Controls.Add(this.label7, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.textBoxPciValue, 1, 1);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowCount = 2;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(277, 39);
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(277, 68);
             this.tableLayoutPanel4.TabIndex = 0;
+            // 
+            // buttonPciWrite
+            // 
+            this.buttonPciWrite.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonPciWrite.Location = new System.Drawing.Point(194, 37);
+            this.buttonPciWrite.Name = "buttonPciWrite";
+            this.buttonPciWrite.Size = new System.Drawing.Size(75, 23);
+            this.buttonPciWrite.TabIndex = 5;
+            this.buttonPciWrite.Text = "Write";
+            this.buttonPciWrite.UseVisualStyleBackColor = true;
+            this.buttonPciWrite.Click += new System.EventHandler(this.ButtonPciWrite_Click);
             // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label5.Location = new System.Drawing.Point(3, 5);
+            this.label5.MinimumSize = new System.Drawing.Size(77, 28);
             this.label5.Name = "label5";
             this.label5.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.label5.Size = new System.Drawing.Size(70, 29);
+            this.label5.Size = new System.Drawing.Size(77, 29);
             this.label5.TabIndex = 0;
-            this.label5.Text = "PCI Address";
+            this.label5.Text = "PCI Register";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // textBoxPciAddress
             // 
             this.textBoxPciAddress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxPciAddress.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBoxPciAddress.Location = new System.Drawing.Point(80, 9);
-            this.textBoxPciAddress.Margin = new System.Windows.Forms.Padding(4);
+            this.textBoxPciAddress.Location = new System.Drawing.Point(87, 9);
+            this.textBoxPciAddress.Margin = new System.Windows.Forms.Padding(4, 4, 14, 4);
             this.textBoxPciAddress.Name = "textBoxPciAddress";
-            this.textBoxPciAddress.Size = new System.Drawing.Size(107, 20);
+            this.textBoxPciAddress.Size = new System.Drawing.Size(90, 20);
             this.textBoxPciAddress.TabIndex = 1;
             this.textBoxPciAddress.Text = "0x0";
             this.textBoxPciAddress.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxPciAddress_KeyDown);
@@ -391,13 +415,37 @@
             this.buttonPciRead.UseVisualStyleBackColor = true;
             this.buttonPciRead.Click += new System.EventHandler(this.ButtonPciRead_Click);
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label7.Location = new System.Drawing.Point(3, 34);
+            this.label7.MinimumSize = new System.Drawing.Size(77, 28);
+            this.label7.Name = "label7";
+            this.label7.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
+            this.label7.Size = new System.Drawing.Size(77, 29);
+            this.label7.TabIndex = 3;
+            this.label7.Text = "Value";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // textBoxPciValue
+            // 
+            this.textBoxPciValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxPciValue.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxPciValue.Location = new System.Drawing.Point(87, 38);
+            this.textBoxPciValue.Margin = new System.Windows.Forms.Padding(4, 4, 14, 4);
+            this.textBoxPciValue.Name = "textBoxPciValue";
+            this.textBoxPciValue.Size = new System.Drawing.Size(90, 20);
+            this.textBoxPciValue.TabIndex = 4;
+            this.textBoxPciValue.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxPciValue_KeyDown);
+            // 
             // tabPageInfo
             // 
             this.tabPageInfo.Controls.Add(this.tableLayoutPanel3);
             this.tabPageInfo.Location = new System.Drawing.Point(4, 22);
             this.tabPageInfo.Name = "tabPageInfo";
             this.tabPageInfo.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageInfo.Size = new System.Drawing.Size(283, 154);
+            this.tabPageInfo.Size = new System.Drawing.Size(283, 156);
             this.tabPageInfo.TabIndex = 2;
             this.tabPageInfo.Text = "Info";
             this.tabPageInfo.UseVisualStyleBackColor = true;
@@ -701,6 +749,9 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label cpuIdLabel;
+        private System.Windows.Forms.Button buttonPciWrite;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox textBoxPciValue;
     }
 }
 

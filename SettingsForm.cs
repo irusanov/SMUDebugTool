@@ -222,7 +222,7 @@ namespace ZenStatesDebugTool
             SetCmdStatus($"{this.cpuType}. Ready.");
         }
 
-        private bool SmuWriteReg(UInt32 addr, UInt32 data)
+        private bool SmuWriteReg(uint addr, uint data)
         {
             int res = 0;
 
@@ -360,6 +360,7 @@ namespace ZenStatesDebugTool
             textBoxCMD.Enabled = enabled;
             textBoxARG0.Enabled = enabled;
             textBoxPciAddress.Enabled = enabled;
+            textBoxPciValue.Enabled = enabled;
             // textBoxResult.Enabled = enabled;
         }
 
@@ -459,34 +460,6 @@ namespace ZenStatesDebugTool
             }
         }
 
-        private void BackgroundWorkerReadPci_DoWork(object sender, DoWorkEventArgs e)
-        {
-            try
-            {
-                uint address = Convert.ToUInt32(textBoxPciAddress.Text.Trim(), 16);
-                e.Result = ReadDword(address);
-            }
-            catch (ApplicationException)
-            {
-                this.Invoke(new MethodInvoker(delegate ()
-                {
-                    SetButtonsState(true);
-                    SetCmdStatus(Properties.Resources.Error);
-                }));
-                e.Result = 0;
-            }
-        }
-
-        private void BackgroundWorkerReadPci_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            backgroundWorker1.Dispose();
-            uint data = (uint)e.Result;
-
-            SetButtonsState(true);
-            SetCmdStatus(GetSMUStatus.GetByType(SMU.Status.OK));
-            ShowResult(data);
-        }
-
         private void HandlePciReadBtnClick()
         {
             try
@@ -494,14 +467,45 @@ namespace ZenStatesDebugTool
                 SetCmdStatus("Reading, please wait...");
                 SetButtonsState(false);
 
-                backgroundWorker1 = new BackgroundWorker();
-                backgroundWorker1.DoWork += new DoWorkEventHandler(BackgroundWorkerReadPci_DoWork);
-                backgroundWorker1.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorkerReadPci_RunWorkerCompleted);
-                backgroundWorker1.RunWorkerAsync();
+                uint address = Convert.ToUInt32(textBoxPciAddress.Text.Trim(), 16);
+                uint data = ReadDword(address);
+
+                textBoxPciValue.Text = $"0x{data.ToString("X8")}";
+
+                SetButtonsState(true);
+                SetCmdStatus(GetSMUStatus.GetByType(SMU.Status.OK));
+                ShowResult(data);
             }
             catch (ApplicationException ex)
             {
-                SetCmdStatus(Properties.Resources.Error);
+                SetButtonsState(true);
+                HandleError(ex);
+            }
+        }
+
+        private void HandlePciWriteBtnClick()
+        {
+            try
+            {
+                SetCmdStatus("Writing, please wait...");
+                SetButtonsState(false);
+
+                uint address = Convert.ToUInt32(textBoxPciAddress.Text.Trim(), 16);
+                uint data = Convert.ToUInt32(textBoxPciValue.Text.Trim(), 16);
+
+                if (SmuWriteReg(address, data))
+                {
+                    SetCmdStatus("Write OK.");
+                }
+                else
+                {
+                    SetCmdStatus(Properties.Resources.Error);
+                }
+
+                SetButtonsState(true);
+            }
+            catch (ApplicationException ex)
+            {
                 SetButtonsState(true);
                 HandleError(ex);
             }
@@ -517,6 +521,19 @@ namespace ZenStatesDebugTool
             if (e.KeyCode == Keys.Enter)
             {
                 HandlePciReadBtnClick();
+            }
+        }
+
+        private void ButtonPciWrite_Click(object sender, EventArgs e)
+        {
+            HandlePciWriteBtnClick();
+        }
+
+        private void TextBoxPciValue_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                HandlePciWriteBtnClick();
             }
         }
 
