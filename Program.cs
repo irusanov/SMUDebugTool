@@ -17,10 +17,14 @@ namespace ZenStatesDebugTool
             try
             {
                 Form MainForm = new SettingsForm();
-                MainForm.Text = Application.ProductName + " " + Application.ProductVersion.Substring(0, Application.ProductVersion.LastIndexOf("."));
+                string appString = $"{Application.ProductName} {Application.ProductVersion.Substring(0, Application.ProductVersion.LastIndexOf('.'))}";
+#if DEBUG
+                appString += " (debug)";
+#endif
+                MainForm.Text = appString;
                 Application.Run(MainForm);
             }
-            catch (Exception ex)
+            catch (ApplicationException ex)
             {
                 Console.WriteLine(ex.Message);
                 Application.Exit();
@@ -30,7 +34,7 @@ namespace ZenStatesDebugTool
         static void ApplicationThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
         {
             // Handle your exception here...
-            MessageBox.Show(e.Exception.Message, "Error");
+            MessageBox.Show(e.Exception.Message, Properties.Resources.Error);
         }
     }
 }

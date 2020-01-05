@@ -1,25 +1,24 @@
 using OpenLibSys;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Management;
 using System.Threading;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace ZenStatesDebugTool
 {
-    public partial class SettingsForm : Form, IDisposable
+    public partial class SettingsForm : Form
     {
         private static readonly int Threads = Convert.ToInt32(Environment.GetEnvironmentVariable("NUMBER_OF_PROCESSORS"));
         private BackgroundWorker backgroundWorker1;
         private readonly Ols ols;
         private SMU.CPUType cpuType = SMU.CPUType.Unsupported;
         private SMU smu;
-
-        private string mbVendor;
-        private string mbName;
-        private string cpuName;
-        private string biosVersion;
-        private uint smuVersion;
+        private SystemInfo SI;
+        List<SmuAddressSet> matches;
 
         readonly Mutex hMutexPci;
 
@@ -27,6 +26,27 @@ namespace ZenStatesDebugTool
         private uint SMU_ADDR_RSP = 0;
         private uint SMU_ADDR_ARG0 = 0;
         private uint SMU_ADDR_ARG1 = 0;
+
+        private class SmuAddressSet
+        {
+            public uint MsgAddress;
+            public uint RspAddress;
+            public uint ArgAddress;
+
+            public SmuAddressSet()
+            {
+                MsgAddress = 0;
+                RspAddress = 0;
+                ArgAddress = 0;
+            }
+
+            public SmuAddressSet(uint msgAddress, uint rspAddress, uint argAddress)
+            {
+                MsgAddress = msgAddress;
+                RspAddress = rspAddress;
+                ArgAddress = argAddress;
+            }
+        }
 
         public SettingsForm()
         {
@@ -41,47 +61,9 @@ namespace ZenStatesDebugTool
             }
             catch (ApplicationException ex)
             {
-                MessageBox.Show(ex.Message, "Error");
+                MessageBox.Show(ex.Message, Properties.Resources.Error);
                 this.Dispose();
                 Application.Exit();
-            }
-
-            // CPU Check. Compare family, model, ext family, ext model. Ignore stepping/revision
-            switch (GetCpuInfo() & 0xFFFFFFF0)
-            {
-                case 0x00800F10: // CPU \ Zen \ Summit Ridge \ ZP - B0 \ 14nm
-                case 0x00800F00: // CPU \ Zen \ Summit Ridge \ ZP - A0 \ 14nm
-                    this.cpuType = SMU.CPUType.SummitRidge;
-                    break;
-                case 0x00800F80: // CPU \ Zen + \ Pinnacle Ridge \ Colfax 12nm
-                    this.cpuType = SMU.CPUType.PinnacleRidge;
-                    break;
-                case 0x00810F80: // APU \ Zen + \ Picasso \ 12nm
-                    this.cpuType = SMU.CPUType.Picasso;
-                    break;
-                case 0x00810F00: // APU \ Zen \ Raven Ridge \ RV - A0 \ 14nm
-                case 0x00810F10: // APU \ Zen \ Raven Ridge \ 14nm
-                case 0x00820F00: // APU \ Zen \ Raven Ridge 2 \ RV2 - A0 \ 14nm
-                    this.cpuType = SMU.CPUType.RavenRidge;
-                    break;
-                case 0x00870F10: // CPU \ Zen2 \ Matisse \ MTS - B0 \ 7nm + 14nm I/ O Die
-                case 0x00870F00: // CPU \ Zen2 \ Matisse \ MTS - A0 \ 7nm + 14nm I/ O Die
-                    this.cpuType = SMU.CPUType.Matisse;
-                    break;
-                case 0x00830F00:
-                case 0x00830F10: // CPU \ Epyc 2 \ Rome \ Treadripper 2 \ Castle Peak 7nm
-                    this.cpuType = SMU.CPUType.Rome;
-                    break;
-                case 0x00850F00:
-                case 0x00850F10: // APU \ Renoir \ Fenghuang
-                    this.cpuType = SMU.CPUType.Renoir;
-                    break;
-                default:
-                    this.cpuType = SMU.CPUType.Unsupported;
-#if DEBUG
-                    this.cpuType = SMU.CPUType.DEBUG;
-#endif
-                    break;
             }
 
             InitForm();
@@ -133,6 +115,79 @@ namespace ZenStatesDebugTool
             return 0;
         }
 
+        private void InitSystemInfo()
+        {
+            SI = new SystemInfo
+            {
+                CpuId = GetCpuInfo()
+            };
+
+            // CPU Check. Compare family, model, ext family, ext model. Ignore stepping/revision
+            switch (SI.CpuId & 0xFFFFFFF0)
+            {
+                case 0x00800F10: // CPU \ Zen \ Summit Ridge \ ZP - B0 \ 14nm
+                case 0x00800F00: // CPU \ Zen \ Summit Ridge \ ZP - A0 \ 14nm
+                    this.cpuType = SMU.CPUType.SummitRidge;
+                    break;
+                case 0x00800F80: // CPU \ Zen + \ Pinnacle Ridge \ Colfax 12nm
+                    this.cpuType = SMU.CPUType.PinnacleRidge;
+                    break;
+                case 0x00810F80: // APU \ Zen + \ Picasso \ 12nm
+                    this.cpuType = SMU.CPUType.Picasso;
+                    break;
+                case 0x00810F00: // APU \ Zen \ Raven Ridge \ RV - A0 \ 14nm
+                case 0x00810F10: // APU \ Zen \ Raven Ridge \ 14nm
+                case 0x00820F00: // APU \ Zen \ Raven Ridge 2 \ RV2 - A0 \ 14nm
+                    this.cpuType = SMU.CPUType.RavenRidge;
+                    break;
+                case 0x00870F10: // CPU \ Zen2 \ Matisse \ MTS - B0 \ 7nm + 14nm I/ O Die
+                case 0x00870F00: // CPU \ Zen2 \ Matisse \ MTS - A0 \ 7nm + 14nm I/ O Die
+                    this.cpuType = SMU.CPUType.Matisse;
+                    break;
+                case 0x00830F00:
+                case 0x00830F10: // CPU \ Epyc 2 \ Rome \ Treadripper 2 \ Castle Peak 7nm
+                    this.cpuType = SMU.CPUType.Rome;
+                    break;
+                case 0x00850F00:
+                case 0x00850F10: // APU \ Renoir \ Fenghuang
+                    this.cpuType = SMU.CPUType.Renoir;
+                    break;
+                default:
+                    this.cpuType = SMU.CPUType.Unsupported;
+#if DEBUG
+                    this.cpuType = SMU.CPUType.DEBUG;
+#endif
+                    break;
+            }
+
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BaseBoard");
+            foreach (ManagementObject obj in searcher.Get())
+            {
+                SI.MbVendor = ((string)obj["Manufacturer"]).Trim();
+                SI.MbName = ((string)obj["Product"]).Trim();
+            }
+            if (searcher != null) searcher.Dispose();
+
+            searcher = new ManagementObjectSearcher("SELECT * FROM Win32_Processor");
+            foreach (ManagementObject obj in searcher.Get())
+            {
+                var cpuName = (string)obj["Name"];
+                cpuName = cpuName.Replace("(R)", "");
+                cpuName = cpuName.Replace("(TM)", "");
+                cpuName = cpuName.Trim();
+
+                SI.CpuName = cpuName;
+            }
+            if (searcher != null) searcher.Dispose();
+
+            searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BIOS");
+            foreach (ManagementObject obj in searcher.Get())
+            {
+                SI.BiosVersion = ((string)obj["SMBIOSBIOSVersion"]).Trim();
+            }
+            if (searcher != null) searcher.Dispose();
+        }
+
         private void ResetSettings(SMU smuSettings)
         {
             SMU_ADDR_MSG = smuSettings.SMU_ADDR_MSG;
@@ -148,26 +203,29 @@ namespace ZenStatesDebugTool
             textBoxARG0.Text = "0x0";
         }
 
-        private void SetSystemInfo()
+        private void DisplaySystemInfo()
         {
-            cpuInfoLabel.Text = cpuName;
-            mbVendorInfoLabel.Text = mbVendor;
-            mbModelInfoLabel.Text = mbName;
-            biosInfoLabel.Text = biosVersion;
-            smuInfoLabel.Text = GetSmuVersionString(smuVersion);
+            cpuInfoLabel.Text = SI.CpuName;
+            mbVendorInfoLabel.Text = SI.MbVendor;
+            mbModelInfoLabel.Text = SI.MbName;
+            biosInfoLabel.Text = SI.BiosVersion;
+            smuInfoLabel.Text = SI.GetSmuVersionString();
+            cpuIdLabel.Text = $"{SI.GetCpuIdString()} ({cpuType.ToString()})";
         }
 
         private void InitForm()
         {
-            this.smu = GetMaintainedSettings.GetByType(this.cpuType);
-            ResetSettings(smu);
             InitSystemInfo();
-            SetSystemInfo();
+            smu = GetMaintainedSettings.GetByType(this.cpuType);
+            ResetSettings(smu);
+            smu.Version = GetSmuVersion();
+            SI.SmuVersion = smu.Version;
+            DisplaySystemInfo();
 
-            SetCmdStatus($"{Convert.ToString(this.cpuType)}. Ready.");
+            SetCmdStatus($"{this.cpuType}. Ready.");
         }
 
-        private bool SmuWriteReg(UInt32 addr, UInt32 data)
+        private bool SmuWriteReg(uint addr, uint data)
         {
             int res = 0;
 
@@ -293,52 +351,27 @@ namespace ZenStatesDebugTool
             return version;
         }
 
-        private static string GetSmuVersionString(uint version)
+        private void SetButtonsState(bool enabled = true)
         {
-            string[] versionString = new string[3];
-            versionString[0] = ((version & 0x00FF0000) >> 16).ToString("D2");
-            versionString[1] = ((version & 0x0000FF00) >> 8).ToString("D2");
-            versionString[2] = (version & 0x000000FF).ToString("D2");
-
-            return string.Join(".", versionString);
+            buttonApply.Enabled = enabled;
+            buttonDefaults.Enabled = enabled;
+            buttonProbe.Enabled = enabled;
+            buttonPciRead.Enabled = enabled;
+            buttonExport.Enabled = enabled;
+            textBoxCMDAddress.Enabled = enabled;
+            textBoxRSPAddress.Enabled = enabled;
+            textBoxARGAddress.Enabled = enabled;
+            textBoxCMD.Enabled = enabled;
+            textBoxARG0.Enabled = enabled;
+            textBoxPciAddress.Enabled = enabled;
+            textBoxPciValue.Enabled = enabled;
+            // textBoxResult.Enabled = enabled;
         }
 
-        private void InitSystemInfo()
-        {
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BaseBoard");
-            foreach (ManagementObject obj in searcher.Get())
-            {
-                mbVendor = (string)obj["Manufacturer"];
-                mbVendor = mbVendor.Trim();
-                mbName = (string)obj["Product"];
-                mbName = mbName.Trim();
-            }
-            if (searcher != null) searcher.Dispose();
-
-            searcher = new ManagementObjectSearcher("SELECT * FROM Win32_Processor");
-            foreach (ManagementObject obj in searcher.Get())
-            {
-                cpuName = (string)obj["Name"];
-                cpuName = cpuName.Replace("(R)", "");
-                cpuName = cpuName.Replace("(TM)", "");
-                cpuName = cpuName.Trim();
-            }
-            if (searcher != null) searcher.Dispose();
-
-            searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BIOS");
-            foreach (ManagementObject obj in searcher.Get())
-            {
-                biosVersion = (string)obj["SMBIOSBIOSVersion"];
-                biosVersion = biosVersion.Trim();
-            }
-            if (searcher != null) searcher.Dispose();
-
-            smuVersion = GetSmuVersion();
-        }
-
-        private static void HandleError(Exception ex, string title = "Error")
+        private void HandleError(Exception ex, string title = "Error")
         {
             MessageBox.Show(ex.Message, title);
+            SetCmdStatus(Properties.Resources.Error);
         }
 
         private void ShowResultMessageBox(uint data)
@@ -346,12 +379,15 @@ namespace ZenStatesDebugTool
             string responseString = 
                 $"HEX: 0x{Convert.ToString(data, 16).ToUpper()}" +
                 Environment.NewLine +
-                $"INT: {Convert.ToString(data, 10).ToUpper()}";
-            Console.WriteLine($"Response: {Environment.NewLine}{responseString}");
-            MessageBox.Show(responseString, "Response");
+                $"INT: {Convert.ToString(data, 10).ToUpper()}" +
+                Environment.NewLine +
+                Environment.NewLine;
+            Console.WriteLine($"Response: {responseString}");
+            // MessageBox.Show(responseString, "Response");
+            textBoxResult.Text = responseString + textBoxResult.Text;
         }
 
-        private void ShowPciResult(uint data)
+        private void ShowResult(uint data)
         {
             string responseString =
                 $"REG: {textBoxPciAddress.Text.Trim()}" +
@@ -362,7 +398,7 @@ namespace ZenStatesDebugTool
                 Environment.NewLine +
                 Environment.NewLine;
             Console.WriteLine($"Response: {responseString}");
-            textBoxPciResult.Text = responseString + textBoxPciResult.Text;
+            textBoxResult.Text = responseString + textBoxResult.Text;
         }
 
         private void ApplySettings()
@@ -380,7 +416,6 @@ namespace ZenStatesDebugTool
                 Console.WriteLine("MSG Address:  0x" + Convert.ToString(SMU_ADDR_MSG, 16).ToUpper());
                 Console.WriteLine("RSP Address:  0x" + Convert.ToString(SMU_ADDR_RSP, 16).ToUpper());
                 Console.WriteLine("ARG0 Address: 0x" + Convert.ToString(SMU_ADDR_ARG0, 16).ToUpper());
-                Console.WriteLine("ARG1 Address: 0x" + Convert.ToString(SMU_ADDR_ARG0, 16).ToUpper());
                 Console.WriteLine("ARG0        : 0x" + Convert.ToString(arg0, 16).ToUpper());
 
                 if (SmuWrite(command, arg0))
@@ -391,8 +426,7 @@ namespace ZenStatesDebugTool
                     if (SmuReadReg(SMU_ADDR_RSP, ref data))
                     {
                         string responseString = "0x" + Convert.ToString(data, 16).ToUpper();
-                        SetCmdStatus(GetSMUStatus.GetByType(data));
-                        Console.WriteLine("CMD Status: " + responseString);
+                        SetCmdStatus(GetSMUStatus.GetByType((SMU.Status)data));
 
                         SmuReadReg(SMU_ADDR_ARG0, ref data);
                         ShowResultMessageBox(data);
@@ -407,7 +441,7 @@ namespace ZenStatesDebugTool
                     SetCmdStatus("Error SMU write");
                 }
             }
-            catch (Exception ex)
+            catch (ApplicationException ex)
             {
                 HandleError(ex);
             }
@@ -424,42 +458,10 @@ namespace ZenStatesDebugTool
             {
                 ApplySettings();
             }
-            catch (Exception ex)
+            catch (ApplicationException ex)
             {
                 HandleError(ex, "Error reading response");
-                SetCmdStatus("Error");
             }
-        }
-
-        private void BackgroundWorkerReadPci_DoWork(object sender, DoWorkEventArgs e)
-        {
-            try
-            {
-                uint address = Convert.ToUInt32(textBoxPciAddress.Text.Trim(), 16);
-                e.Result = ReadDword(address);
-            }
-            catch
-            {
-                this.Invoke(new MethodInvoker(delegate ()
-                {
-                    buttonPciRead.Enabled = true;
-                    textBoxPciAddress.Enabled = true;
-                    textBoxPciResult.Enabled = true;
-                    SetCmdStatus("Error");
-                }));
-                e.Result = 0;
-            }
-        }
-
-        private void BackgroundWorkerReadPci_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            uint data = (uint)e.Result;
-
-            buttonPciRead.Enabled = true;
-            textBoxPciAddress.Enabled = true;
-            textBoxPciResult.Enabled = true;
-            SetCmdStatus("OK");
-            ShowPciResult(data);
         }
 
         private void HandlePciReadBtnClick()
@@ -467,20 +469,48 @@ namespace ZenStatesDebugTool
             try
             {
                 SetCmdStatus("Reading, please wait...");
-                buttonPciRead.Enabled = false;
-                textBoxPciAddress.Enabled = false;
-                textBoxPciResult.Enabled = false;
-                backgroundWorker1 = new BackgroundWorker();
-                backgroundWorker1.DoWork += new DoWorkEventHandler(BackgroundWorkerReadPci_DoWork);
-                backgroundWorker1.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorkerReadPci_RunWorkerCompleted);
-                backgroundWorker1.RunWorkerAsync();
+                SetButtonsState(false);
+
+                uint address = Convert.ToUInt32(textBoxPciAddress.Text.Trim(), 16);
+                uint data = ReadDword(address);
+
+                textBoxPciValue.Text = $"0x{data.ToString("X8")}";
+
+                SetButtonsState(true);
+                SetCmdStatus(GetSMUStatus.GetByType(SMU.Status.OK));
+                ShowResult(data);
             }
-            catch (Exception ex)
+            catch (ApplicationException ex)
             {
-                SetCmdStatus("Error");
-                buttonPciRead.Enabled = true;
-                textBoxPciAddress.Enabled = true;
-                textBoxPciResult.Enabled = true;
+                SetButtonsState(true);
+                HandleError(ex);
+            }
+        }
+
+        private void HandlePciWriteBtnClick()
+        {
+            try
+            {
+                SetCmdStatus("Writing, please wait...");
+                SetButtonsState(false);
+
+                uint address = Convert.ToUInt32(textBoxPciAddress.Text.Trim(), 16);
+                uint data = Convert.ToUInt32(textBoxPciValue.Text.Trim(), 16);
+
+                if (SmuWriteReg(address, data))
+                {
+                    SetCmdStatus("Write OK.");
+                }
+                else
+                {
+                    SetCmdStatus(Properties.Resources.Error);
+                }
+
+                SetButtonsState(true);
+            }
+            catch (ApplicationException ex)
+            {
+                SetButtonsState(true);
                 HandleError(ex);
             }
         }
@@ -496,6 +526,248 @@ namespace ZenStatesDebugTool
             {
                 HandlePciReadBtnClick();
             }
+        }
+
+        private void ButtonPciWrite_Click(object sender, EventArgs e)
+        {
+            HandlePciWriteBtnClick();
+        }
+
+        private void TextBoxPciValue_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                HandlePciWriteBtnClick();
+            }
+        }
+
+        private SMU.Status TrySettings(uint msgAddr, uint rspAddr, uint argAddress, uint value)
+        {
+            SMU.Status status = SMU.Status.FAILED;
+
+            try
+            {
+                SMU_ADDR_MSG = msgAddr;
+                SMU_ADDR_RSP = rspAddr;
+                SMU_ADDR_ARG0 = argAddress;
+
+                if (SmuWrite(smu.SMC_MSG_TestMessage, value))
+                {
+                    // Read response
+                    status = (SMU.Status)ReadDword(SMU_ADDR_RSP);
+                }
+            }
+            catch (ApplicationException ex)
+            {
+                HandleError(ex);
+            }
+
+            return status;
+        }
+
+        private void BackgroundWorkerTrySettings_DoWork(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                matches = new List<SmuAddressSet>();
+
+                uint SMU_START = 0x03B10500;
+                uint SMU_END = 0x03B10AFF;
+                byte RSP_OFFSET = 0x4C;
+                byte RSP_OFFSET_PICASSO = 0x60; // Picasso
+
+                if (this.cpuType == SMU.CPUType.Picasso)
+                {
+                    RSP_OFFSET = RSP_OFFSET_PICASSO;
+                }
+
+                while (SMU_START <= SMU_END)
+                {
+                    uint smuRspAddress = SMU_START + RSP_OFFSET;
+
+                    // Check if CMD-RSP pair returns correct status, while using a placeholder ARG address
+                    if (TrySettings(SMU_START, smuRspAddress, 0xFFFFFFFF, 0x0) == SMU.Status.OK)
+                    {
+                        //TrySettings(SMU_START, smuRspAddress, SMU_ADDR_ARG0, 0x4);
+                        bool match = false;
+                        SMU_ADDR_ARG0 = SMU_ADDR_RSP + 4;
+
+                        // Scan for ARG address
+                        while ((SMU_ADDR_ARG0 <= SMU_END) && !match)
+                        {
+                            var currentRegValue = ReadDword(SMU_ADDR_ARG0);
+                            // Console.WriteLine($"REG: 0x{Convert.ToString(SMU_ADDR_ARG0, 16).ToUpper()} Value: 0x{Convert.ToString(currentRegValue, 16).ToUpper()}");
+                            if (currentRegValue != 0xFFFFFFFF)
+                            {
+                                TrySettings(SMU_START, smuRspAddress, SMU_ADDR_ARG0, 0x4);
+                                if (ReadDword(SMU_ADDR_ARG0) == 0x5)
+                                {
+                                    match = true;
+                                    matches.Add(new SmuAddressSet(SMU_START, smuRspAddress, SMU_ADDR_ARG0));
+
+                                    string responseString =
+                                        $"CMD:  0x{Convert.ToString(SMU_START, 16).ToUpper()}" +
+                                        Environment.NewLine +
+                                        $"RSP:  0x{Convert.ToString(smuRspAddress, 16).ToUpper()}" +
+                                        Environment.NewLine +
+                                        $"ARG:  0x{Convert.ToString(SMU_ADDR_ARG0, 16).ToUpper()}" +
+                                        Environment.NewLine +
+                                        Environment.NewLine;
+
+                                    this.Invoke(new MethodInvoker(delegate ()
+                                    {
+                                        textBoxResult.Text += responseString;
+                                    }));
+                                }
+                            }
+
+                            SMU_ADDR_ARG0 += 0x4;
+                        }
+                    }
+
+                    SMU_START += 0x4;
+                }
+            }
+            catch (ApplicationException)
+            {
+                this.Invoke(new MethodInvoker(delegate ()
+                {
+                    SetButtonsState(true);
+                    SetCmdStatus(Properties.Resources.Error);
+                }));
+            }
+        }
+
+        private void BackgroundWorkerTrySettings_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            SetButtonsState(true);
+            SetCmdStatus("Scan Complete.");
+        }
+
+        private void ScanSmu(RunWorkerCompletedEventHandler completedHandler)
+        {
+            try
+            {
+                SetCmdStatus("Scanning addresses, please wait...");
+                SetButtonsState(false);
+                textBoxResult.Clear();
+
+                backgroundWorker1 = new BackgroundWorker();
+                backgroundWorker1.DoWork += new DoWorkEventHandler(BackgroundWorkerTrySettings_DoWork);
+                backgroundWorker1.RunWorkerCompleted += completedHandler;
+                backgroundWorker1.RunWorkerAsync();
+            }
+            catch (ApplicationException ex)
+            {
+                SetCmdStatus(Properties.Resources.Error);
+                SetButtonsState(true);
+                HandleError(ex);
+            }
+        }
+
+        private void ButtonScan_Click(object sender, EventArgs e)
+        {
+            var confirmResult = MessageBox.Show(
+                "The scan process might crash your system or have other unexpected results. " +
+                Environment.NewLine +
+                "It could take up to 1 minute, depending on the system and current workload." +
+                Environment.NewLine +
+                "Do you want to continue?",
+                "Confirm Scan",
+                MessageBoxButtons.OKCancel
+            );
+
+            if (confirmResult == DialogResult.OK)
+            {
+                ScanSmu(new RunWorkerCompletedEventHandler(BackgroundWorkerTrySettings_RunWorkerCompleted));
+            }
+        }
+
+        private void TabControl1_Selected(object sender, TabControlEventArgs e)
+        {
+            if (e.TabPage == tabPageInfo)
+            {
+                splitContainer1.Panel2Collapsed = true;
+            }
+            else if (splitContainer1.Panel2Collapsed)
+            {
+                splitContainer1.Panel2Collapsed = false;
+            }
+        }
+
+        public string GenerateReportJson()
+        {
+            StringWriter sw = new StringWriter();
+            JsonTextWriter writer = new JsonTextWriter(sw);
+            writer.Formatting = Formatting.Indented;
+
+            // {
+            writer.WriteStartObject();
+
+            writer.WritePropertyName("CpuId");
+            writer.WriteValue(SI.GetCpuIdString());
+
+            writer.WritePropertyName("CpuName");
+            writer.WriteValue(SI.CpuName);
+
+            writer.WritePropertyName("MbVendor");
+            writer.WriteValue(SI.MbVendor);
+
+            writer.WritePropertyName("MbName");
+            writer.WriteValue(SI.MbName);
+
+            writer.WritePropertyName("BiosVersion");
+            writer.WriteValue(SI.BiosVersion);
+
+            writer.WritePropertyName("SmuVersion");
+            writer.WriteValue(SI.GetSmuVersionString());
+
+            // "SmuAddresses:"
+            writer.WritePropertyName("Mailboxes");
+            writer.WriteStartArray();
+            foreach (SmuAddressSet set in matches)
+            {
+                writer.WriteStartObject();
+                writer.WritePropertyName("MsgAddress");
+                writer.WriteValue($"0x{set.MsgAddress.ToString("X8")}");
+                writer.WritePropertyName("RspAddress");
+                writer.WriteValue($"0x{set.RspAddress.ToString("X8")}");
+                writer.WritePropertyName("ArgAddress");
+                writer.WriteValue($"0x{set.ArgAddress.ToString("X8")}");
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+
+            // }
+            writer.WriteEndObject();
+
+            return sw.ToString();
+        }
+
+        private void BackgroundWorkerReport_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            string unixTimestamp = Convert.ToString((DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMinutes);
+            string fileName = $@"SMUDebug_{unixTimestamp}.json";
+
+            if (File.Exists(fileName))
+            {
+                File.Delete(fileName);
+            }
+
+            using (var sw = new StreamWriter(fileName, true))
+            {
+                sw.WriteLine(GenerateReportJson());
+                sw.Close();
+            }
+
+            SetButtonsState(true);
+            SetCmdStatus("Report Complete.");
+            MessageBox.Show($"Report saved as {fileName}");
+        }
+
+        private void buttonExport_Click(object sender, EventArgs e)
+        {
+            ScanSmu(new RunWorkerCompletedEventHandler(BackgroundWorkerReport_RunWorkerCompleted));
         }
     }
 }
