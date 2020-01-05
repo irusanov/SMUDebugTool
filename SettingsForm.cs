@@ -2,9 +2,11 @@ using OpenLibSys;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Management;
 using System.Threading;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace ZenStatesDebugTool
 {
@@ -16,6 +18,7 @@ namespace ZenStatesDebugTool
         private SMU.CPUType cpuType = SMU.CPUType.Unsupported;
         private SMU smu;
         private SystemInfo SI;
+        List<SmuAddressSet> matches;
 
         readonly Mutex hMutexPci;
 
@@ -354,6 +357,7 @@ namespace ZenStatesDebugTool
             buttonDefaults.Enabled = enabled;
             buttonProbe.Enabled = enabled;
             buttonPciRead.Enabled = enabled;
+            buttonExport.Enabled = enabled;
             textBoxCMDAddress.Enabled = enabled;
             textBoxRSPAddress.Enabled = enabled;
             textBoxARGAddress.Enabled = enabled;
@@ -565,10 +569,10 @@ namespace ZenStatesDebugTool
         {
             try
             {
-                List<SmuAddressSet> matches = new List<SmuAddressSet>();
+                matches = new List<SmuAddressSet>();
 
                 uint SMU_START = 0x03B10500;
-                uint SMU_END = 0x3B10AFF;
+                uint SMU_END = 0x03B10AFF;
                 byte RSP_OFFSET = 0x4C;
                 byte RSP_OFFSET_PICASSO = 0x60; // Picasso
 
@@ -640,6 +644,27 @@ namespace ZenStatesDebugTool
             SetCmdStatus("Scan Complete.");
         }
 
+        private void ScanSmu(RunWorkerCompletedEventHandler completedHandler)
+        {
+            try
+            {
+                SetCmdStatus("Scanning addresses, please wait...");
+                SetButtonsState(false);
+                textBoxResult.Clear();
+
+                backgroundWorker1 = new BackgroundWorker();
+                backgroundWorker1.DoWork += new DoWorkEventHandler(BackgroundWorkerTrySettings_DoWork);
+                backgroundWorker1.RunWorkerCompleted += completedHandler;
+                backgroundWorker1.RunWorkerAsync();
+            }
+            catch (ApplicationException ex)
+            {
+                SetCmdStatus(Properties.Resources.Error);
+                SetButtonsState(true);
+                HandleError(ex);
+            }
+        }
+
         private void ButtonScan_Click(object sender, EventArgs e)
         {
             var confirmResult = MessageBox.Show(
@@ -654,23 +679,7 @@ namespace ZenStatesDebugTool
 
             if (confirmResult == DialogResult.OK)
             {
-                try
-                {
-                    SetCmdStatus("Scanning addresses, please wait...");
-                    SetButtonsState(false);
-                    textBoxResult.Clear();
-
-                    backgroundWorker1 = new BackgroundWorker();
-                    backgroundWorker1.DoWork += new DoWorkEventHandler(BackgroundWorkerTrySettings_DoWork);
-                    backgroundWorker1.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorkerTrySettings_RunWorkerCompleted);
-                    backgroundWorker1.RunWorkerAsync();
-                }
-                catch (ApplicationException ex)
-                {
-                    SetCmdStatus(Properties.Resources.Error);
-                    SetButtonsState(true);
-                    HandleError(ex);
-                }
+                ScanSmu(new RunWorkerCompletedEventHandler(BackgroundWorkerTrySettings_RunWorkerCompleted));
             }
         }
 
@@ -684,6 +693,81 @@ namespace ZenStatesDebugTool
             {
                 splitContainer1.Panel2Collapsed = false;
             }
+        }
+
+        public string GenerateReportJson()
+        {
+            StringWriter sw = new StringWriter();
+            JsonTextWriter writer = new JsonTextWriter(sw);
+            writer.Formatting = Formatting.Indented;
+
+            // {
+            writer.WriteStartObject();
+
+            writer.WritePropertyName("CpuId");
+            writer.WriteValue(SI.GetCpuIdString());
+
+            writer.WritePropertyName("CpuName");
+            writer.WriteValue(SI.CpuName);
+
+            writer.WritePropertyName("MbVendor");
+            writer.WriteValue(SI.MbVendor);
+
+            writer.WritePropertyName("MbName");
+            writer.WriteValue(SI.MbName);
+
+            writer.WritePropertyName("BiosVersion");
+            writer.WriteValue(SI.BiosVersion);
+
+            writer.WritePropertyName("SmuVersion");
+            writer.WriteValue(SI.GetSmuVersionString());
+
+            // "SmuAddresses:"
+            writer.WritePropertyName("Mailboxes");
+            writer.WriteStartArray();
+            foreach (SmuAddressSet set in matches)
+            {
+                writer.WriteStartObject();
+                writer.WritePropertyName("MsgAddress");
+                writer.WriteValue($"0x{set.MsgAddress.ToString("X8")}");
+                writer.WritePropertyName("RspAddress");
+                writer.WriteValue($"0x{set.RspAddress.ToString("X8")}");
+                writer.WritePropertyName("ArgAddress");
+                writer.WriteValue($"0x{set.ArgAddress.ToString("X8")}");
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+
+            // }
+            writer.WriteEndObject();
+
+            return sw.ToString();
+        }
+
+        private void BackgroundWorkerReport_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            string unixTimestamp = Convert.ToString((DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMinutes);
+            string fileName = $@"SMUDebug_{unixTimestamp}.json";
+
+            if (File.Exists(fileName))
+            {
+                File.Delete(fileName);
+            }
+
+            using (var sw = new StreamWriter(fileName, true))
+            {
+                sw.WriteLine(GenerateReportJson());
+                sw.Close();
+            }
+
+            SetButtonsState(true);
+            SetCmdStatus("Report Complete.");
+            MessageBox.Show($"Report saved as {fileName}");
+        }
+
+        private void buttonExport_Click(object sender, EventArgs e)
+        {
+            ScanSmu(new RunWorkerCompletedEventHandler(BackgroundWorkerReport_RunWorkerCompleted));
         }
     }
 }

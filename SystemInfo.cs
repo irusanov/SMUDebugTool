@@ -5,6 +5,7 @@ using System.Text;
 
 namespace ZenStatesDebugTool
 {
+    [Serializable]
     public class SystemInfo
     {
         private static string SmuVersionToString(uint version)

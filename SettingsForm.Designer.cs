@@ -74,6 +74,7 @@
             this.cpuIdLabel = new System.Windows.Forms.Label();
             this.textBoxResult = new System.Windows.Forms.TextBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.buttonExport = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -241,7 +242,7 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.labelStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 192);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 223);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(469, 22);
             this.statusStrip1.SizingGrip = false;
@@ -317,7 +318,7 @@
             this.tabControl1.Location = new System.Drawing.Point(5, 5);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(291, 182);
+            this.tabControl1.Size = new System.Drawing.Size(291, 213);
             this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.tabControl1.TabIndex = 3;
             this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.TabControl1_Selected);
@@ -441,11 +442,12 @@
             // 
             // tabPageInfo
             // 
+            this.tabPageInfo.Controls.Add(this.buttonExport);
             this.tabPageInfo.Controls.Add(this.tableLayoutPanel3);
             this.tabPageInfo.Location = new System.Drawing.Point(4, 22);
             this.tabPageInfo.Name = "tabPageInfo";
             this.tabPageInfo.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageInfo.Size = new System.Drawing.Size(283, 156);
+            this.tabPageInfo.Size = new System.Drawing.Size(283, 187);
             this.tabPageInfo.TabIndex = 2;
             this.tabPageInfo.Text = "Info";
             this.tabPageInfo.UseVisualStyleBackColor = true;
@@ -642,7 +644,7 @@
             this.textBoxResult.Name = "textBoxResult";
             this.textBoxResult.ReadOnly = true;
             this.textBoxResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxResult.Size = new System.Drawing.Size(163, 182);
+            this.textBoxResult.Size = new System.Drawing.Size(163, 213);
             this.textBoxResult.TabIndex = 4;
             // 
             // splitContainer1
@@ -663,16 +665,26 @@
             this.splitContainer1.Panel2.Controls.Add(this.textBoxResult);
             this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
             this.splitContainer1.Panel2MinSize = 0;
-            this.splitContainer1.Size = new System.Drawing.Size(469, 192);
+            this.splitContainer1.Size = new System.Drawing.Size(469, 223);
             this.splitContainer1.SplitterDistance = 300;
             this.splitContainer1.SplitterWidth = 1;
             this.splitContainer1.TabIndex = 5;
+            // 
+            // buttonExport
+            // 
+            this.buttonExport.Location = new System.Drawing.Point(4, 158);
+            this.buttonExport.Name = "buttonExport";
+            this.buttonExport.Size = new System.Drawing.Size(75, 23);
+            this.buttonExport.TabIndex = 1;
+            this.buttonExport.Text = "Export";
+            this.buttonExport.UseVisualStyleBackColor = true;
+            this.buttonExport.Click += new System.EventHandler(this.buttonExport_Click);
             // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(469, 214);
+            this.ClientSize = new System.Drawing.Size(469, 245);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -752,6 +764,7 @@
         private System.Windows.Forms.Button buttonPciWrite;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textBoxPciValue;
+        private System.Windows.Forms.Button buttonExport;
     }
 }
 
