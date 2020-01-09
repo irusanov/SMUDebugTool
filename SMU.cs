@@ -8,18 +8,19 @@ namespace ZenStatesDebugTool
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "<Pending>")]
     public abstract class SMU
     {
-        public enum CPUType 
+        public enum CPUType : int
         { 
             Unsupported     = 0,
-            DEBUG           = 1, 
-            SummitRidge     = 2, 
-            Threadripper    = 3, 
-            RavenRidge      = 4, 
-            PinnacleRidge   = 5, 
-            Picasso         = 6, 
-            Matisse         = 7, 
-            Rome            = 8, 
-            Renoir          = 9 
+            DEBUG,
+            SummitRidge,
+            Threadripper,
+            RavenRidge,
+            PinnacleRidge,
+            Picasso,
+            Fenghuang,
+            Matisse,
+            Rome,
+            Renoir 
         };
 
         public enum Status : int

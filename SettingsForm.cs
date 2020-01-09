@@ -7,6 +7,7 @@ using System.Management;
 using System.Threading;
 using System.Windows.Forms;
 using Newtonsoft.Json;
+using Microsoft.VisualBasic.Devices;
 
 namespace ZenStatesDebugTool
 {
@@ -149,7 +150,9 @@ namespace ZenStatesDebugTool
                     this.cpuType = SMU.CPUType.Rome;
                     break;
                 case 0x00850F00:
-                case 0x00850F10: // APU \ Renoir \ Fenghuang
+                    this.cpuType = SMU.CPUType.Fenghuang;
+                    break;
+                case 0x00850F10: // APU \ Renoir
                     this.cpuType = SMU.CPUType.Renoir;
                     break;
                 default:
@@ -541,7 +544,7 @@ namespace ZenStatesDebugTool
             }
         }
 
-        private SMU.Status TrySettings(uint msgAddr, uint rspAddr, uint argAddress, uint value)
+        private SMU.Status TrySettings(uint msgAddr, uint rspAddr, uint argAddress, uint cmd, uint value)
         {
             SMU.Status status = SMU.Status.FAILED;
 
@@ -551,7 +554,7 @@ namespace ZenStatesDebugTool
                 SMU_ADDR_RSP = rspAddr;
                 SMU_ADDR_ARG0 = argAddress;
 
-                if (SmuWrite(smu.SMC_MSG_TestMessage, value))
+                if (SmuWrite(cmd, value))
                 {
                     // Read response
                     status = (SMU.Status)ReadDword(SMU_ADDR_RSP);
@@ -574,54 +577,67 @@ namespace ZenStatesDebugTool
                 uint SMU_START = 0x03B10500;
                 uint SMU_END = 0x03B10AFF;
                 byte RSP_OFFSET = 0x4C;
-                byte RSP_OFFSET_PICASSO = 0x60; // Picasso
+                byte RSP_OFFSET_APU = 0x60; // Picasso & Fenghuang
 
-                if (this.cpuType == SMU.CPUType.Picasso)
+                if (this.cpuType == SMU.CPUType.Picasso || this.cpuType == SMU.CPUType.Fenghuang)
                 {
-                    RSP_OFFSET = RSP_OFFSET_PICASSO;
+                    RSP_OFFSET = RSP_OFFSET_APU;
                 }
 
                 while (SMU_START <= SMU_END)
                 {
                     uint smuRspAddress = SMU_START + RSP_OFFSET;
 
-                    // Check if CMD-RSP pair returns correct status, while using a placeholder ARG address
-                    if (TrySettings(SMU_START, smuRspAddress, 0xFFFFFFFF, 0x0) == SMU.Status.OK)
+                    if (ReadDword(SMU_START) != 0xFFFFFFFF)
                     {
-                        //TrySettings(SMU_START, smuRspAddress, SMU_ADDR_ARG0, 0x4);
-                        bool match = false;
-                        SMU_ADDR_ARG0 = SMU_ADDR_RSP + 4;
-
-                        // Scan for ARG address
-                        while ((SMU_ADDR_ARG0 <= SMU_END) && !match)
+                        // Check if CMD-RSP pair returns correct status, while using a placeholder ARG address
+                        if (TrySettings(SMU_START, smuRspAddress, 0xF, smu.SMC_MSG_TestMessage, 0x0) == SMU.Status.OK)
                         {
-                            var currentRegValue = ReadDword(SMU_ADDR_ARG0);
-                            // Console.WriteLine($"REG: 0x{Convert.ToString(SMU_ADDR_ARG0, 16).ToUpper()} Value: 0x{Convert.ToString(currentRegValue, 16).ToUpper()}");
-                            if (currentRegValue != 0xFFFFFFFF)
+                            // Send smu version command, so the corresponding ARG0 address changes its value
+                            TrySettings(SMU_START, smuRspAddress, 0xF, smu.SMC_MSG_GetSmuVersion, 0x0);
+                            bool match = false;
+
+                            SMU_ADDR_ARG0 = SMU_ADDR_RSP + 4;
+
+                            // Scan for ARG address
+                            while ((SMU_ADDR_ARG0 <= SMU_END) && !match)
                             {
-                                TrySettings(SMU_START, smuRspAddress, SMU_ADDR_ARG0, 0x4);
-                                if (ReadDword(SMU_ADDR_ARG0) == 0x5)
+                                // Check if smu version major is in range
+                                var currentRegValue = (ReadDword(SMU_ADDR_ARG0) & 0x00FF0000) >> 16;
+                                if (currentRegValue > 1 && currentRegValue <= 99)
                                 {
-                                    match = true;
-                                    matches.Add(new SmuAddressSet(SMU_START, smuRspAddress, SMU_ADDR_ARG0));
+                                    // Send test message with an argument, using the potential ARG0 address
+                                    var argValue = (uint)matches.Count * 2 + 99;
+                                    TrySettings(SMU_START, smuRspAddress, SMU_ADDR_ARG0, smu.SMC_MSG_TestMessage, argValue);
+                                    currentRegValue = ReadDword(SMU_ADDR_ARG0);
+                                    Console.WriteLine($"REG: 0x{Convert.ToString(SMU_ADDR_ARG0, 16).ToUpper()} Value: 0x{Convert.ToString(currentRegValue, 16).ToUpper()}");
 
-                                    string responseString =
-                                        $"CMD:  0x{Convert.ToString(SMU_START, 16).ToUpper()}" +
-                                        Environment.NewLine +
-                                        $"RSP:  0x{Convert.ToString(smuRspAddress, 16).ToUpper()}" +
-                                        Environment.NewLine +
-                                        $"ARG:  0x{Convert.ToString(SMU_ADDR_ARG0, 16).ToUpper()}" +
-                                        Environment.NewLine +
-                                        Environment.NewLine;
-
-                                    this.Invoke(new MethodInvoker(delegate ()
+                                    // Check the address for expected value (argument + 1)
+                                    if (currentRegValue == argValue + 1)
                                     {
-                                        textBoxResult.Text += responseString;
-                                    }));
-                                }
-                            }
+                                        match = true;
+                                        matches.Add(new SmuAddressSet(SMU_START, smuRspAddress, SMU_ADDR_ARG0));
 
-                            SMU_ADDR_ARG0 += 0x4;
+                                        string responseString =
+                                            $"CMD:  0x{Convert.ToString(SMU_START, 16).ToUpper()}" +
+                                            Environment.NewLine +
+                                            $"RSP:  0x{Convert.ToString(smuRspAddress, 16).ToUpper()}" +
+                                            Environment.NewLine +
+                                            $"ARG:  0x{Convert.ToString(SMU_ADDR_ARG0, 16).ToUpper()}" +
+                                            Environment.NewLine +
+                                            Environment.NewLine;
+
+                                        SMU_ADDR_ARG0 += 20;
+
+                                        Invoke(new MethodInvoker(delegate ()
+                                        {
+                                            textBoxResult.Text += responseString;
+                                        }));
+                                    }
+                                }
+
+                                SMU_ADDR_ARG0 += 0x4;
+                            }
                         }
                     }
 
@@ -704,8 +720,17 @@ namespace ZenStatesDebugTool
             // {
             writer.WriteStartObject();
 
+            writer.WritePropertyName("AppVersion");
+            writer.WriteValue(Application.ProductVersion);
+
+            writer.WritePropertyName("OSVersion");
+            writer.WriteValue(new ComputerInfo().OSFullName);
+
             writer.WritePropertyName("CpuId");
             writer.WriteValue(SI.GetCpuIdString());
+
+            writer.WritePropertyName("CpuCodeName");
+            writer.WriteValue(cpuType.ToString());
 
             writer.WritePropertyName("CpuName");
             writer.WriteValue(SI.CpuName);
