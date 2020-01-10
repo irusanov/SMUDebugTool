@@ -371,10 +371,22 @@ namespace ZenStatesDebugTool
             // textBoxResult.Enabled = enabled;
         }
 
+        private void TryConvertToUint(string text, out uint address)
+        {
+            try
+            {
+                address = Convert.ToUInt32(text.Trim().ToLower(), 16);
+            }
+            catch
+            {
+                throw new ApplicationException("Invalid hexadecimal value.");
+            }
+        }
+
         private void HandleError(Exception ex, string title = "Error")
         {
-            MessageBox.Show(ex.Message, title);
             SetCmdStatus(Properties.Resources.Error);
+            MessageBox.Show(ex.Message, title);
         }
 
         private void ShowResultMessageBox(uint data)
@@ -408,13 +420,13 @@ namespace ZenStatesDebugTool
         {
             try
             {
-                SMU_ADDR_MSG = Convert.ToUInt32(textBoxCMDAddress.Text, 16);
-                SMU_ADDR_RSP = Convert.ToUInt32(textBoxRSPAddress.Text, 16);
-                SMU_ADDR_ARG0 = Convert.ToUInt32(textBoxARGAddress.Text, 16);
+                TryConvertToUint(textBoxCMDAddress.Text, out SMU_ADDR_MSG);
+                TryConvertToUint(textBoxRSPAddress.Text, out SMU_ADDR_RSP);
+                TryConvertToUint(textBoxARGAddress.Text, out SMU_ADDR_ARG0);
                 SMU_ADDR_ARG1 = SMU_ADDR_ARG0 + 0x4;
 
-                uint command = Convert.ToUInt32(textBoxCMD.Text, 16);
-                uint arg0 = Convert.ToUInt32(textBoxARG0.Text, 16);
+                TryConvertToUint(textBoxCMD.Text, out uint command);
+                TryConvertToUint(textBoxARG0.Text, out uint arg0);
 
                 Console.WriteLine("MSG Address:  0x" + Convert.ToString(SMU_ADDR_MSG, 16).ToUpper());
                 Console.WriteLine("RSP Address:  0x" + Convert.ToString(SMU_ADDR_RSP, 16).ToUpper());
@@ -474,7 +486,7 @@ namespace ZenStatesDebugTool
                 SetCmdStatus("Reading, please wait...");
                 SetButtonsState(false);
 
-                uint address = Convert.ToUInt32(textBoxPciAddress.Text.Trim(), 16);
+                TryConvertToUint(textBoxPciAddress.Text, out uint address);
                 uint data = ReadDword(address);
 
                 textBoxPciValue.Text = $"0x{data.ToString("X8")}";
@@ -497,8 +509,8 @@ namespace ZenStatesDebugTool
                 SetCmdStatus("Writing, please wait...");
                 SetButtonsState(false);
 
-                uint address = Convert.ToUInt32(textBoxPciAddress.Text.Trim(), 16);
-                uint data = Convert.ToUInt32(textBoxPciValue.Text.Trim(), 16);
+                TryConvertToUint(textBoxPciAddress.Text, out uint address);
+                TryConvertToUint(textBoxPciValue.Text, out uint data);
 
                 if (SmuWriteReg(address, data))
                 {
