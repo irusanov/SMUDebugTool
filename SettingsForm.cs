@@ -591,7 +591,11 @@ namespace ZenStatesDebugTool
                 byte RSP_OFFSET = 0x4C;
                 byte RSP_OFFSET_APU = 0x60; // Picasso & Fenghuang
 
-                if (this.cpuType == SMU.CPUType.Picasso || this.cpuType == SMU.CPUType.Fenghuang)
+                if (
+                    cpuType == SMU.CPUType.Picasso 
+                 || cpuType == SMU.CPUType.Fenghuang
+                 || cpuType == SMU.CPUType.RavenRidge
+                )
                 {
                     RSP_OFFSET = RSP_OFFSET_APU;
                 }
@@ -777,6 +781,8 @@ namespace ZenStatesDebugTool
 
             // }
             writer.WriteEndObject();
+
+            sw.Close();
 
             return sw.ToString();
         }
