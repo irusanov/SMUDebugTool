@@ -5,7 +5,6 @@ namespace ZenStatesDebugTool
 {
     public class NUMAUtil
     {
-        
         public ulong HighestNumaNode
         {
             get
