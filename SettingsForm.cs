@@ -1,13 +1,15 @@
-using OpenLibSys;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Management;
 using System.Threading;
 using System.Windows.Forms;
-using Newtonsoft.Json;
 using Microsoft.VisualBasic.Devices;
+using Newtonsoft.Json;
+using OpenLibSys;
+using ZenStatesDebugTool.Properties;
 
 namespace ZenStatesDebugTool
 {
@@ -15,6 +17,7 @@ namespace ZenStatesDebugTool
     {
         private static readonly int Threads = Convert.ToInt32(Environment.GetEnvironmentVariable("NUMBER_OF_PROCESSORS"));
         private BackgroundWorker backgroundWorker1;
+        private NUMAUtil _numaUtil;
         private readonly Ols ols;
         private SMU.CPUType cpuType = SMU.CPUType.Unsupported;
         private SMU smu;
@@ -23,10 +26,10 @@ namespace ZenStatesDebugTool
 
         readonly Mutex hMutexPci;
 
-        private uint SMU_ADDR_MSG = 0;
-        private uint SMU_ADDR_RSP = 0;
-        private uint SMU_ADDR_ARG0 = 0;
-        private uint SMU_ADDR_ARG1 = 0;
+        private uint SMU_ADDR_MSG;
+        private uint SMU_ADDR_RSP;
+        private uint SMU_ADDR_ARG0;
+        private uint SMU_ADDR_ARG1;
 
         private class SmuAddressSet
         {
@@ -55,6 +58,12 @@ namespace ZenStatesDebugTool
 
             ols = new Ols();
             hMutexPci = new Mutex();
+            
+            _numaUtil = new NUMAUtil();
+            if (_numaUtil.HighestNumaNode > 0)
+            {
+                textBoxResult.Text = $@"Detected NUMA nodes. ({_numaUtil.HighestNumaNode + 1})" + textBoxResult.Text;
+            }
 
             try
             {
@@ -62,8 +71,8 @@ namespace ZenStatesDebugTool
             }
             catch (ApplicationException ex)
             {
-                MessageBox.Show(ex.Message, Properties.Resources.Error);
-                this.Dispose();
+                MessageBox.Show(ex.Message, Resources.Error);
+                Dispose();
                 Application.Exit();
             }
 
@@ -128,37 +137,37 @@ namespace ZenStatesDebugTool
             {
                 case 0x00800F10: // CPU \ Zen \ Summit Ridge \ ZP - B0 \ 14nm
                 case 0x00800F00: // CPU \ Zen \ Summit Ridge \ ZP - A0 \ 14nm
-                    this.cpuType = SMU.CPUType.SummitRidge;
+                    cpuType = SMU.CPUType.SummitRidge;
                     break;
                 case 0x00800F80: // CPU \ Zen + \ Pinnacle Ridge \ Colfax 12nm
-                    this.cpuType = SMU.CPUType.PinnacleRidge;
+                    cpuType = SMU.CPUType.PinnacleRidge;
                     break;
                 case 0x00810F80: // APU \ Zen + \ Picasso \ 12nm
-                    this.cpuType = SMU.CPUType.Picasso;
+                    cpuType = SMU.CPUType.Picasso;
                     break;
                 case 0x00810F00: // APU \ Zen \ Raven Ridge \ RV - A0 \ 14nm
                 case 0x00810F10: // APU \ Zen \ Raven Ridge \ 14nm
                 case 0x00820F00: // APU \ Zen \ Raven Ridge 2 \ RV2 - A0 \ 14nm
-                    this.cpuType = SMU.CPUType.RavenRidge;
+                    cpuType = SMU.CPUType.RavenRidge;
                     break;
                 case 0x00870F10: // CPU \ Zen2 \ Matisse \ MTS - B0 \ 7nm + 14nm I/ O Die
                 case 0x00870F00: // CPU \ Zen2 \ Matisse \ MTS - A0 \ 7nm + 14nm I/ O Die
-                    this.cpuType = SMU.CPUType.Matisse;
+                    cpuType = SMU.CPUType.Matisse;
                     break;
                 case 0x00830F00:
                 case 0x00830F10: // CPU \ Epyc 2 \ Rome \ Treadripper 2 \ Castle Peak 7nm
-                    this.cpuType = SMU.CPUType.Rome;
+                    cpuType = SMU.CPUType.Rome;
                     break;
                 case 0x00850F00:
-                    this.cpuType = SMU.CPUType.Fenghuang;
+                    cpuType = SMU.CPUType.Fenghuang;
                     break;
                 case 0x00850F10: // APU \ Renoir
-                    this.cpuType = SMU.CPUType.Renoir;
+                    cpuType = SMU.CPUType.Renoir;
                     break;
                 default:
-                    this.cpuType = SMU.CPUType.Unsupported;
+                    cpuType = SMU.CPUType.Unsupported;
 #if DEBUG
-                    this.cpuType = SMU.CPUType.DEBUG;
+                    cpuType = SMU.CPUType.DEBUG;
 #endif
                     break;
             }
@@ -198,9 +207,9 @@ namespace ZenStatesDebugTool
             SMU_ADDR_ARG0 = smuSettings.SMU_ADDR_ARG0;
             SMU_ADDR_ARG1 = SMU_ADDR_ARG0 + 0x4;
 
-            textBoxCMDAddress.Text = this.cpuType > SMU.CPUType.DEBUG ? $"0x{Convert.ToString(SMU_ADDR_MSG, 16).ToUpper()}" : "0x0";
-            textBoxRSPAddress.Text = this.cpuType > SMU.CPUType.DEBUG ? $"0x{Convert.ToString(SMU_ADDR_RSP, 16).ToUpper()}" : "0x0";
-            textBoxARGAddress.Text = this.cpuType > SMU.CPUType.DEBUG ? $"0x{Convert.ToString(SMU_ADDR_ARG0, 16).ToUpper()}" : "0x0";
+            textBoxCMDAddress.Text = cpuType > SMU.CPUType.DEBUG ? $"0x{Convert.ToString(SMU_ADDR_MSG, 16).ToUpper()}" : "0x0";
+            textBoxRSPAddress.Text = cpuType > SMU.CPUType.DEBUG ? $"0x{Convert.ToString(SMU_ADDR_RSP, 16).ToUpper()}" : "0x0";
+            textBoxARGAddress.Text = cpuType > SMU.CPUType.DEBUG ? $"0x{Convert.ToString(SMU_ADDR_ARG0, 16).ToUpper()}" : "0x0";
 
             textBoxCMD.Text = "0x1";
             textBoxARG0.Text = "0x0";
@@ -219,13 +228,22 @@ namespace ZenStatesDebugTool
         private void InitForm()
         {
             InitSystemInfo();
-            smu = GetMaintainedSettings.GetByType(this.cpuType);
+            smu = GetMaintainedSettings.GetByType(cpuType);
             ResetSettings(smu);
             smu.Version = GetSmuVersion();
             SI.SmuVersion = smu.Version;
             DisplaySystemInfo();
 
-            SetCmdStatus($"{this.cpuType}. Ready.");
+            pstateIdBox.SelectedIndex = 0;
+            
+            pstateDid.KeyDown += pstateFidDid_KeyDown;
+            pstateDid.KeyPress += pstateFidDid_KeyPress;
+            pstateDid.KeyUp += pstateFidDid_KeyUp;
+            pstateFid.KeyDown += pstateFidDid_KeyDown;
+            pstateFid.KeyPress += pstateFidDid_KeyPress;
+            pstateFid.KeyUp += pstateFidDid_KeyUp;
+
+            SetCmdStatus($"{cpuType}. Ready.");
         }
 
         private bool SmuWriteReg(uint addr, uint data)
@@ -385,7 +403,7 @@ namespace ZenStatesDebugTool
 
         private void HandleError(Exception ex, string title = "Error")
         {
-            SetCmdStatus(Properties.Resources.Error);
+            SetCmdStatus(Resources.Error);
             MessageBox.Show(ex.Message, title);
         }
 
@@ -464,7 +482,7 @@ namespace ZenStatesDebugTool
 
         private void ButtonDefaults_Click(object sender, EventArgs e)
         {
-            this.InitForm();
+            InitForm();
         }
 
         private void ButtonApply_Click(object sender, EventArgs e)
@@ -491,13 +509,13 @@ namespace ZenStatesDebugTool
 
                 textBoxPciValue.Text = $"0x{data.ToString("X8")}";
 
-                SetButtonsState(true);
+                SetButtonsState();
                 SetCmdStatus(GetSMUStatus.GetByType(SMU.Status.OK));
                 ShowResult(data);
             }
             catch (ApplicationException ex)
             {
-                SetButtonsState(true);
+                SetButtonsState();
                 HandleError(ex);
             }
         }
@@ -518,14 +536,14 @@ namespace ZenStatesDebugTool
                 }
                 else
                 {
-                    SetCmdStatus(Properties.Resources.Error);
+                    SetCmdStatus(Resources.Error);
                 }
 
-                SetButtonsState(true);
+                SetButtonsState();
             }
             catch (ApplicationException ex)
             {
-                SetButtonsState(true);
+                SetButtonsState();
                 HandleError(ex);
             }
         }
@@ -645,7 +663,7 @@ namespace ZenStatesDebugTool
 
                                         SMU_ADDR_ARG0 += 20;
 
-                                        Invoke(new MethodInvoker(delegate ()
+                                        Invoke(new MethodInvoker(delegate
                                         {
                                             textBoxResult.Text += responseString;
                                         }));
@@ -662,17 +680,17 @@ namespace ZenStatesDebugTool
             }
             catch (ApplicationException)
             {
-                this.Invoke(new MethodInvoker(delegate ()
+                Invoke(new MethodInvoker(delegate
                 {
-                    SetButtonsState(true);
-                    SetCmdStatus(Properties.Resources.Error);
+                    SetButtonsState();
+                    SetCmdStatus(Resources.Error);
                 }));
             }
         }
 
         private void BackgroundWorkerTrySettings_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            SetButtonsState(true);
+            SetButtonsState();
             SetCmdStatus("Scan Complete.");
         }
 
@@ -685,14 +703,14 @@ namespace ZenStatesDebugTool
                 textBoxResult.Clear();
 
                 backgroundWorker1 = new BackgroundWorker();
-                backgroundWorker1.DoWork += new DoWorkEventHandler(BackgroundWorkerTrySettings_DoWork);
+                backgroundWorker1.DoWork += BackgroundWorkerTrySettings_DoWork;
                 backgroundWorker1.RunWorkerCompleted += completedHandler;
                 backgroundWorker1.RunWorkerAsync();
             }
             catch (ApplicationException ex)
             {
-                SetCmdStatus(Properties.Resources.Error);
-                SetButtonsState(true);
+                SetCmdStatus(Resources.Error);
+                SetButtonsState();
                 HandleError(ex);
             }
         }
@@ -711,7 +729,7 @@ namespace ZenStatesDebugTool
 
             if (confirmResult == DialogResult.OK)
             {
-                ScanSmu(new RunWorkerCompletedEventHandler(BackgroundWorkerTrySettings_RunWorkerCompleted));
+                ScanSmu(BackgroundWorkerTrySettings_RunWorkerCompleted);
             }
         }
 
@@ -803,14 +821,156 @@ namespace ZenStatesDebugTool
                 sw.Close();
             }
 
-            SetButtonsState(true);
+            SetButtonsState();
             SetCmdStatus("Report Complete.");
             MessageBox.Show($"Report saved as {fileName}");
+        }
+        
+        public static void CalculatePstateDetails(uint eax, ref uint IddDiv, ref uint IddVal, ref uint CpuVid, ref uint CpuDfsId, ref uint CpuFid)
+        {
+            IddDiv = eax >> 30;
+            IddVal = eax >> 22 & 0xFF;
+            CpuVid = eax >> 14 & 0xFF;
+            CpuDfsId = eax >> 8 & 0x3F;
+            CpuFid = eax & 0xFF;
         }
 
         private void buttonExport_Click(object sender, EventArgs e)
         {
-            ScanSmu(new RunWorkerCompletedEventHandler(BackgroundWorkerReport_RunWorkerCompleted));
+            ScanSmu(BackgroundWorkerReport_RunWorkerCompleted);
+        }
+
+        private bool nonNumberEntered;
+
+        private void pstateFidDid_KeyDown(object sender, KeyEventArgs e)
+        {
+            nonNumberEntered = false;
+            
+            if (e.KeyCode < Keys.D0 || e.KeyCode > Keys.D9)
+            {
+                if (e.KeyCode < Keys.NumPad0 || e.KeyCode > Keys.NumPad9)
+                {
+                    if(e.KeyCode != Keys.Back)
+                    {
+                        nonNumberEntered = true;
+                    }
+                }
+            }
+
+            if (ModifierKeys == Keys.Shift) {
+                nonNumberEntered = true;
+            }
+        }
+        
+        private void pstateFidDid_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (nonNumberEntered)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void pstateFidDid_KeyUp(object sender, KeyEventArgs e)
+        {
+            var fid = string.IsNullOrEmpty(pstateFid.Text) ? 0 : int.Parse(pstateFid.Text);
+            var did = string.IsNullOrEmpty(pstateDid.Text) ? 1 : int.Parse(pstateDid.Text);
+            pstateFrequency.Text = fid / did * 200 + "Mhz";
+        }
+
+        private void btnPstateRead_Click(object sender, EventArgs e)
+        {
+            uint eax = default, edx = default;
+            var pstateId = pstateIdBox.SelectedIndex;
+            if (ols.RdmsrTx(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx, (UIntPtr) (1 << 10)) != 1)
+            {
+                labelStatus.Text = $@"Error scanning PState {pstateId}!";
+                return;
+            }
+            
+            uint IddDiv = 0x0;
+            uint IddVal = 0x0;
+            uint CpuVid = 0x0;
+            uint CpuDfsId = 0x0;
+            uint CpuFid = 0x0;
+            
+            CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
+
+            var frequency = ((CpuFid / CpuDfsId) * 200) + "";
+
+            pstateDid.Text = Convert.ToString(CpuDfsId, 10);
+            pstateFid.Text = Convert.ToString(CpuFid, 10);
+            pstateFrequency.Text = frequency + "Mhz";
+
+            labelStatus.Text = $@"PState {pstateId} successfully scanned.";
+
+            pstateDid.ReadOnly = false;
+            pstateFid.ReadOnly = false;
+            btnPstateWrite.Enabled = true;
+        }
+
+        private void btnPstateWrite_Click(object sender, EventArgs e)
+        {
+            var confirmResult = MessageBox.Show(
+                @"This will change the selected PState and your CPU frequency." +
+                Environment.NewLine +
+                @"Setting a high frequency could crash/damage your system." +
+                Environment.NewLine +
+                @"Do you want to continue?",
+                @"Confirm PState change",
+                MessageBoxButtons.OKCancel
+            );
+
+            if (confirmResult != DialogResult.OK) return;
+
+            if (string.IsNullOrEmpty(pstateDid.Text) || string.IsNullOrEmpty(pstateFid.Text))
+            {
+                MessageBox.Show("Can't write because DID/FID is empty!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            
+            var pstateId = pstateIdBox.SelectedIndex;
+            uint eax = default, edx = default;
+            uint IddDiv = 0x0;
+            uint IddVal = 0x0;
+            uint CpuVid = 0x0;
+            uint CpuDfsId = 0x0;
+            uint CpuFid = 0x0;
+
+            if (ols.RdmsrTx(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx, (UIntPtr) (1 << 10)) != 1)
+            {
+                labelStatus.Text = $@"Error scanning PState {pstateId}!";
+                return;
+            }
+            
+            CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
+                
+            eax = (IddDiv & 0xFF) << 30 | (IddVal & 0xFF) << 22 | (CpuVid & 0xFF) << 14 | (uint.Parse(pstateDid.Text) & 0xFF) << 8 | uint.Parse(pstateFid.Text) & 0xFF;
+
+            if (_numaUtil.HighestNumaNode > 0)
+            {
+                for (var i = 0; i < (int) _numaUtil.HighestNumaNode; i++)
+                {
+                    if (!WritePstateClick(pstateId, eax, edx, i)) return;
+                }
+            }
+            else
+            {
+                if (!WritePstateClick(pstateId, eax, edx)) return;
+            }
+
+            labelStatus.Text = $@"Successfully written PState {pstateId}.";
+        }
+
+        private bool WritePstateClick(int pstateId, uint eax, uint edx, int numanode = 0)
+        {
+            if (_numaUtil.HighestNumaNode > 0) _numaUtil.SetThreadProcessorAffinity((ushort) (numanode + 1), Enumerable.Range(0, Environment.ProcessorCount).ToArray());
+            if (ols.Wrmsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx) != 1) //, (UIntPtr) ((1 << i) - 1)
+            {
+                labelStatus.Text = $@"Error writing PState {pstateId}!";
+                return false;
+            }
+
+            return true;
         }
     }
 }
