@@ -61,6 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NUMAUtil.cs" />
     <Compile Include="SystemInfo.cs" />
     <Compile Include="SMU.cs" />
     <Compile Include="OpenLibSys.cs" />
