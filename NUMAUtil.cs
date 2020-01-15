@@ -59,11 +59,11 @@ namespace ZenStatesDebugTool
             }
 
             var hThread = GetCurrentThread();
-            var previousAffinity = new _GROUP_AFFINITY {Reserved = new ushort[3]};
+            var previousAffinity = new _GROUP_AFFINITY { Reserved = new ushort[3] };
             var newAffinity = new _GROUP_AFFINITY
             {
                 Group = groupId,
-                Mask = new UIntPtr((ulong) cpuMask),
+                Mask = new UIntPtr((ulong)cpuMask),
                 Reserved = new ushort[3]
             };
 

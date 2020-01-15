@@ -1,7 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ZenStatesDebugTool
 {
@@ -9,8 +7,8 @@ namespace ZenStatesDebugTool
     public abstract class SMU
     {
         public enum CPUType : int
-        { 
-            Unsupported     = 0,
+        {
+            Unsupported = 0,
             DEBUG,
             SummitRidge,
             Threadripper,
@@ -20,7 +18,7 @@ namespace ZenStatesDebugTool
             Fenghuang,
             Matisse,
             Rome,
-            Renoir 
+            Renoir
         };
 
         public enum Status : int
