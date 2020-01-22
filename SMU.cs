@@ -40,8 +40,7 @@ namespace ZenStatesDebugTool
 
             SMU_ADDR_MSG = 0x03B10528;
             SMU_ADDR_RSP = 0x03B10564;
-            SMU_ADDR_ARG0 = 0x03B10598;
-            SMU_ADDR_ARG1 = SMU_ADDR_ARG0 + 0x4;
+            SMU_ADDR_ARG = 0x03B10598;
 
             // SMU Messages
             SMC_MSG_TestMessage = 0x1;
@@ -55,9 +54,7 @@ namespace ZenStatesDebugTool
 
         public uint SMU_ADDR_MSG { get; protected set; }
         public uint SMU_ADDR_RSP { get; protected set; }
-        public uint SMU_ADDR_ARG0 { get; protected set; }
-
-        public uint SMU_ADDR_ARG1 { get; protected set; }
+        public uint SMU_ADDR_ARG { get; protected set; }
 
         public uint SMC_MSG_TestMessage { get; protected set; }
         public uint SMC_MSG_GetSmuVersion { get; protected set; }
@@ -76,8 +73,7 @@ namespace ZenStatesDebugTool
         {
             SMU_ADDR_MSG = 0x03B10524;
             SMU_ADDR_RSP = 0x03B10570;
-            SMU_ADDR_ARG0 = 0x03B10A40;
-            SMU_ADDR_ARG1 = SMU_ADDR_ARG0 + 0x4;
+            SMU_ADDR_ARG = 0x03B10A40;
         }
     }
 
@@ -88,20 +84,29 @@ namespace ZenStatesDebugTool
         {
             SMU_ADDR_MSG = 0x03B1051C;
             SMU_ADDR_RSP = 0x03B10568;
-            SMU_ADDR_ARG0 = 0x03B10590;
-            SMU_ADDR_ARG1 = SMU_ADDR_ARG0 + 0x4;
+            SMU_ADDR_ARG = 0x03B10590;
         }
     }
 
-    // Raven Ridge, Raven Ridge 2, Picasso
+    // Raven Ridge
     public class RavenRidgeSettings : SMU
     {
         public RavenRidgeSettings()
         {
+            SMU_ADDR_MSG = 0x03B10528;
+            SMU_ADDR_RSP = 0x03B10564;
+            SMU_ADDR_ARG = 0x03B10998;
+        }
+    }
+
+    // Raven Ridge 2, Picasso
+    public class RavenRidge2Settings : SMU
+    {
+        public RavenRidge2Settings()
+        {
             SMU_ADDR_MSG = 0x03B10A20;
             SMU_ADDR_RSP = 0x03B10A80;
-            SMU_ADDR_ARG0 = 0x03B10A88;
-            SMU_ADDR_ARG1 = SMU_ADDR_ARG0 + 0x4;
+            SMU_ADDR_ARG = 0x03B10A88;
         }
     }
 
@@ -113,7 +118,7 @@ namespace ZenStatesDebugTool
         {
             { SMU.CPUType.SummitRidge, new SummitRidgeSettings() },
             { SMU.CPUType.RavenRidge, new RavenRidgeSettings() },
-            { SMU.CPUType.Picasso, new RavenRidgeSettings() },
+            { SMU.CPUType.Picasso, new RavenRidge2Settings() },
             { SMU.CPUType.PinnacleRidge, new ZenPSettings() },
             { SMU.CPUType.Matisse, new Zen2Settings() },
             { SMU.CPUType.Rome, new Zen2Settings() },
