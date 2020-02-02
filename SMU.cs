@@ -45,6 +45,10 @@ namespace ZenStatesDebugTool
             // SMU Messages
             SMC_MSG_TestMessage = 0x1;
             SMC_MSG_GetSmuVersion = 0x2;
+            SMC_MSG_SetOverclockFrequencyAllCores = 0x0;
+            SMC_MSG_SetOverclockFrequencyPerCore = 0x0;
+            SMC_MSG_EnableOcMode = 0x0;
+            SMC_MSG_DisableOcMode = 0x0;
         }
 
         public uint Version { get; set; }
@@ -58,6 +62,10 @@ namespace ZenStatesDebugTool
 
         public uint SMC_MSG_TestMessage { get; protected set; }
         public uint SMC_MSG_GetSmuVersion { get; protected set; }
+        public uint SMC_MSG_SetOverclockFrequencyAllCores { get; protected set; }
+        public uint SMC_MSG_SetOverclockFrequencyPerCore { get; protected set; }
+        public uint SMC_MSG_EnableOcMode { get; protected set; }
+        public uint SMC_MSG_DisableOcMode { get; protected set; }
     }
 
     // inherit the base class and define the new values in ctor
@@ -74,6 +82,11 @@ namespace ZenStatesDebugTool
             SMU_ADDR_MSG = 0x03B10524;
             SMU_ADDR_RSP = 0x03B10570;
             SMU_ADDR_ARG = 0x03B10A40;
+
+            SMC_MSG_SetOverclockFrequencyAllCores = 0x5C;
+            SMC_MSG_SetOverclockFrequencyPerCore = 0x5D;
+            SMC_MSG_EnableOcMode = 0x5A;
+            SMC_MSG_DisableOcMode = 0x5B;
         }
     }
 

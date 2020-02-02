@@ -52,6 +52,17 @@ namespace ZenStatesDebugTool
             this.buttonDefaults = new System.Windows.Forms.Button();
             this.buttonProbe = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPageCPU = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
+            this.buttonApplyPROCHOT = new System.Windows.Forms.Button();
+            this.buttonApplySC = new System.Windows.Forms.Button();
+            this.buttonApplyAC = new System.Windows.Forms.Button();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.comboBoxACF = new System.Windows.Forms.ComboBox();
+            this.comboBoxSCF = new System.Windows.Forms.ComboBox();
+            this.comboBoxCore = new System.Windows.Forms.ComboBox();
+            this.checkBoxPROCHOT = new System.Windows.Forms.CheckBox();
             this.tabPageSmu = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
@@ -101,6 +112,8 @@ namespace ZenStatesDebugTool
             this.statusStrip1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tabControl1.SuspendLayout();
+            this.tabPageCPU.SuspendLayout();
+            this.tableLayoutPanel8.SuspendLayout();
             this.tabPageSmu.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
             this.tabPagePci.SuspendLayout();
@@ -335,6 +348,7 @@ namespace ZenStatesDebugTool
             // 
             // tabControl1
             // 
+            this.tabControl1.Controls.Add(this.tabPageCPU);
             this.tabControl1.Controls.Add(this.tabPageSmu);
             this.tabControl1.Controls.Add(this.tabPagePci);
             this.tabControl1.Controls.Add(this.tabPagePstates);
@@ -347,6 +361,148 @@ namespace ZenStatesDebugTool
             this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.tabControl1.TabIndex = 2;
             this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.TabControl1_Selected);
+            // 
+            // tabPageCPU
+            // 
+            this.tabPageCPU.Controls.Add(this.tableLayoutPanel8);
+            this.tabPageCPU.Location = new System.Drawing.Point(4, 22);
+            this.tabPageCPU.Name = "tabPageCPU";
+            this.tabPageCPU.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageCPU.Size = new System.Drawing.Size(283, 185);
+            this.tabPageCPU.TabIndex = 4;
+            this.tabPageCPU.Text = "CPU";
+            this.tabPageCPU.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel8
+            // 
+            this.tableLayoutPanel8.AutoSize = true;
+            this.tableLayoutPanel8.ColumnCount = 4;
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel8.Controls.Add(this.buttonApplyPROCHOT, 0, 6);
+            this.tableLayoutPanel8.Controls.Add(this.buttonApplySC, 3, 4);
+            this.tableLayoutPanel8.Controls.Add(this.buttonApplyAC, 3, 1);
+            this.tableLayoutPanel8.Controls.Add(this.label14, 0, 0);
+            this.tableLayoutPanel8.Controls.Add(this.label16, 0, 3);
+            this.tableLayoutPanel8.Controls.Add(this.comboBoxACF, 0, 1);
+            this.tableLayoutPanel8.Controls.Add(this.comboBoxSCF, 0, 4);
+            this.tableLayoutPanel8.Controls.Add(this.comboBoxCore, 1, 4);
+            this.tableLayoutPanel8.Controls.Add(this.checkBoxPROCHOT, 0, 6);
+            this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tableLayoutPanel8.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel8.Name = "tableLayoutPanel8";
+            this.tableLayoutPanel8.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
+            this.tableLayoutPanel8.RowCount = 7;
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel8.Size = new System.Drawing.Size(277, 157);
+            this.tableLayoutPanel8.TabIndex = 1;
+            // 
+            // buttonApplyPROCHOT
+            // 
+            this.buttonApplyPROCHOT.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonApplyPROCHOT.Location = new System.Drawing.Point(193, 126);
+            this.buttonApplyPROCHOT.Name = "buttonApplyPROCHOT";
+            this.buttonApplyPROCHOT.Size = new System.Drawing.Size(76, 23);
+            this.buttonApplyPROCHOT.TabIndex = 12;
+            this.buttonApplyPROCHOT.Text = "Apply";
+            this.buttonApplyPROCHOT.UseVisualStyleBackColor = true;
+            this.buttonApplyPROCHOT.Click += new System.EventHandler(this.buttonApplyPROCHOT_Click);
+            // 
+            // buttonApplySC
+            // 
+            this.buttonApplySC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonApplySC.Location = new System.Drawing.Point(193, 87);
+            this.buttonApplySC.Name = "buttonApplySC";
+            this.buttonApplySC.Size = new System.Drawing.Size(76, 23);
+            this.buttonApplySC.TabIndex = 5;
+            this.buttonApplySC.Text = "Apply";
+            this.buttonApplySC.UseVisualStyleBackColor = true;
+            this.buttonApplySC.Click += new System.EventHandler(this.buttonApplySC_Click);
+            // 
+            // buttonApplyAC
+            // 
+            this.buttonApplyAC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonApplyAC.Location = new System.Drawing.Point(193, 28);
+            this.buttonApplyAC.Name = "buttonApplyAC";
+            this.buttonApplyAC.Size = new System.Drawing.Size(76, 23);
+            this.buttonApplyAC.TabIndex = 2;
+            this.buttonApplyAC.Text = "Apply";
+            this.buttonApplyAC.UseVisualStyleBackColor = true;
+            this.buttonApplyAC.Click += new System.EventHandler(this.buttonApplyAC_Click);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.tableLayoutPanel8.SetColumnSpan(this.label14, 4);
+            this.label14.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label14.Location = new System.Drawing.Point(3, 5);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(266, 20);
+            this.label14.TabIndex = 6;
+            this.label14.Text = "All Core Frequency";
+            this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.tableLayoutPanel8.SetColumnSpan(this.label16, 4);
+            this.label16.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label16.Location = new System.Drawing.Point(3, 64);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(266, 20);
+            this.label16.TabIndex = 7;
+            this.label16.Text = "Single Core Frequency";
+            this.label16.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // comboBoxACF
+            // 
+            this.comboBoxACF.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.comboBoxACF.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxACF.FormattingEnabled = true;
+            this.comboBoxACF.Location = new System.Drawing.Point(3, 28);
+            this.comboBoxACF.Name = "comboBoxACF";
+            this.comboBoxACF.Size = new System.Drawing.Size(84, 21);
+            this.comboBoxACF.TabIndex = 9;
+            // 
+            // comboBoxSCF
+            // 
+            this.comboBoxSCF.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.comboBoxSCF.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxSCF.FormattingEnabled = true;
+            this.comboBoxSCF.Location = new System.Drawing.Point(3, 87);
+            this.comboBoxSCF.Name = "comboBoxSCF";
+            this.comboBoxSCF.Size = new System.Drawing.Size(84, 21);
+            this.comboBoxSCF.TabIndex = 10;
+            // 
+            // comboBoxCore
+            // 
+            this.comboBoxCore.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.comboBoxCore.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxCore.FormattingEnabled = true;
+            this.comboBoxCore.Location = new System.Drawing.Point(93, 87);
+            this.comboBoxCore.Name = "comboBoxCore";
+            this.comboBoxCore.Size = new System.Drawing.Size(84, 21);
+            this.comboBoxCore.TabIndex = 8;
+            // 
+            // checkBoxPROCHOT
+            // 
+            this.checkBoxPROCHOT.AutoSize = true;
+            this.tableLayoutPanel8.SetColumnSpan(this.checkBoxPROCHOT, 3);
+            this.checkBoxPROCHOT.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.checkBoxPROCHOT.Location = new System.Drawing.Point(3, 126);
+            this.checkBoxPROCHOT.Name = "checkBoxPROCHOT";
+            this.checkBoxPROCHOT.Size = new System.Drawing.Size(184, 23);
+            this.checkBoxPROCHOT.TabIndex = 11;
+            this.checkBoxPROCHOT.Text = "PROCHOT";
+            this.checkBoxPROCHOT.UseVisualStyleBackColor = true;
             // 
             // tabPageSmu
             // 
@@ -979,6 +1135,10 @@ namespace ZenStatesDebugTool
             this.statusStrip1.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
+            this.tabPageCPU.ResumeLayout(false);
+            this.tabPageCPU.PerformLayout();
+            this.tableLayoutPanel8.ResumeLayout(false);
+            this.tableLayoutPanel8.PerformLayout();
             this.tabPageSmu.ResumeLayout(false);
             this.tabPageSmu.PerformLayout();
             this.tableLayoutPanel6.ResumeLayout(false);
@@ -1070,6 +1230,17 @@ namespace ZenStatesDebugTool
         private TableLayoutPanel tableLayoutPanel6;
         private TableLayoutPanel tableLayoutPanel7;
         private TextBox pstateFid;
+        private TabPage tabPageCPU;
+        private TableLayoutPanel tableLayoutPanel8;
+        private Button buttonApplySC;
+        private Button buttonApplyAC;
+        private Label label14;
+        private Label label16;
+        private ComboBox comboBoxCore;
+        private ComboBox comboBoxACF;
+        private ComboBox comboBoxSCF;
+        private CheckBox checkBoxPROCHOT;
+        private Button buttonApplyPROCHOT;
     }
 }
 

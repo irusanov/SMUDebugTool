@@ -23,6 +23,7 @@ namespace ZenStatesDebugTool
         private SMU smu;
         private SystemInfo SI;
         List<SmuAddressSet> matches;
+        private int _coreCount;
 
         readonly Mutex hMutexPci;
 
@@ -60,6 +61,8 @@ namespace ZenStatesDebugTool
 
             _numaUtil = new NUMAUtil();
             textBoxResult.Text = $@"Detected NUMA nodes. ({_numaUtil.HighestNumaNode + 1})" + textBoxResult.Text;
+
+            _coreCount = new ManagementObjectSearcher("Select * from Win32_Processor").Get().Cast<ManagementBaseObject>().Sum<ManagementBaseObject>((Func<ManagementBaseObject, int>)(item => int.Parse(item["NumberOfCores"].ToString())));
 
             try
             {
@@ -244,6 +247,24 @@ namespace ZenStatesDebugTool
             pstateFid.KeyPress += pstateFidDid_KeyPress;
             pstateFid.KeyUp += pstateFidDid_KeyUp;
 
+            PopulateFrequencyList(comboBoxACF.Items);
+            PopulateFrequencyList(comboBoxSCF.Items);
+            PopulateCCDList(comboBoxCore.Items);
+
+            comboBoxCore.SelectedIndex = 0;
+
+            int index = (int)((GetCurrentMulti() - 5.50) / 0.25);
+            comboBoxACF.SelectedIndex = index;
+            comboBoxSCF.SelectedIndex = index;
+
+            var prochotEnabled = IsProchotEnabled();
+            checkBoxPROCHOT.Checked = prochotEnabled;
+            //checkBoxPROCHOT.Enabled = prochotEnabled;
+            //buttonApplyPROCHOT.Enabled = prochotEnabled;
+
+            ToolTip toolTip = new ToolTip();
+            toolTip.SetToolTip(checkBoxPROCHOT, "Disables temperature throttling. Can be useful on extreme cooling.");
+
             SetStatusText($"{cpuType}. Ready.");
         }
 
@@ -329,6 +350,70 @@ namespace ZenStatesDebugTool
             return ols.ReadPciConfigDword(smu.SMU_PCI_ADDR, (byte)smu.SMU_OFFSET_DATA);
         }
 
+        // TODO: Detect OC Mode and return PState freq if on auto
+        private double GetCurrentMulti()
+        {
+            uint eax = default, edx = default;
+            if (ols.RdmsrTx(0xC0010293, ref eax, ref edx, (UIntPtr)(1)) != 1)
+            {
+                SetStatusText($@"Error getting current frequency!");
+                return 0;
+            }
+
+            return 25 * (eax & 0xFF) / (12.5 * (eax >> 8 & 0x3F));
+        }
+
+        private void PopulateFrequencyList(ComboBox.ObjectCollection l)
+        {
+            for (double multi = 5.5; multi <= 70; multi += 0.25)
+            {
+                l.Add((object)new FrequencyListItem(multi, string.Format("x{0:0.00}", multi)));
+            }
+        }
+
+        private void PopulateCCDList(ComboBox.ObjectCollection l)
+        {
+            for (int core = 0; core < this._coreCount; ++core)
+                l.Add((object)new CoreListItem(core / 8, core / 4, core));
+        }
+
+        private void ApplyFrequencyAllCoreSetting(int frequency)
+        {
+            if (SmuWrite(smu.SMC_MSG_SetOverclockFrequencyAllCores, Convert.ToUInt32(frequency)))
+                SetStatusText(string.Format("Set frequency to {0} MHz!", (object)frequency));
+            else
+                HandleError("Error setting frequency!");
+        }
+
+        private void ApplyFrequencySingleCoreSetting(CoreListItem i, int frequency)
+        {
+            if (SmuWrite(smu.SMC_MSG_SetOverclockFrequencyPerCore, Convert.ToUInt32(((i.CCD << 4 | i.CCX % 2 & 15) << 4 | i.CORE % 4 & 15) << 20 | frequency & 0xFFFFF)))
+                SetStatusText(string.Format("Set core {0} frequency to {1} MHz!", (object)i, (object)frequency));
+            else
+                HandleError("Error setting frequency!");
+        }
+
+        private void EnableOCMode(bool prochotEnabled = true)
+        {
+            if (SmuWrite(smu.SMC_MSG_EnableOcMode, prochotEnabled ? 0U : 0x1000000))
+                SetStatusText(prochotEnabled ? "PROCHOT enabled." : "PROCHOT disabled.");
+            else
+                HandleError("Error setting OC Mode!");
+        }
+
+        private void DisableOCMode()
+        {
+            if (SmuWrite(smu.SMC_MSG_DisableOcMode, 0U))
+                SetStatusText(string.Format("Set OK!"));
+            else
+                HandleError("Error disabling OC Mode!");
+        }
+
+        private bool IsProchotEnabled() {
+            uint data = ReadDword(0x59804);
+            return (data & 1) == 1;
+        }
+
         private void SetStatusText(string status)
         {
             labelStatus.Text = status;
@@ -351,6 +436,7 @@ namespace ZenStatesDebugTool
             buttonDefaults.Enabled = enabled;
             buttonProbe.Enabled = enabled;
             buttonPciRead.Enabled = enabled;
+            buttonPciScan.Enabled = enabled;
             buttonExport.Enabled = enabled;
             textBoxCMDAddress.Enabled = enabled;
             textBoxRSPAddress.Enabled = enabled;
@@ -359,6 +445,8 @@ namespace ZenStatesDebugTool
             textBoxARG0.Enabled = enabled;
             textBoxPciAddress.Enabled = enabled;
             textBoxPciValue.Enabled = enabled;
+            textBoxPciStartReg.Enabled = enabled;
+            textBoxPciEndReg.Enabled = enabled;
             // textBoxResult.Enabled = enabled;
         }
 
@@ -374,10 +462,10 @@ namespace ZenStatesDebugTool
             }
         }
 
-        private void HandleError(Exception ex, string title = "Error")
+        private void HandleError(string message, string title = "Error")
         {
             SetStatusText(Resources.Error);
-            MessageBox.Show(ex.Message, title);
+            MessageBox.Show(message, title);
         }
 
         private void ShowResultMessageBox(uint data)
@@ -447,7 +535,7 @@ namespace ZenStatesDebugTool
             }
             catch (ApplicationException ex)
             {
-                HandleError(ex);
+                HandleError(ex.Message);
             }
         }
 
@@ -464,7 +552,7 @@ namespace ZenStatesDebugTool
             }
             catch (ApplicationException ex)
             {
-                HandleError(ex, "Error reading response");
+                HandleError(ex.Message, "Error reading response");
             }
         }
 
@@ -487,7 +575,7 @@ namespace ZenStatesDebugTool
             catch (ApplicationException ex)
             {
                 SetButtonsState();
-                HandleError(ex);
+                HandleError(ex.Message);
             }
         }
 
@@ -515,7 +603,7 @@ namespace ZenStatesDebugTool
             catch (ApplicationException ex)
             {
                 SetButtonsState();
-                HandleError(ex);
+                HandleError(ex.Message);
             }
         }
 
@@ -563,7 +651,7 @@ namespace ZenStatesDebugTool
             }
             catch (ApplicationException ex)
             {
-                HandleError(ex);
+                HandleError(ex.Message);
             }
 
             return status;
@@ -636,10 +724,35 @@ namespace ZenStatesDebugTool
             }
         }
 
+        private void RunBackgroundTask(DoWorkEventHandler task, RunWorkerCompletedEventHandler completedHandler)
+        {
+            try
+            {
+                SetButtonsState(false);
+                textBoxResult.Clear();
+
+                backgroundWorker1 = new BackgroundWorker();
+                backgroundWorker1.DoWork += task;
+                backgroundWorker1.RunWorkerCompleted += completedHandler;
+                backgroundWorker1.RunWorkerAsync();
+            }
+            catch (ApplicationException ex)
+            {
+                SetStatusText(Resources.Error);
+                SetButtonsState();
+                HandleError(ex.Message);
+            }
+        }
+
         private void BackgroundWorkerTrySettings_DoWork(object sender, DoWorkEventArgs e)
         {
             try
             {
+                Invoke(new MethodInvoker(delegate
+                {
+                    SetStatusText("Scanning SMU addresses, please wait...");
+                }));
+
                 switch (cpuType)
                 {
                     case SMU.CPUType.RavenRidge:
@@ -676,27 +789,6 @@ namespace ZenStatesDebugTool
             SetStatusText("Scan Complete.");
         }
 
-        private void ScanSmu(RunWorkerCompletedEventHandler completedHandler)
-        {
-            try
-            {
-                SetStatusText("Scanning addresses, please wait...");
-                SetButtonsState(false);
-                textBoxResult.Clear();
-
-                backgroundWorker1 = new BackgroundWorker();
-                backgroundWorker1.DoWork += BackgroundWorkerTrySettings_DoWork;
-                backgroundWorker1.RunWorkerCompleted += completedHandler;
-                backgroundWorker1.RunWorkerAsync();
-            }
-            catch (ApplicationException ex)
-            {
-                SetStatusText(Resources.Error);
-                SetButtonsState();
-                HandleError(ex);
-            }
-        }
-
         private void ButtonScan_Click(object sender, EventArgs e)
         {
             var confirmResult = MessageBox.Show(
@@ -711,7 +803,7 @@ namespace ZenStatesDebugTool
 
             if (confirmResult == DialogResult.OK)
             {
-                ScanSmu(BackgroundWorkerTrySettings_RunWorkerCompleted);
+                RunBackgroundTask(BackgroundWorkerTrySettings_DoWork, BackgroundWorkerTrySettings_RunWorkerCompleted);
             }
         }
 
@@ -818,7 +910,7 @@ namespace ZenStatesDebugTool
 
         private void buttonExport_Click(object sender, EventArgs e)
         {
-            ScanSmu(BackgroundWorkerReport_RunWorkerCompleted);
+            RunBackgroundTask(BackgroundWorkerTrySettings_DoWork, BackgroundWorkerReport_RunWorkerCompleted);
         }
 
         private bool nonNumberEntered;
@@ -877,11 +969,9 @@ namespace ZenStatesDebugTool
 
             CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
 
-            var frequency = ((CpuFid / CpuDfsId) * 200) + "";
-
             pstateDid.Text = Convert.ToString(CpuDfsId, 10);
             pstateFid.Text = Convert.ToString(CpuFid, 10);
-            pstateFrequency.Text = frequency + "MHz";
+            pstateFrequency.Text = (CpuFid * 25 / (CpuDfsId * 12.5)) * 100 + "MHz";
 
             SetStatusText($@"PState {pstateId} successfully read.");
 
@@ -955,18 +1045,84 @@ namespace ZenStatesDebugTool
             return true;
         }
 
+        private void PciScan_DoWork(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                Invoke(new MethodInvoker(delegate
+                {
+                    SetStatusText("Scanning PCI addresses, please wait...");
+                }));
+
+                string result = "";
+
+                TryConvertToUint(textBoxPciStartReg.Text, out uint startReg);
+                TryConvertToUint(textBoxPciEndReg.Text, out uint endReg);
+
+                while (startReg <= endReg)
+                {
+                    var data = ReadDword(startReg);
+                    result += Environment.NewLine + $"REG: 0x{startReg.ToString("X8")}";
+                    result += Environment.NewLine + $"VAL: 0x{data.ToString("X8")}";
+                    startReg += 4;
+                }
+
+                Invoke(new MethodInvoker(delegate
+                {
+                    textBoxResult.Text += result;
+                }));
+            }
+            catch (ApplicationException ex)
+            {
+                Invoke(new MethodInvoker(delegate
+                {
+                    SetButtonsState();
+                    HandleError(ex.Message);
+                }));
+            }
+        }
+
+        private void PciScan_WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            SetButtonsState();
+            SetStatusText("Scan Complete.");
+        }
+
         private void buttonPciScan_Click(object sender, EventArgs e)
         {
-            TryConvertToUint(textBoxPciStartReg.Text, out uint startReg);
-            TryConvertToUint(textBoxPciEndReg.Text, out uint endReg);
+            RunBackgroundTask(PciScan_DoWork, PciScan_WorkerCompleted);
+        }
 
-            while (startReg <= endReg)
+        private void buttonApplyAC_Click(object sender, EventArgs e)
+        {
+            int frequency = (int)(((FrequencyListItem)comboBoxACF.SelectedItem).multi * 100.00);
+            ApplyFrequencyAllCoreSetting(frequency);
+        }
+
+        private void buttonApplySC_Click(object sender, EventArgs e)
+        {
+            ApplyFrequencyAllCoreSetting(550);
+            int frequency = (int)(((FrequencyListItem)comboBoxSCF.SelectedItem).multi * 100.00);
+            ApplyFrequencySingleCoreSetting((CoreListItem)comboBoxCore.SelectedItem, frequency);
+        }
+
+        private void buttonApplyPROCHOT_Click(object sender, EventArgs e)
+        {
+            if (checkBoxPROCHOT.Checked)
             {
-                textBoxPciAddress.Text = $"0x{startReg.ToString("X8")}";
-                var value = ReadDword(startReg);
-                HandlePciReadBtnClick();
-                startReg += 4;
+                DisableOCMode();
             }
+            EnableOCMode(checkBoxPROCHOT.Checked);
+            if (!checkBoxPROCHOT.Checked && IsProchotEnabled())
+            {
+                checkBoxPROCHOT.Checked = true;
+                HandleError($@"Error, PROCHOT could not be disabled!");
+            }
+            /*else
+            {
+                checkBoxPROCHOT.Enabled = false;
+                buttonApplyPROCHOT.Enabled = false;
+            }*/
         }
     }
 }

@@ -61,6 +61,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CoreListItem.cs" />
+    <Compile Include="FrequencyListItem.cs" />
     <Compile Include="NUMAUtil.cs" />
     <Compile Include="SystemInfo.cs" />
     <Compile Include="SMU.cs" />
