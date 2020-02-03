@@ -438,6 +438,10 @@ namespace ZenStatesDebugTool
             buttonPciRead.Enabled = enabled;
             buttonPciScan.Enabled = enabled;
             buttonExport.Enabled = enabled;
+            buttonMsrRead.Enabled = enabled;
+            buttonMsrScan.Enabled = enabled;
+            buttonMsrWrite.Enabled = enabled;
+
             textBoxCMDAddress.Enabled = enabled;
             textBoxRSPAddress.Enabled = enabled;
             textBoxARGAddress.Enabled = enabled;
@@ -447,6 +451,11 @@ namespace ZenStatesDebugTool
             textBoxPciValue.Enabled = enabled;
             textBoxPciStartReg.Enabled = enabled;
             textBoxPciEndReg.Enabled = enabled;
+            textBoxMsrAddress.Enabled = enabled;
+            textBoxMsrEdx.Enabled = enabled;
+            textBoxMsrEax.Enabled = enabled;
+            textBoxMsrStart.Enabled = enabled;
+            textBoxMsrEnd.Enabled = enabled;
             // textBoxResult.Enabled = enabled;
         }
 
@@ -493,6 +502,17 @@ namespace ZenStatesDebugTool
                 Environment.NewLine;
             Console.WriteLine($"Response: {responseString}");
             textBoxResult.Text = responseString + textBoxResult.Text;
+        }
+
+        private void ShowResultForm(string title="Result", string result="No result")
+        {
+            Invoke(new MethodInvoker(delegate
+            {
+                var resultForm = new ResultForm();
+                resultForm.textBoxFormResult.Text = result;
+                resultForm.Text = title;
+                resultForm.Show();
+            }));
         }
 
         private void ApplySettings()
@@ -1054,7 +1074,7 @@ namespace ZenStatesDebugTool
                     SetStatusText("Scanning PCI addresses, please wait...");
                 }));
 
-                string result = "";
+                string result = "REG         Value" + Environment.NewLine;
 
                 TryConvertToUint(textBoxPciStartReg.Text, out uint startReg);
                 TryConvertToUint(textBoxPciEndReg.Text, out uint endReg);
@@ -1062,15 +1082,11 @@ namespace ZenStatesDebugTool
                 while (startReg <= endReg)
                 {
                     var data = ReadDword(startReg);
-                    result += Environment.NewLine + $"REG: 0x{startReg.ToString("X8")}";
-                    result += Environment.NewLine + $"VAL: 0x{data.ToString("X8")}";
+                    result += $"0x{startReg.ToString("X8")}: 0x{data.ToString("X8")}" + Environment.NewLine;
                     startReg += 4;
                 }
-
-                Invoke(new MethodInvoker(delegate
-                {
-                    textBoxResult.Text += result;
-                }));
+                    
+                ShowResultForm("PCI Scan result", result);
             }
             catch (ApplicationException ex)
             {
@@ -1123,6 +1139,80 @@ namespace ZenStatesDebugTool
                 checkBoxPROCHOT.Enabled = false;
                 buttonApplyPROCHOT.Enabled = false;
             }*/
+        }
+
+        private void ReadMsr_Task(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                Invoke(new MethodInvoker(delegate
+                {
+                    SetStatusText("Scanning MSR range, please wait...");
+                }));
+
+                string result = "MSR         EDX(64-32) EAX(32-0)" + Environment.NewLine;
+
+                TryConvertToUint(textBoxMsrStart.Text, out uint startReg);
+                TryConvertToUint(textBoxMsrEnd.Text, out uint endReg);
+
+                while (startReg <= endReg)
+                {
+                    uint eax = default, edx = default;
+                    if (ols.RdmsrTx(startReg, ref eax, ref edx, (UIntPtr)(1)) == 1)
+                    {
+                        result += $"0x{startReg.ToString("X8")}: 0x{edx.ToString("X8")} 0x{eax.ToString("X8")}" + Environment.NewLine;
+                    }
+
+                    startReg += 1;
+                }
+
+                ShowResultForm("MSR Scan result", result);
+            }
+            catch (ApplicationException ex)
+            {
+                Invoke(new MethodInvoker(delegate
+                {
+                    SetButtonsState();
+                    HandleError(ex.Message);
+                }));
+            }
+        }
+
+        private void ReadMsr_TaskCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            SetButtonsState();
+            SetStatusText("Scan Complete.");
+        }
+
+        private void buttonMsrRead_Click(object sender, EventArgs e)
+        {
+            TryConvertToUint(textBoxMsrAddress.Text, out uint msr);
+            uint eax = default, edx = default;
+            if (ols.RdmsrTx(msr, ref eax, ref edx, (UIntPtr)(1)) == 1)
+            {
+                textBoxMsrEdx.Text = $"0x{edx.ToString("X8")}";
+                textBoxMsrEax.Text = $"0x{eax.ToString("X8")}";
+            }
+        }
+
+        private void buttonMsrWrite_Click(object sender, EventArgs e)
+        {
+            TryConvertToUint(textBoxMsrEdx.Text, out uint edx);
+            TryConvertToUint(textBoxMsrEax.Text, out uint eax);
+            TryConvertToUint(textBoxMsrAddress.Text, out uint msr);
+
+            if (ols.Wrmsr(msr, eax, edx) != 1)
+            {
+                HandleError($@"Error writing MSR {textBoxMsrAddress.Text}!");
+                return;
+            }
+
+            SetStatusText("Write OK.");
+        }
+
+        private void buttonMsrScan_Click(object sender, EventArgs e)
+        {
+            RunBackgroundTask(ReadMsr_Task, ReadMsr_TaskCompleted);
         }
     }
 }

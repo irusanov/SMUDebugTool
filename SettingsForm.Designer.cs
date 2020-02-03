@@ -79,6 +79,21 @@ namespace ZenStatesDebugTool
             this.textBoxPciStartReg = new System.Windows.Forms.TextBox();
             this.textBoxPciEndReg = new System.Windows.Forms.TextBox();
             this.buttonPciScan = new System.Windows.Forms.Button();
+            this.tabPageMsr = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
+            this.buttonMsrWrite = new System.Windows.Forms.Button();
+            this.label15 = new System.Windows.Forms.Label();
+            this.textBoxMsrAddress = new System.Windows.Forms.TextBox();
+            this.buttonMsrRead = new System.Windows.Forms.Button();
+            this.label17 = new System.Windows.Forms.Label();
+            this.textBoxMsrEdx = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.textBoxMsrStart = new System.Windows.Forms.TextBox();
+            this.textBoxMsrEnd = new System.Windows.Forms.TextBox();
+            this.buttonMsrScan = new System.Windows.Forms.Button();
+            this.label20 = new System.Windows.Forms.Label();
+            this.textBoxMsrEax = new System.Windows.Forms.TextBox();
             this.tabPagePstates = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.btnPstateWrite = new System.Windows.Forms.Button();
@@ -118,6 +133,8 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel6.SuspendLayout();
             this.tabPagePci.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
+            this.tabPageMsr.SuspendLayout();
+            this.tableLayoutPanel9.SuspendLayout();
             this.tabPagePstates.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
             this.tabPageInfo.SuspendLayout();
@@ -351,6 +368,7 @@ namespace ZenStatesDebugTool
             this.tabControl1.Controls.Add(this.tabPageCPU);
             this.tabControl1.Controls.Add(this.tabPageSmu);
             this.tabControl1.Controls.Add(this.tabPagePci);
+            this.tabControl1.Controls.Add(this.tabPageMsr);
             this.tabControl1.Controls.Add(this.tabPagePstates);
             this.tabControl1.Controls.Add(this.tabPageInfo);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -692,6 +710,7 @@ namespace ZenStatesDebugTool
             this.textBoxPciStartReg.Name = "textBoxPciStartReg";
             this.textBoxPciStartReg.Size = new System.Drawing.Size(90, 20);
             this.textBoxPciStartReg.TabIndex = 8;
+            this.textBoxPciStartReg.Text = "0x50000";
             // 
             // textBoxPciEndReg
             // 
@@ -702,6 +721,7 @@ namespace ZenStatesDebugTool
             this.textBoxPciEndReg.Name = "textBoxPciEndReg";
             this.textBoxPciEndReg.Size = new System.Drawing.Size(90, 20);
             this.textBoxPciEndReg.TabIndex = 9;
+            this.textBoxPciEndReg.Text = "0x50300";
             // 
             // buttonPciScan
             // 
@@ -713,6 +733,199 @@ namespace ZenStatesDebugTool
             this.buttonPciScan.Text = "Scan";
             this.buttonPciScan.UseVisualStyleBackColor = true;
             this.buttonPciScan.Click += new System.EventHandler(this.buttonPciScan_Click);
+            // 
+            // tabPageMsr
+            // 
+            this.tabPageMsr.Controls.Add(this.tableLayoutPanel9);
+            this.tabPageMsr.Location = new System.Drawing.Point(4, 22);
+            this.tabPageMsr.Name = "tabPageMsr";
+            this.tabPageMsr.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageMsr.Size = new System.Drawing.Size(283, 185);
+            this.tabPageMsr.TabIndex = 5;
+            this.tabPageMsr.Text = "MSR";
+            this.tabPageMsr.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel9
+            // 
+            this.tableLayoutPanel9.AutoSize = true;
+            this.tableLayoutPanel9.ColumnCount = 4;
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel9.Controls.Add(this.buttonMsrWrite, 3, 2);
+            this.tableLayoutPanel9.Controls.Add(this.label15, 0, 0);
+            this.tableLayoutPanel9.Controls.Add(this.textBoxMsrAddress, 1, 0);
+            this.tableLayoutPanel9.Controls.Add(this.buttonMsrRead, 3, 0);
+            this.tableLayoutPanel9.Controls.Add(this.label17, 0, 1);
+            this.tableLayoutPanel9.Controls.Add(this.textBoxMsrEdx, 0, 2);
+            this.tableLayoutPanel9.Controls.Add(this.label18, 0, 4);
+            this.tableLayoutPanel9.Controls.Add(this.label19, 0, 5);
+            this.tableLayoutPanel9.Controls.Add(this.textBoxMsrStart, 1, 4);
+            this.tableLayoutPanel9.Controls.Add(this.textBoxMsrEnd, 1, 5);
+            this.tableLayoutPanel9.Controls.Add(this.buttonMsrScan, 3, 4);
+            this.tableLayoutPanel9.Controls.Add(this.label20, 1, 1);
+            this.tableLayoutPanel9.Controls.Add(this.textBoxMsrEax, 1, 2);
+            this.tableLayoutPanel9.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tableLayoutPanel9.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel9.Name = "tableLayoutPanel9";
+            this.tableLayoutPanel9.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
+            this.tableLayoutPanel9.RowCount = 6;
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel9.Size = new System.Drawing.Size(277, 172);
+            this.tableLayoutPanel9.TabIndex = 1;
+            // 
+            // buttonMsrWrite
+            // 
+            this.buttonMsrWrite.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonMsrWrite.Location = new System.Drawing.Point(193, 64);
+            this.buttonMsrWrite.Name = "buttonMsrWrite";
+            this.buttonMsrWrite.Size = new System.Drawing.Size(76, 23);
+            this.buttonMsrWrite.TabIndex = 5;
+            this.buttonMsrWrite.Text = "Write";
+            this.buttonMsrWrite.UseVisualStyleBackColor = true;
+            this.buttonMsrWrite.Click += new System.EventHandler(this.buttonMsrWrite_Click);
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label15.Location = new System.Drawing.Point(3, 5);
+            this.label15.MinimumSize = new System.Drawing.Size(77, 27);
+            this.label15.Name = "label15";
+            this.label15.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
+            this.label15.Size = new System.Drawing.Size(84, 29);
+            this.label15.TabIndex = 0;
+            this.label15.Text = "MSR";
+            this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // textBoxMsrAddress
+            // 
+            this.textBoxMsrAddress.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxMsrAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxMsrAddress.Location = new System.Drawing.Point(94, 9);
+            this.textBoxMsrAddress.Margin = new System.Windows.Forms.Padding(4);
+            this.textBoxMsrAddress.Name = "textBoxMsrAddress";
+            this.textBoxMsrAddress.Size = new System.Drawing.Size(82, 20);
+            this.textBoxMsrAddress.TabIndex = 1;
+            this.textBoxMsrAddress.Text = "0x00000000";
+            // 
+            // buttonMsrRead
+            // 
+            this.buttonMsrRead.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonMsrRead.Location = new System.Drawing.Point(193, 8);
+            this.buttonMsrRead.Name = "buttonMsrRead";
+            this.buttonMsrRead.Size = new System.Drawing.Size(76, 23);
+            this.buttonMsrRead.TabIndex = 2;
+            this.buttonMsrRead.Text = "Read";
+            this.buttonMsrRead.UseVisualStyleBackColor = true;
+            this.buttonMsrRead.Click += new System.EventHandler(this.buttonMsrRead_Click);
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label17.Location = new System.Drawing.Point(3, 34);
+            this.label17.MinimumSize = new System.Drawing.Size(77, 27);
+            this.label17.Name = "label17";
+            this.label17.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
+            this.label17.Size = new System.Drawing.Size(84, 27);
+            this.label17.TabIndex = 3;
+            this.label17.Text = "EDX (63 - 32)";
+            this.label17.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // textBoxMsrEdx
+            // 
+            this.textBoxMsrEdx.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxMsrEdx.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxMsrEdx.Location = new System.Drawing.Point(4, 65);
+            this.textBoxMsrEdx.Margin = new System.Windows.Forms.Padding(4);
+            this.textBoxMsrEdx.Name = "textBoxMsrEdx";
+            this.textBoxMsrEdx.Size = new System.Drawing.Size(82, 20);
+            this.textBoxMsrEdx.TabIndex = 4;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label18.Location = new System.Drawing.Point(3, 110);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(84, 29);
+            this.label18.TabIndex = 6;
+            this.label18.Text = "Start Address";
+            this.label18.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label19.Location = new System.Drawing.Point(3, 139);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(84, 28);
+            this.label19.TabIndex = 7;
+            this.label19.Text = "End Address";
+            this.label19.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // textBoxMsrStart
+            // 
+            this.textBoxMsrStart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxMsrStart.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxMsrStart.Location = new System.Drawing.Point(94, 114);
+            this.textBoxMsrStart.Margin = new System.Windows.Forms.Padding(4);
+            this.textBoxMsrStart.Name = "textBoxMsrStart";
+            this.textBoxMsrStart.Size = new System.Drawing.Size(82, 20);
+            this.textBoxMsrStart.TabIndex = 8;
+            this.textBoxMsrStart.Text = "0x00000000";
+            // 
+            // textBoxMsrEnd
+            // 
+            this.textBoxMsrEnd.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxMsrEnd.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxMsrEnd.Location = new System.Drawing.Point(94, 143);
+            this.textBoxMsrEnd.Margin = new System.Windows.Forms.Padding(4);
+            this.textBoxMsrEnd.Name = "textBoxMsrEnd";
+            this.textBoxMsrEnd.Size = new System.Drawing.Size(82, 20);
+            this.textBoxMsrEnd.TabIndex = 9;
+            this.textBoxMsrEnd.Text = "0x0000FFFF";
+            // 
+            // buttonMsrScan
+            // 
+            this.buttonMsrScan.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonMsrScan.Location = new System.Drawing.Point(193, 113);
+            this.buttonMsrScan.Name = "buttonMsrScan";
+            this.buttonMsrScan.Size = new System.Drawing.Size(76, 23);
+            this.buttonMsrScan.TabIndex = 10;
+            this.buttonMsrScan.Text = "Scan";
+            this.buttonMsrScan.UseVisualStyleBackColor = true;
+            this.buttonMsrScan.Click += new System.EventHandler(this.buttonMsrScan_Click);
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label20.Location = new System.Drawing.Point(93, 34);
+            this.label20.MinimumSize = new System.Drawing.Size(77, 27);
+            this.label20.Name = "label20";
+            this.label20.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
+            this.label20.Size = new System.Drawing.Size(84, 27);
+            this.label20.TabIndex = 11;
+            this.label20.Text = "EAX (31 - 0)";
+            this.label20.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // textBoxMsrEax
+            // 
+            this.textBoxMsrEax.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxMsrEax.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxMsrEax.Location = new System.Drawing.Point(94, 65);
+            this.textBoxMsrEax.Margin = new System.Windows.Forms.Padding(4);
+            this.textBoxMsrEax.Name = "textBoxMsrEax";
+            this.textBoxMsrEax.Size = new System.Drawing.Size(82, 20);
+            this.textBoxMsrEax.TabIndex = 12;
             // 
             // tabPagePstates
             // 
@@ -1147,6 +1360,10 @@ namespace ZenStatesDebugTool
             this.tabPagePci.PerformLayout();
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
+            this.tabPageMsr.ResumeLayout(false);
+            this.tabPageMsr.PerformLayout();
+            this.tableLayoutPanel9.ResumeLayout(false);
+            this.tableLayoutPanel9.PerformLayout();
             this.tabPagePstates.ResumeLayout(false);
             this.tabPagePstates.PerformLayout();
             this.tableLayoutPanel5.ResumeLayout(false);
@@ -1241,6 +1458,21 @@ namespace ZenStatesDebugTool
         private ComboBox comboBoxSCF;
         private CheckBox checkBoxPROCHOT;
         private Button buttonApplyPROCHOT;
+        private TabPage tabPageMsr;
+        private TableLayoutPanel tableLayoutPanel9;
+        private Button buttonMsrWrite;
+        private Label label15;
+        private TextBox textBoxMsrAddress;
+        private Button buttonMsrRead;
+        private Label label17;
+        private TextBox textBoxMsrEdx;
+        private Label label18;
+        private Label label19;
+        private TextBox textBoxMsrStart;
+        private TextBox textBoxMsrEnd;
+        private Button buttonMsrScan;
+        private Label label20;
+        private TextBox textBoxMsrEax;
     }
 }
 
