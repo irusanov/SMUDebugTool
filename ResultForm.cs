@@ -18,7 +18,7 @@ namespace ZenStatesDebugTool
             if (filename.Trim().Length == 0)
             {
                 string unixTimestamp = Convert.ToString((DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMinutes);
-                fileName = $@"PCI_scan_result_{unixTimestamp}.txt";
+                fileName = $@"{String.Join("_", this.Text.Split())}_{unixTimestamp}.txt";
             }
 
             if (File.Exists(fileName))
