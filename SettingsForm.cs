@@ -1150,7 +1150,7 @@ namespace ZenStatesDebugTool
                     SetStatusText("Scanning MSR range, please wait...");
                 }));
 
-                string result = "MSR         EDX(64-32) EAX(32-0)" + Environment.NewLine;
+                string result = "MSR         EDX(63-32) EAX(31-0)" + Environment.NewLine;
 
                 TryConvertToUint(textBoxMsrStart.Text, out uint startReg);
                 TryConvertToUint(textBoxMsrEnd.Text, out uint endReg);
