@@ -120,6 +120,11 @@ namespace ZenStatesDebugTool
             SMU_ADDR_MSG = 0x03B10A20;
             SMU_ADDR_RSP = 0x03B10A80;
             SMU_ADDR_ARG = 0x03B10A88;
+
+            SMC_MSG_SetOverclockFrequencyAllCores = 0x7D;
+            SMC_MSG_SetOverclockFrequencyPerCore = 0x7E;
+            SMC_MSG_EnableOcMode = 0x69;
+            SMC_MSG_DisableOcMode = 0x6A;
         }
     }
 
