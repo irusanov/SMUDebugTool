@@ -1053,10 +1053,29 @@ namespace ZenStatesDebugTool
             SetStatusText($@"Successfully written PState {pstateId}.");
         }
 
+        // P0 fix C001_0015 HWCR[21]=1
+        // Fixes timer issues when not using HPET
+        public bool ApplyTscWorkaround()
+        {
+            uint eax = 0, edx = 0;
+
+            if (ols.Rdmsr(0xC0010015, ref eax, ref edx) != -1)
+            {
+                eax |= 0x200000;
+                return ols.Wrmsr(0xC0010015, eax, edx) != -1;
+            }
+
+            SetStatusText($@"Error applying TSC fix!");
+            return false;
+        }
+
         private bool WritePstateClick(int pstateId, uint eax, uint edx, int numanode = 0)
         {
             if (_numaUtil.HighestNumaNode > 0) _numaUtil.SetThreadProcessorAffinity((ushort)(numanode + 1), Enumerable.Range(0, Environment.ProcessorCount).ToArray());
-            if (ols.Wrmsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx) != 1) //, (UIntPtr) ((1 << i) - 1)
+
+            if (!ApplyTscWorkaround()) return false;
+
+            if (ols.Wrmsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx) != 1)
             {
                 SetStatusText($@"Error writing PState {pstateId}!");
                 return false;
