@@ -789,6 +789,9 @@ namespace ZenStatesDebugTool
                         ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
                         ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
                         break;
+                    case SMU.CPUType.Rome:
+                        ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
+                        break;
                     default:
                         break;
                 }
