@@ -961,6 +961,30 @@ namespace ZenStatesDebugTool
             writer.WritePropertyName("CpuName");
             writer.WriteValue(SI.CpuName);
 
+            writer.WritePropertyName("ExtendedModel");
+            writer.WriteValue($"{SI.ExtendedModel:X8}");
+
+            writer.WritePropertyName("PackageType");
+            writer.WriteValue(SI.PackageType);
+
+            writer.WritePropertyName("CCDCount");
+            writer.WriteValue($"{SI.CCDCount}" );
+
+            writer.WritePropertyName("CCXCount");
+            writer.WriteValue($"{SI.CCXCount}");
+
+            writer.WritePropertyName("NumCoresInCCX");
+            writer.WriteValue(SI.NumCoresInCCX);
+
+            writer.WritePropertyName("FusedCoreCount");
+            writer.WriteValue(SI.FusedCoreCount);
+
+            writer.WritePropertyName("PhysicalCoreCount");
+            writer.WriteValue(SI.PhysicalCoreCount);
+
+            writer.WritePropertyName("Threads");
+            writer.WriteValue(SI.Threads);
+
             writer.WritePropertyName("MbVendor");
             writer.WriteValue(SI.MbVendor);
 
@@ -969,6 +993,9 @@ namespace ZenStatesDebugTool
 
             writer.WritePropertyName("BiosVersion");
             writer.WriteValue(SI.BiosVersion);
+
+            writer.WritePropertyName("Microcode");
+            writer.WriteValue($"{SI.PatchLevel:X8}");
 
             writer.WritePropertyName("SmuVersion");
             writer.WriteValue(SI.GetSmuVersionString());
@@ -980,11 +1007,11 @@ namespace ZenStatesDebugTool
             {
                 writer.WriteStartObject();
                 writer.WritePropertyName("MsgAddress");
-                writer.WriteValue($"0x{set.MsgAddress.ToString("X8")}");
+                writer.WriteValue($"0x{set.MsgAddress:X8}");
                 writer.WritePropertyName("RspAddress");
-                writer.WriteValue($"0x{set.RspAddress.ToString("X8")}");
+                writer.WriteValue($"0x{set.RspAddress:X8}");
                 writer.WritePropertyName("ArgAddress");
-                writer.WriteValue($"0x{set.ArgAddress.ToString("X8")}");
+                writer.WriteValue($"0x{set.ArgAddress:X8}");
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
