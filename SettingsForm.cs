@@ -112,81 +112,193 @@ namespace ZenStatesDebugTool
             }
         }
 
-        private uint GetCpuInfo()
+        private SMU.CPUType GetCPUType(uint packageType)
+        {
+            SMU.CPUType type;
+
+            // CPU Check. Compare family, model, ext family, ext model. Ignore stepping/revision
+            switch (GetCpuId())
+            {
+                case 0x00800F11: // CPU \ Zen \ Summit Ridge \ ZP - B0 \ 14nm
+                case 0x00800F00: // CPU \ Zen \ Summit Ridge \ ZP - A0 \ 14nm
+                    if (packageType == 7)
+                        type = SMU.CPUType.Threadripper;
+                    else
+                        type = SMU.CPUType.SummitRidge;
+                    break;
+                case 0x00800F12:
+                    type = SMU.CPUType.Naples;
+                    break;
+                case 0x00800F82: // CPU \ Zen + \ Pinnacle Ridge \ 12nm
+                    if (packageType == 7)
+                        type = SMU.CPUType.Colfax;
+                    else
+                        type = SMU.CPUType.PinnacleRidge;
+                    break;
+                case 0x00810F81: // APU \ Zen + \ Picasso \ 12nm
+                    type = SMU.CPUType.Picasso;
+                    break;
+                case 0x00810F00: // APU \ Zen \ Raven Ridge \ RV - A0 \ 14nm
+                case 0x00810F10: // APU \ Zen \ Raven Ridge \ 14nm
+                case 0x00820F00: // APU \ Zen \ Raven Ridge 2 \ RV2 - A0 \ 14nm
+                    type = SMU.CPUType.RavenRidge;
+                    break;
+                case 0x00870F10: // CPU \ Zen2 \ Matisse \ MTS - B0 \ 7nm + 14nm I/ O Die
+                case 0x00870F00: // CPU \ Zen2 \ Matisse \ MTS - A0 \ 7nm + 14nm I/ O Die
+                    type = SMU.CPUType.Matisse;
+                    break;
+                case 0x00830F00:
+                case 0x00830F10: // CPU \ Epyc 2 \ Rome \ Treadripper 2 \ Castle Peak 7nm
+                    if (packageType == 7)
+                        type = SMU.CPUType.Rome;
+                    else
+                        type = SMU.CPUType.CastlePeak;
+                    break;
+                case 0x00850F00: // Subor Z+
+                    type = SMU.CPUType.Fenghuang;
+                    break;
+                case 0x00860F01: // APU \ Renoir
+                    type = SMU.CPUType.Renoir;
+                    break;
+                default:
+                    type = SMU.CPUType.Unsupported;
+#if DEBUG
+                    type = SMU.CPUType.DEBUG;
+#endif
+                    break;
+            }
+
+            return type;
+        }
+
+        private uint GetCpuId()
         {
             uint eax = 0, ebx = 0, ecx = 0, edx = 0;
-            ols.CpuidPx(0x00000000, ref eax, ref ebx, ref ecx, ref edx, (UIntPtr)1);
-            if (ols.CpuidPx(0x00000001, ref eax, ref ebx, ref ecx, ref edx, (UIntPtr)1) == 1)
+            if (ols.Cpuid(0x00000001, ref eax, ref ebx, ref ecx, ref edx) == 1)
             {
                 return eax;
             }
             return 0;
         }
 
+        private uint GetPkgType()
+        {
+            uint eax = 0, ebx = 0, ecx = 0, edx = 0;
+            if (ols.Cpuid(0x80000001, ref eax, ref ebx, ref ecx, ref edx) == 1)
+            {
+                return ebx >> 28;
+            }
+            return 0;
+        }
+
+        private int[] GetCoreCount()
+        {
+            uint eax = 0, ebx = 0, ecx = 0, edx = 0;
+            int logicalCores = 0;
+            int threadsPerCore = 1;
+            int[] count = { 0, 1 };
+
+            if (ols.Cpuid(0x00000001, ref eax, ref ebx, ref ecx, ref edx) == 1)
+            {
+                logicalCores = Convert.ToInt32((ebx >> 16) & 0xFF);
+
+                if (ols.Cpuid(0x8000001E, ref eax, ref ebx, ref ecx, ref edx) == 1)
+                    threadsPerCore = Convert.ToInt32(ebx >> 8 & 0xF) + 1;
+            }
+            if (threadsPerCore == 0)
+                count[0] = logicalCores;
+            else
+                count[0] = logicalCores / threadsPerCore;
+
+            count[1] = logicalCores;
+
+            return count;
+        }
+
+        private string GetStringPart(uint val)
+        {
+            return val != 0 ? Convert.ToChar(val).ToString() : "";
+        }
+
+        private string IntToStr(uint val)
+        {
+            uint part1 = val & 0xff;
+            uint part2 = val >> 8 & 0xff;
+            uint part3 = val >> 16 & 0xff;
+            uint part4 = val >> 24 & 0xff;
+
+            return string.Format("{0}{1}{2}{3}", GetStringPart(part1), GetStringPart(part2), GetStringPart(part3), GetStringPart(part4));
+        }
+
+        private string GetCpuName()
+        {
+            string model = "";
+            uint eax = 0, ebx = 0, ecx = 0, edx = 0;
+
+            if (ols.Cpuid(0x80000002, ref eax, ref ebx, ref ecx, ref edx) == 1)
+                model = model + IntToStr(eax) + IntToStr(ebx) + IntToStr(ecx) + IntToStr(edx);
+
+            if (ols.Cpuid(0x80000003, ref eax, ref ebx, ref ecx, ref edx) == 1)
+                model = model + IntToStr(eax) + IntToStr(ebx) + IntToStr(ecx) + IntToStr(edx);
+
+            if (ols.Cpuid(0x80000004, ref eax, ref ebx, ref ecx, ref edx) == 1)
+                model = model + IntToStr(eax) + IntToStr(ebx) + IntToStr(ecx) + IntToStr(edx);
+
+            return model.Trim();
+        }
+
+        private uint GetSmuVersion()
+        {
+            uint version = 0;
+            if (SmuRead(smu.SMU_MSG_GetSmuVersion, ref version))
+            {
+                return version;
+            }
+            return 0;
+        }
+
+        private uint GetPatchLevel()
+        {
+            uint eax = 0, edx = 0;
+            if (ols.Rdmsr(0x8b, ref eax, ref edx) != 1)
+            {
+                return 0;
+            }
+            return eax;
+        }
+
+        private bool IsProchotEnabled()
+        {
+            uint data = ReadDword(0x59804);
+            return (data & 1) == 1;
+        }
+
         private void InitSystemInfo()
         {
+            cpuType = GetCPUType(GetPkgType());
+            smu = GetMaintainedSettings.GetByType(cpuType);
+            ResetSettings(smu);
+            smu.Version = GetSmuVersion();
+
+            uint cpuid = GetCpuId();
+            int[] coreCount = GetCoreCount();
             SI = new SystemInfo
             {
-                CpuId = GetCpuInfo()
+                CpuId = cpuid,
+                ExtendedModel = ((cpuid & 0xff) >> 4) + ((cpuid >> 12) & 0xf0),
+                PackageType = GetPkgType(),
+                PatchLevel = GetPatchLevel(),
+                SmuVersion = smu.Version,
+                FusedCoreCount = coreCount[0],
+                Threads = coreCount[1],
+                CpuName = GetCpuName(),
             };
-
-            // CPU Check. Compare family, model, ext family, ext model. Ignore stepping/revision
-            switch (SI.CpuId & 0xFFFFFFF0)
-            {
-                case 0x00800F10: // CPU \ Zen \ Summit Ridge \ ZP - B0 \ 14nm
-                case 0x00800F00: // CPU \ Zen \ Summit Ridge \ ZP - A0 \ 14nm
-                    cpuType = SMU.CPUType.SummitRidge;
-                    break;
-                case 0x00800F80: // CPU \ Zen + \ Pinnacle Ridge \ Colfax 12nm
-                    cpuType = SMU.CPUType.PinnacleRidge;
-                    break;
-                case 0x00810F80: // APU \ Zen + \ Picasso \ 12nm
-                    cpuType = SMU.CPUType.Picasso;
-                    break;
-                case 0x00810F00: // APU \ Zen \ Raven Ridge \ RV - A0 \ 14nm
-                case 0x00810F10: // APU \ Zen \ Raven Ridge \ 14nm
-                case 0x00820F00: // APU \ Zen \ Raven Ridge 2 \ RV2 - A0 \ 14nm
-                    cpuType = SMU.CPUType.RavenRidge;
-                    break;
-                case 0x00870F10: // CPU \ Zen2 \ Matisse \ MTS - B0 \ 7nm + 14nm I/ O Die
-                case 0x00870F00: // CPU \ Zen2 \ Matisse \ MTS - A0 \ 7nm + 14nm I/ O Die
-                    cpuType = SMU.CPUType.Matisse;
-                    break;
-                case 0x00830F00:
-                case 0x00830F10: // CPU \ Epyc 2 \ Rome \ Treadripper 2 \ Castle Peak 7nm
-                    cpuType = SMU.CPUType.Rome;
-                    break;
-                case 0x00850F00:
-                    cpuType = SMU.CPUType.Fenghuang;
-                    break;
-                case 0x00850F10: // APU \ Renoir
-                    cpuType = SMU.CPUType.Renoir;
-                    break;
-                default:
-                    cpuType = SMU.CPUType.Unsupported;
-#if DEBUG
-                    cpuType = SMU.CPUType.DEBUG;
-#endif
-                    break;
-            }
 
             ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BaseBoard");
             foreach (ManagementObject obj in searcher.Get())
             {
                 SI.MbVendor = ((string)obj["Manufacturer"]).Trim();
                 SI.MbName = ((string)obj["Product"]).Trim();
-            }
-            if (searcher != null) searcher.Dispose();
-
-            searcher = new ManagementObjectSearcher("SELECT * FROM Win32_Processor");
-            foreach (ManagementObject obj in searcher.Get())
-            {
-                var cpuName = (string)obj["Name"];
-                cpuName = cpuName.Replace("(R)", "");
-                cpuName = cpuName.Replace("(TM)", "");
-                cpuName = cpuName.Trim();
-
-                SI.CpuName = cpuName;
             }
             if (searcher != null) searcher.Dispose();
 
@@ -225,9 +337,7 @@ namespace ZenStatesDebugTool
         private void InitForm()
         {
             InitSystemInfo();
-            smu = GetMaintainedSettings.GetByType(cpuType);
-            ResetSettings(smu);
-            smu.Version = GetSmuVersion();
+
             if (smu.Version == 0)
             {
                 MessageBox.Show("Error getting SMU version!\n" +
@@ -235,7 +345,7 @@ namespace ZenStatesDebugTool
                     "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            SI.SmuVersion = smu.Version;
+
             DisplaySystemInfo();
 
             pstateIdBox.SelectedIndex = 0;
@@ -379,7 +489,7 @@ namespace ZenStatesDebugTool
 
         private void ApplyFrequencyAllCoreSetting(int frequency)
         {
-            if (SmuWrite(smu.SMC_MSG_SetOverclockFrequencyAllCores, Convert.ToUInt32(frequency)))
+            if (SmuWrite(smu.SMU_MSG_SetOverclockFrequencyAllCores, Convert.ToUInt32(frequency)))
                 SetStatusText(string.Format("Set frequency to {0} MHz!", (object)frequency));
             else
                 HandleError("Error setting frequency!");
@@ -387,7 +497,7 @@ namespace ZenStatesDebugTool
 
         private void ApplyFrequencySingleCoreSetting(CoreListItem i, int frequency)
         {
-            if (SmuWrite(smu.SMC_MSG_SetOverclockFrequencyPerCore, Convert.ToUInt32(((i.CCD << 4 | i.CCX % 2 & 15) << 4 | i.CORE % 4 & 15) << 20 | frequency & 0xFFFFF)))
+            if (SmuWrite(smu.SMU_MSG_SetOverclockFrequencyPerCore, Convert.ToUInt32(((i.CCD << 4 | i.CCX % 2 & 15) << 4 | i.CORE % 4 & 15) << 20 | frequency & 0xFFFFF)))
                 SetStatusText(string.Format("Set core {0} frequency to {1} MHz!", (object)i, (object)frequency));
             else
                 HandleError("Error setting frequency!");
@@ -395,7 +505,7 @@ namespace ZenStatesDebugTool
 
         private void EnableOCMode(bool prochotEnabled = true)
         {
-            if (SmuWrite(smu.SMC_MSG_EnableOcMode, prochotEnabled ? 0U : 0x1000000))
+            if (SmuWrite(smu.SMU_MSG_EnableOcMode, prochotEnabled ? 0U : 0x1000000))
                 SetStatusText(prochotEnabled ? "PROCHOT enabled." : "PROCHOT disabled.");
             else
                 HandleError("Error setting OC Mode!");
@@ -403,31 +513,16 @@ namespace ZenStatesDebugTool
 
         private void DisableOCMode()
         {
-            if (SmuWrite(smu.SMC_MSG_DisableOcMode, 0U))
+            if (SmuWrite(smu.SMU_MSG_DisableOcMode, 0U))
                 SetStatusText(string.Format("Set OK!"));
             else
                 HandleError("Error disabling OC Mode!");
-        }
-
-        private bool IsProchotEnabled() {
-            uint data = ReadDword(0x59804);
-            return (data & 1) == 1;
         }
 
         private void SetStatusText(string status)
         {
             labelStatus.Text = status;
             Console.WriteLine($"CMD Status: {status}");
-        }
-
-        private uint GetSmuVersion()
-        {
-            uint version = 0;
-            if (SmuRead(smu.SMC_MSG_GetSmuVersion, ref version))
-            {
-                return version;
-            }
-            return 0;
         }
 
         private void SetButtonsState(bool enabled = true)
@@ -689,10 +784,10 @@ namespace ZenStatesDebugTool
                 if (ReadDword(start) != 0xFFFFFFFF)
                 {
                     // Check if CMD-RSP pair returns correct status, while using a placeholder ARG address
-                    if (TrySettings(start, smuRspAddress, smuArgAddress, smu.SMC_MSG_TestMessage, 0x0) == SMU.Status.OK)
+                    if (TrySettings(start, smuRspAddress, smuArgAddress, smu.SMU_MSG_TestMessage, 0x0) == SMU.Status.OK)
                     {
                         // Send smu version command, so the corresponding ARG0 address changes its value
-                        TrySettings(start, smuRspAddress, smuArgAddress, smu.SMC_MSG_GetSmuVersion, 0x0);
+                        TrySettings(start, smuRspAddress, smuArgAddress, smu.SMU_MSG_GetSmuVersion, 0x0);
                         bool match = false;
 
                         smuArgAddress = smuRspAddress + 4;
@@ -707,7 +802,7 @@ namespace ZenStatesDebugTool
                             {
                                 // Send test message with an argument, using the potential ARG0 address
                                 var argValue = (uint)matches.Count * 2 + 99;
-                                TrySettings(start, smuRspAddress, smuArgAddress, smu.SMC_MSG_TestMessage, argValue);
+                                TrySettings(start, smuRspAddress, smuArgAddress, smu.SMU_MSG_TestMessage, argValue);
                                 currentRegValue = ReadDword(smuArgAddress);
                                 Console.WriteLine($"REG: 0x{Convert.ToString(smuArgAddress, 16).ToUpper()} Value: 0x{Convert.ToString(currentRegValue, 16).ToUpper()}");
 
