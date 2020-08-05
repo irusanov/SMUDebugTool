@@ -63,12 +63,13 @@ namespace ZenStatesDebugTool
             set
             {
                 fusedCoreCount = value;
-                PhysicalCoreCount = value + value % 8;
+                //PhysicalCoreCount = value + value % 8;
                 CCDCount = value / 6;
                 CCXCount = CCDCount * 2;
                 if (CCDCount == 0) CCDCount = 1;
                 if (CCXCount == 0) CCXCount = 1;
                 NumCoresInCCX = value / CCXCount;
+                PhysicalCoreCount = CCXCount * 4;
             }
         }
 

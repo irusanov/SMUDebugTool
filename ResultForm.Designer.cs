@@ -46,7 +46,7 @@ namespace ZenStatesDebugTool
             this.textBoxFormResult.Name = "textBoxFormResult";
             this.textBoxFormResult.ReadOnly = true;
             this.textBoxFormResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxFormResult.Size = new System.Drawing.Size(241, 246);
+            this.textBoxFormResult.Size = new System.Drawing.Size(375, 239);
             this.textBoxFormResult.TabIndex = 0;
             this.textBoxFormResult.TabStop = false;
             // 
@@ -75,7 +75,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(247, 274);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(381, 274);
             this.tableLayoutPanel1.TabIndex = 3;
             // 
             // buttonSaveAs
@@ -92,7 +92,7 @@ namespace ZenStatesDebugTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(247, 274);
+            this.ClientSize = new System.Drawing.Size(381, 274);
             this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Name = "ResultForm";

@@ -901,12 +901,6 @@ namespace ZenStatesDebugTool
             }
         }
 
-        private void BackgroundWorkerTrySettings_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            SetButtonsState();
-            SetStatusText("Scan Complete.");
-        }
-
         private void ButtonScan_Click(object sender, EventArgs e)
         {
             var confirmResult = MessageBox.Show(
@@ -921,7 +915,7 @@ namespace ZenStatesDebugTool
 
             if (confirmResult == DialogResult.OK)
             {
-                RunBackgroundTask(BackgroundWorkerTrySettings_DoWork, BackgroundWorkerTrySettings_RunWorkerCompleted);
+                RunBackgroundTask(BackgroundWorkerTrySettings_DoWork, Scan_WorkerCompleted);
             }
         }
 
@@ -968,10 +962,10 @@ namespace ZenStatesDebugTool
             writer.WriteValue(SI.PackageType);
 
             writer.WritePropertyName("CCDCount");
-            writer.WriteValue($"{SI.CCDCount}" );
+            writer.WriteValue(SI.CCDCount);
 
             writer.WritePropertyName("CCXCount");
-            writer.WriteValue($"{SI.CCXCount}");
+            writer.WriteValue(SI.CCXCount);
 
             writer.WritePropertyName("NumCoresInCCX");
             writer.WriteValue(SI.NumCoresInCCX);
@@ -1226,7 +1220,7 @@ namespace ZenStatesDebugTool
                 while (startReg <= endReg)
                 {
                     var data = ReadDword(startReg);
-                    result += $"0x{startReg.ToString("X8")}: 0x{data.ToString("X8")}" + Environment.NewLine;
+                    result += $"0x{startReg:X8}: 0x{data:X8}" + Environment.NewLine;
                     startReg += 4;
                 }
                     
@@ -1242,7 +1236,7 @@ namespace ZenStatesDebugTool
             }
         }
 
-        private void PciScan_WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void Scan_WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             SetButtonsState();
             SetStatusText("Scan Complete.");
@@ -1250,7 +1244,7 @@ namespace ZenStatesDebugTool
 
         private void buttonPciScan_Click(object sender, EventArgs e)
         {
-            RunBackgroundTask(PciScan_DoWork, PciScan_WorkerCompleted);
+            RunBackgroundTask(PciScan_DoWork, Scan_WorkerCompleted);
         }
 
         private void buttonApplyAC_Click(object sender, EventArgs e)
@@ -1304,7 +1298,7 @@ namespace ZenStatesDebugTool
                     uint eax = default, edx = default;
                     if (ols.RdmsrTx(startReg, ref eax, ref edx, (UIntPtr)(1)) == 1)
                     {
-                        result += $"0x{startReg.ToString("X8")}: 0x{edx.ToString("X8")} 0x{eax.ToString("X8")}" + Environment.NewLine;
+                        result += $"0x{startReg:X8}: 0x{edx:X8} 0x{eax:X8}" + Environment.NewLine;
                     }
 
                     startReg += 1;
@@ -1322,20 +1316,14 @@ namespace ZenStatesDebugTool
             }
         }
 
-        private void ReadMsr_TaskCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            SetButtonsState();
-            SetStatusText("Scan Complete.");
-        }
-
         private void buttonMsrRead_Click(object sender, EventArgs e)
         {
             TryConvertToUint(textBoxMsrAddress.Text, out uint msr);
             uint eax = default, edx = default;
             if (ols.RdmsrTx(msr, ref eax, ref edx, (UIntPtr)(1)) == 1)
             {
-                textBoxMsrEdx.Text = $"0x{edx.ToString("X8")}";
-                textBoxMsrEax.Text = $"0x{eax.ToString("X8")}";
+                textBoxMsrEdx.Text = $"0x{edx:X8}";
+                textBoxMsrEax.Text = $"0x{eax:X8}";
             }
         }
 
@@ -1356,7 +1344,70 @@ namespace ZenStatesDebugTool
 
         private void buttonMsrScan_Click(object sender, EventArgs e)
         {
-            RunBackgroundTask(ReadMsr_Task, ReadMsr_TaskCompleted);
+            RunBackgroundTask(ReadMsr_Task, Scan_WorkerCompleted);
+        }
+
+        private void ReadCPUID_Task(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                Invoke(new MethodInvoker(delegate
+                {
+                    SetStatusText("Scanning CPUID range, please wait...");
+                }));
+
+                string result = "CPUID       EAX        EBX        ECX        EDX" + Environment.NewLine;
+                uint LFuncStd = 0, LFuncExt = 0;
+                uint eax = 0, ebx = 0, ecx = 0, edx = 0;
+
+                if (ols.Cpuid(0x00000000, ref eax, ref ebx, ref ecx, ref edx) == 1)
+                    LFuncStd = eax;
+
+                if (ols.Cpuid(0x80000000, ref eax, ref ebx, ref ecx, ref edx) == 1)
+                    LFuncExt = eax - 0x80000000;
+
+                for (uint i = 0; i <= LFuncStd; ++i)
+                {
+                    var index = 0x00000000 + i;
+                    ols.Cpuid(index, ref eax, ref ebx, ref ecx, ref edx);
+                    result += $"0x{index:X8}: 0x{eax:X8} 0x{ebx:X8} 0x{ecx:X8} 0x{edx:X8}" + Environment.NewLine;
+                }
+
+                for (uint i = 0; i <= LFuncExt; ++i)
+                {
+                    var index = 0x80000000 + i;
+                    ols.Cpuid(index, ref eax, ref ebx, ref ecx, ref edx);
+                    result += $"0x{index:X8}: 0x{eax:X8} 0x{ebx:X8} 0x{ecx:X8} 0x{edx:X8}" + Environment.NewLine;
+                }
+
+                ShowResultForm("CPUID Scan result", result);
+            }
+            catch (ApplicationException ex)
+            {
+                Invoke(new MethodInvoker(delegate
+                {
+                    SetButtonsState();
+                    HandleError(ex.Message);
+                }));
+            }
+        }
+
+        private void buttonCPUIDRead_Click(object sender, EventArgs e)
+        {
+            TryConvertToUint(textBoxCPUIDAddress.Text, out uint index);
+            uint eax = 0, ebx = 0, ecx = 0, edx = 0;
+            if (ols.Cpuid(index, ref eax, ref ebx, ref ecx, ref edx) == 1)
+            {
+                textBoxCPUIDeax.Text = $"0x{eax:X8}";
+                textBoxCPUIDebx.Text = $"0x{ebx:X8}";
+                textBoxCPUIDecx.Text = $"0x{ecx:X8}";
+                textBoxCPUIDedx.Text = $"0x{edx:X8}";
+            }
+        }
+
+        private void buttonCPUIDScan_Click(object sender, EventArgs e)
+        {
+            RunBackgroundTask(ReadCPUID_Task, Scan_WorkerCompleted);
         }
     }
 }
