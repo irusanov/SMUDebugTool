@@ -86,6 +86,7 @@ namespace ZenStatesDebugTool
             this.buttonSaveAs.TabIndex = 4;
             this.buttonSaveAs.Text = "Save As...";
             this.buttonSaveAs.UseVisualStyleBackColor = true;
+            this.buttonSaveAs.Click += new System.EventHandler(this.buttonSaveAs_Click);
             // 
             // ResultForm
             // 
