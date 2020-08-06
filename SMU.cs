@@ -24,6 +24,13 @@ namespace ZenStatesDebugTool
             Renoir
         };
 
+        public enum PackageType: int
+        {
+            FP6 = 0,
+            AM4 = 2,
+            SP3 = 7
+        }
+
         public enum Status : byte
         {
             OK                      = 0x01,

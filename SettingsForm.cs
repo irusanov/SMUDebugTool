@@ -327,11 +327,15 @@ namespace ZenStatesDebugTool
         private void DisplaySystemInfo()
         {
             cpuInfoLabel.Text = SI.CpuName;
+            extendedModelInfoLabel.Text = $"{SI.ExtendedModel:X8}";
+            packageTypeInfoLabel.Text = $"{SI.PackageType} ({(SMU.PackageType)SI.PackageType})";
             mbVendorInfoLabel.Text = SI.MbVendor;
             mbModelInfoLabel.Text = SI.MbName;
             biosInfoLabel.Text = SI.BiosVersion;
             smuInfoLabel.Text = SI.GetSmuVersionString();
-            cpuIdLabel.Text = $"{SI.GetCpuIdString()} ({cpuType.ToString()})";
+            firmwareInfoLabel.Text = $"{SI.PatchLevel:X8}";
+            cpuIdLabel.Text = $"{SI.GetCpuIdString()} ({cpuType})";
+            configInfoLabel.Text = $"{SI.CCDCount} CCD / {SI.CCXCount} CCX / {SI.PhysicalCoreCount} physical cores";
         }
 
         private void InitForm()

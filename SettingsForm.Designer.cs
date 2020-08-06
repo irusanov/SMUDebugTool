@@ -135,9 +135,17 @@ namespace ZenStatesDebugTool
             this.mbModelInfoLabel = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.cpuIdLabel = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.firmwareInfoLabel = new System.Windows.Forms.Label();
             this.textBoxResult = new System.Windows.Forms.TextBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel11 = new System.Windows.Forms.TableLayoutPanel();
+            this.label24 = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.extendedModelInfoLabel = new System.Windows.Forms.Label();
+            this.packageTypeInfoLabel = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
+            this.configInfoLabel = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -1305,24 +1313,36 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel3.ColumnCount = 2;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Controls.Add(this.buttonExport, 0, 7);
-            this.tableLayoutPanel3.Controls.Add(this.smuInfoLabel, 1, 5);
-            this.tableLayoutPanel3.Controls.Add(this.biosInfoLabel, 1, 4);
-            this.tableLayoutPanel3.Controls.Add(this.mbVendorInfoLabel, 1, 2);
+            this.tableLayoutPanel3.Controls.Add(this.buttonExport, 0, 11);
+            this.tableLayoutPanel3.Controls.Add(this.smuInfoLabel, 1, 9);
+            this.tableLayoutPanel3.Controls.Add(this.biosInfoLabel, 1, 7);
+            this.tableLayoutPanel3.Controls.Add(this.mbVendorInfoLabel, 1, 5);
             this.tableLayoutPanel3.Controls.Add(this.labelInfoCpu, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.label1, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.label2, 0, 5);
-            this.tableLayoutPanel3.Controls.Add(this.label3, 0, 4);
+            this.tableLayoutPanel3.Controls.Add(this.label1, 0, 5);
+            this.tableLayoutPanel3.Controls.Add(this.label2, 0, 9);
+            this.tableLayoutPanel3.Controls.Add(this.label3, 0, 7);
             this.tableLayoutPanel3.Controls.Add(this.cpuInfoLabel, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.label4, 0, 3);
-            this.tableLayoutPanel3.Controls.Add(this.mbModelInfoLabel, 1, 3);
+            this.tableLayoutPanel3.Controls.Add(this.label4, 0, 6);
+            this.tableLayoutPanel3.Controls.Add(this.mbModelInfoLabel, 1, 6);
             this.tableLayoutPanel3.Controls.Add(this.label6, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.cpuIdLabel, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.label23, 0, 8);
+            this.tableLayoutPanel3.Controls.Add(this.firmwareInfoLabel, 1, 8);
+            this.tableLayoutPanel3.Controls.Add(this.label24, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.label28, 0, 3);
+            this.tableLayoutPanel3.Controls.Add(this.extendedModelInfoLabel, 1, 2);
+            this.tableLayoutPanel3.Controls.Add(this.packageTypeInfoLabel, 1, 3);
+            this.tableLayoutPanel3.Controls.Add(this.label29, 0, 4);
+            this.tableLayoutPanel3.Controls.Add(this.configInfoLabel, 1, 4);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.tableLayoutPanel3.RowCount = 8;
+            this.tableLayoutPanel3.RowCount = 12;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -1351,7 +1371,7 @@ namespace ZenStatesDebugTool
             this.smuInfoLabel.AutoEllipsis = true;
             this.smuInfoLabel.AutoSize = true;
             this.smuInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.smuInfoLabel.Location = new System.Drawing.Point(74, 120);
+            this.smuInfoLabel.Location = new System.Drawing.Point(74, 212);
             this.smuInfoLabel.Name = "smuInfoLabel";
             this.smuInfoLabel.Padding = new System.Windows.Forms.Padding(5);
             this.smuInfoLabel.Size = new System.Drawing.Size(250, 23);
@@ -1364,7 +1384,7 @@ namespace ZenStatesDebugTool
             this.biosInfoLabel.AutoEllipsis = true;
             this.biosInfoLabel.AutoSize = true;
             this.biosInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.biosInfoLabel.Location = new System.Drawing.Point(74, 97);
+            this.biosInfoLabel.Location = new System.Drawing.Point(74, 166);
             this.biosInfoLabel.Name = "biosInfoLabel";
             this.biosInfoLabel.Padding = new System.Windows.Forms.Padding(5);
             this.biosInfoLabel.Size = new System.Drawing.Size(250, 23);
@@ -1377,7 +1397,7 @@ namespace ZenStatesDebugTool
             this.mbVendorInfoLabel.AutoEllipsis = true;
             this.mbVendorInfoLabel.AutoSize = true;
             this.mbVendorInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mbVendorInfoLabel.Location = new System.Drawing.Point(74, 51);
+            this.mbVendorInfoLabel.Location = new System.Drawing.Point(74, 120);
             this.mbVendorInfoLabel.Name = "mbVendorInfoLabel";
             this.mbVendorInfoLabel.Padding = new System.Windows.Forms.Padding(5);
             this.mbVendorInfoLabel.Size = new System.Drawing.Size(250, 23);
@@ -1401,7 +1421,7 @@ namespace ZenStatesDebugTool
             // 
             this.label1.AutoSize = true;
             this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Location = new System.Drawing.Point(3, 51);
+            this.label1.Location = new System.Drawing.Point(3, 120);
             this.label1.Name = "label1";
             this.label1.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
             this.label1.Size = new System.Drawing.Size(65, 23);
@@ -1413,7 +1433,7 @@ namespace ZenStatesDebugTool
             // 
             this.label2.AutoSize = true;
             this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label2.Location = new System.Drawing.Point(3, 120);
+            this.label2.Location = new System.Drawing.Point(3, 212);
             this.label2.Name = "label2";
             this.label2.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
             this.label2.Size = new System.Drawing.Size(65, 23);
@@ -1425,7 +1445,7 @@ namespace ZenStatesDebugTool
             // 
             this.label3.AutoSize = true;
             this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label3.Location = new System.Drawing.Point(3, 97);
+            this.label3.Location = new System.Drawing.Point(3, 166);
             this.label3.Name = "label3";
             this.label3.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
             this.label3.Size = new System.Drawing.Size(65, 23);
@@ -1450,7 +1470,7 @@ namespace ZenStatesDebugTool
             // 
             this.label4.AutoSize = true;
             this.label4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label4.Location = new System.Drawing.Point(3, 74);
+            this.label4.Location = new System.Drawing.Point(3, 143);
             this.label4.Name = "label4";
             this.label4.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
             this.label4.Size = new System.Drawing.Size(65, 23);
@@ -1463,7 +1483,7 @@ namespace ZenStatesDebugTool
             this.mbModelInfoLabel.AutoEllipsis = true;
             this.mbModelInfoLabel.AutoSize = true;
             this.mbModelInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mbModelInfoLabel.Location = new System.Drawing.Point(74, 74);
+            this.mbModelInfoLabel.Location = new System.Drawing.Point(74, 143);
             this.mbModelInfoLabel.Name = "mbModelInfoLabel";
             this.mbModelInfoLabel.Padding = new System.Windows.Forms.Padding(5);
             this.mbModelInfoLabel.Size = new System.Drawing.Size(250, 23);
@@ -1494,6 +1514,29 @@ namespace ZenStatesDebugTool
             this.cpuIdLabel.TabIndex = 11;
             this.cpuIdLabel.Text = "-";
             this.cpuIdLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label23.Location = new System.Drawing.Point(3, 189);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(65, 23);
+            this.label23.TabIndex = 12;
+            this.label23.Text = "Firmware";
+            this.label23.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // firmwareInfoLabel
+            // 
+            this.firmwareInfoLabel.AutoSize = true;
+            this.firmwareInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.firmwareInfoLabel.Location = new System.Drawing.Point(74, 189);
+            this.firmwareInfoLabel.Name = "firmwareInfoLabel";
+            this.firmwareInfoLabel.Padding = new System.Windows.Forms.Padding(5);
+            this.firmwareInfoLabel.Size = new System.Drawing.Size(250, 23);
+            this.firmwareInfoLabel.TabIndex = 13;
+            this.firmwareInfoLabel.Text = "-";
+            this.firmwareInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // textBoxResult
             // 
@@ -1546,6 +1589,75 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel11.Size = new System.Drawing.Size(350, 136);
             this.tableLayoutPanel11.TabIndex = 5;
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label24.Location = new System.Drawing.Point(3, 51);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(65, 23);
+            this.label24.TabIndex = 14;
+            this.label24.Text = "Ext. Model";
+            this.label24.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label28.Location = new System.Drawing.Point(3, 74);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(65, 23);
+            this.label28.TabIndex = 15;
+            this.label28.Text = "Package";
+            this.label28.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // extendedModelInfoLabel
+            // 
+            this.extendedModelInfoLabel.AutoSize = true;
+            this.extendedModelInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.extendedModelInfoLabel.Location = new System.Drawing.Point(74, 51);
+            this.extendedModelInfoLabel.Name = "extendedModelInfoLabel";
+            this.extendedModelInfoLabel.Padding = new System.Windows.Forms.Padding(5);
+            this.extendedModelInfoLabel.Size = new System.Drawing.Size(250, 23);
+            this.extendedModelInfoLabel.TabIndex = 16;
+            this.extendedModelInfoLabel.Text = "-";
+            this.extendedModelInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // packageTypeInfoLabel
+            // 
+            this.packageTypeInfoLabel.AutoSize = true;
+            this.packageTypeInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.packageTypeInfoLabel.Location = new System.Drawing.Point(74, 74);
+            this.packageTypeInfoLabel.Name = "packageTypeInfoLabel";
+            this.packageTypeInfoLabel.Padding = new System.Windows.Forms.Padding(5);
+            this.packageTypeInfoLabel.Size = new System.Drawing.Size(250, 23);
+            this.packageTypeInfoLabel.TabIndex = 17;
+            this.packageTypeInfoLabel.Text = "-";
+            this.packageTypeInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label29.Location = new System.Drawing.Point(3, 97);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(65, 23);
+            this.label29.TabIndex = 18;
+            this.label29.Text = "Config";
+            this.label29.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // configInfoLabel
+            // 
+            this.configInfoLabel.AutoSize = true;
+            this.configInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.configInfoLabel.Location = new System.Drawing.Point(74, 97);
+            this.configInfoLabel.Name = "configInfoLabel";
+            this.configInfoLabel.Padding = new System.Windows.Forms.Padding(5);
+            this.configInfoLabel.Size = new System.Drawing.Size(250, 23);
+            this.configInfoLabel.TabIndex = 19;
+            this.configInfoLabel.Text = "-";
+            this.configInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // SettingsForm
             // 
@@ -1711,6 +1823,14 @@ namespace ZenStatesDebugTool
         private TableLayoutPanel tableLayoutPanel11;
         private Button btnPstateWrite;
         private Button btnPstateRead;
+        private Label label23;
+        private Label firmwareInfoLabel;
+        private Label label24;
+        private Label label28;
+        private Label extendedModelInfoLabel;
+        private Label packageTypeInfoLabel;
+        private Label label29;
+        private Label configInfoLabel;
     }
 }
 
