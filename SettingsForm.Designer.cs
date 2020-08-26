@@ -51,6 +51,7 @@ namespace ZenStatesDebugTool
             this.buttonApply = new System.Windows.Forms.Button();
             this.buttonDefaults = new System.Windows.Forms.Button();
             this.buttonProbe = new System.Windows.Forms.Button();
+            this.buttonPMTable = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPageCPU = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
@@ -346,14 +347,16 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel2.Controls.Add(this.buttonApply, 3, 2);
             this.tableLayoutPanel2.Controls.Add(this.buttonDefaults, 3, 1);
             this.tableLayoutPanel2.Controls.Add(this.buttonProbe, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonPMTable, 0, 3);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(245, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.Padding = new System.Windows.Forms.Padding(4, 5, 5, 5);
-            this.tableLayoutPanel2.RowCount = 3;
+            this.tableLayoutPanel2.RowCount = 4;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(90, 97);
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(90, 126);
             this.tableLayoutPanel2.TabIndex = 2;
             // 
             // buttonApply
@@ -388,6 +391,16 @@ namespace ZenStatesDebugTool
             this.buttonProbe.Text = "Scan";
             this.buttonProbe.UseVisualStyleBackColor = true;
             this.buttonProbe.Click += new System.EventHandler(this.ButtonScan_Click);
+            // 
+            // buttonPMTable
+            // 
+            this.buttonPMTable.Location = new System.Drawing.Point(7, 95);
+            this.buttonPMTable.Name = "buttonPMTable";
+            this.buttonPMTable.Size = new System.Drawing.Size(75, 23);
+            this.buttonPMTable.TabIndex = 3;
+            this.buttonPMTable.Text = "PMTable";
+            this.buttonPMTable.UseVisualStyleBackColor = true;
+            this.buttonPMTable.Click += new System.EventHandler(this.buttonPMTable_Click);
             // 
             // tabControl1
             // 
@@ -1831,6 +1844,7 @@ namespace ZenStatesDebugTool
         private Label packageTypeInfoLabel;
         private Label label29;
         private Label configInfoLabel;
+        private Button buttonPMTable;
     }
 }
 

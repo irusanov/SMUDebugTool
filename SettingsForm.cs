@@ -1141,5 +1141,11 @@ namespace ZenStatesDebugTool
         {
             RunBackgroundTask(ReadCPUID_Task, Scan_WorkerCompleted);
         }
+
+        private void buttonPMTable_Click(object sender, EventArgs e)
+        {
+            Form pmWnd = new PowerTableMonitor(OPS);
+            pmWnd.Show();
+        }
     }
 }

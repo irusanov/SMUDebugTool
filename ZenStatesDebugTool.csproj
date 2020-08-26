@@ -61,6 +61,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PowerTableMonitor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PowerTableMonitor.Designer.cs">
+      <DependentUpon>PowerTableMonitor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utils\CoreListItem.cs" />
     <Compile Include="ResultForm.cs">
       <SubType>Form</SubType>
@@ -69,6 +75,7 @@
       <DependentUpon>ResultForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Utils\FrequencyListItem.cs" />
+    <Compile Include="Utils\NativeMethods.cs" />
     <Compile Include="Utils\NUMAUtil.cs" />
     <Compile Include="Utils\Ops.cs" />
     <Compile Include="Utils\PowerTable.cs" />
@@ -83,6 +90,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="PowerTableMonitor.resx">
+      <DependentUpon>PowerTableMonitor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ResultForm.resx">
       <DependentUpon>ResultForm.cs</DependentUpon>
     </EmbeddedResource>
