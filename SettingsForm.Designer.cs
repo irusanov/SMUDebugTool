@@ -18,7 +18,7 @@ namespace ZenStatesDebugTool
         {
             if (disposing && (components != null))
             {
-                ols.Dispose();
+                OPS.Dispose();
                 hMutexPci.Dispose();
                 components.Dispose();
             }
@@ -137,15 +137,15 @@ namespace ZenStatesDebugTool
             this.cpuIdLabel = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
             this.firmwareInfoLabel = new System.Windows.Forms.Label();
-            this.textBoxResult = new System.Windows.Forms.TextBox();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.tableLayoutPanel11 = new System.Windows.Forms.TableLayoutPanel();
             this.label24 = new System.Windows.Forms.Label();
             this.label28 = new System.Windows.Forms.Label();
             this.extendedModelInfoLabel = new System.Windows.Forms.Label();
             this.packageTypeInfoLabel = new System.Windows.Forms.Label();
             this.label29 = new System.Windows.Forms.Label();
             this.configInfoLabel = new System.Windows.Forms.Label();
+            this.textBoxResult = new System.Windows.Forms.TextBox();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.tableLayoutPanel11 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -257,7 +257,7 @@ namespace ZenStatesDebugTool
             this.labelARG0.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
             this.labelARG0.Size = new System.Drawing.Size(94, 28);
             this.labelARG0.TabIndex = 4;
-            this.labelARG0.Text = "Argument";
+            this.labelARG0.Text = "Arguments";
             this.labelARG0.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // textBoxARG0
@@ -1538,58 +1538,6 @@ namespace ZenStatesDebugTool
             this.firmwareInfoLabel.Text = "-";
             this.firmwareInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // textBoxResult
-            // 
-            this.textBoxResult.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBoxResult.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBoxResult.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxResult.Location = new System.Drawing.Point(3, 0);
-            this.textBoxResult.Margin = new System.Windows.Forms.Padding(0);
-            this.textBoxResult.Multiline = true;
-            this.textBoxResult.Name = "textBoxResult";
-            this.textBoxResult.ReadOnly = true;
-            this.textBoxResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxResult.Size = new System.Drawing.Size(347, 136);
-            this.textBoxResult.TabIndex = 4;
-            // 
-            // splitContainer1
-            // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.IsSplitterFixed = true;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Name = "splitContainer1";
-            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.tabControl1);
-            this.splitContainer1.Panel1.Padding = new System.Windows.Forms.Padding(5, 5, 4, 5);
-            this.splitContainer1.Panel1MinSize = 220;
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel11);
-            this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.splitContainer1.Panel2MinSize = 0;
-            this.splitContainer1.Size = new System.Drawing.Size(355, 367);
-            this.splitContainer1.SplitterDistance = 220;
-            this.splitContainer1.SplitterWidth = 1;
-            this.splitContainer1.TabIndex = 5;
-            // 
-            // tableLayoutPanel11
-            // 
-            this.tableLayoutPanel11.ColumnCount = 1;
-            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel11.Controls.Add(this.textBoxResult, 0, 0);
-            this.tableLayoutPanel11.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel11.Location = new System.Drawing.Point(0, 5);
-            this.tableLayoutPanel11.Name = "tableLayoutPanel11";
-            this.tableLayoutPanel11.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.tableLayoutPanel11.RowCount = 1;
-            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel11.Size = new System.Drawing.Size(350, 136);
-            this.tableLayoutPanel11.TabIndex = 5;
-            // 
             // label24
             // 
             this.label24.AutoSize = true;
@@ -1658,6 +1606,58 @@ namespace ZenStatesDebugTool
             this.configInfoLabel.TabIndex = 19;
             this.configInfoLabel.Text = "-";
             this.configInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // textBoxResult
+            // 
+            this.textBoxResult.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBoxResult.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxResult.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxResult.Location = new System.Drawing.Point(3, 0);
+            this.textBoxResult.Margin = new System.Windows.Forms.Padding(0);
+            this.textBoxResult.Multiline = true;
+            this.textBoxResult.Name = "textBoxResult";
+            this.textBoxResult.ReadOnly = true;
+            this.textBoxResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBoxResult.Size = new System.Drawing.Size(347, 136);
+            this.textBoxResult.TabIndex = 4;
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.IsSplitterFixed = true;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.tabControl1);
+            this.splitContainer1.Panel1.Padding = new System.Windows.Forms.Padding(5, 5, 4, 5);
+            this.splitContainer1.Panel1MinSize = 220;
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel11);
+            this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
+            this.splitContainer1.Panel2MinSize = 0;
+            this.splitContainer1.Size = new System.Drawing.Size(355, 367);
+            this.splitContainer1.SplitterDistance = 220;
+            this.splitContainer1.SplitterWidth = 1;
+            this.splitContainer1.TabIndex = 5;
+            // 
+            // tableLayoutPanel11
+            // 
+            this.tableLayoutPanel11.ColumnCount = 1;
+            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel11.Controls.Add(this.textBoxResult, 0, 0);
+            this.tableLayoutPanel11.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel11.Location = new System.Drawing.Point(0, 5);
+            this.tableLayoutPanel11.Name = "tableLayoutPanel11";
+            this.tableLayoutPanel11.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.tableLayoutPanel11.RowCount = 1;
+            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel11.Size = new System.Drawing.Size(350, 136);
+            this.tableLayoutPanel11.TabIndex = 5;
             // 
             // SettingsForm
             // 

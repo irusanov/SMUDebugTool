@@ -61,18 +61,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CoreListItem.cs" />
+    <Compile Include="Utils\CoreListItem.cs" />
     <Compile Include="ResultForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ResultForm.Designer.cs">
       <DependentUpon>ResultForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrequencyListItem.cs" />
-    <Compile Include="NUMAUtil.cs" />
-    <Compile Include="SystemInfo.cs" />
-    <Compile Include="SMU.cs" />
-    <Compile Include="OpenLibSys.cs" />
+    <Compile Include="Utils\FrequencyListItem.cs" />
+    <Compile Include="Utils\NUMAUtil.cs" />
+    <Compile Include="Utils\Ops.cs" />
+    <Compile Include="Utils\PowerTable.cs" />
+    <Compile Include="Utils\SystemInfo.cs" />
+    <Compile Include="Utils\SMU.cs" />
+    <Compile Include="Utils\Ols.cs" />
     <Compile Include="SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
