@@ -344,10 +344,10 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Controls.Add(this.buttonApply, 3, 2);
-            this.tableLayoutPanel2.Controls.Add(this.buttonDefaults, 3, 1);
-            this.tableLayoutPanel2.Controls.Add(this.buttonProbe, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.buttonPMTable, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.buttonProbe, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.buttonPMTable, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonDefaults, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.buttonApply, 0, 2);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(245, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.Padding = new System.Windows.Forms.Padding(4, 5, 5, 5);
@@ -373,7 +373,7 @@ namespace ZenStatesDebugTool
             // buttonDefaults
             // 
             this.buttonDefaults.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonDefaults.Location = new System.Drawing.Point(7, 37);
+            this.buttonDefaults.Location = new System.Drawing.Point(7, 95);
             this.buttonDefaults.Name = "buttonDefaults";
             this.buttonDefaults.Size = new System.Drawing.Size(75, 23);
             this.buttonDefaults.TabIndex = 1;
@@ -384,7 +384,7 @@ namespace ZenStatesDebugTool
             // buttonProbe
             // 
             this.buttonProbe.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonProbe.Location = new System.Drawing.Point(7, 8);
+            this.buttonProbe.Location = new System.Drawing.Point(7, 37);
             this.buttonProbe.Name = "buttonProbe";
             this.buttonProbe.Size = new System.Drawing.Size(75, 23);
             this.buttonProbe.TabIndex = 2;
@@ -394,13 +394,13 @@ namespace ZenStatesDebugTool
             // 
             // buttonPMTable
             // 
-            this.buttonPMTable.Location = new System.Drawing.Point(7, 95);
+            this.buttonPMTable.Location = new System.Drawing.Point(7, 8);
             this.buttonPMTable.Name = "buttonPMTable";
             this.buttonPMTable.Size = new System.Drawing.Size(75, 23);
             this.buttonPMTable.TabIndex = 3;
             this.buttonPMTable.Text = "PMTable";
             this.buttonPMTable.UseVisualStyleBackColor = true;
-            this.buttonPMTable.Click += new System.EventHandler(this.buttonPMTable_Click);
+            this.buttonPMTable.Click += new System.EventHandler(this.ButtonPMTable_Click);
             // 
             // tabControl1
             // 
@@ -472,7 +472,7 @@ namespace ZenStatesDebugTool
             this.buttonApplyPROCHOT.TabIndex = 12;
             this.buttonApplyPROCHOT.Text = "Apply";
             this.buttonApplyPROCHOT.UseVisualStyleBackColor = true;
-            this.buttonApplyPROCHOT.Click += new System.EventHandler(this.buttonApplyPROCHOT_Click);
+            this.buttonApplyPROCHOT.Click += new System.EventHandler(this.ButtonApplyPROCHOT_Click);
             // 
             // buttonApplySC
             // 
@@ -483,7 +483,7 @@ namespace ZenStatesDebugTool
             this.buttonApplySC.TabIndex = 5;
             this.buttonApplySC.Text = "Apply";
             this.buttonApplySC.UseVisualStyleBackColor = true;
-            this.buttonApplySC.Click += new System.EventHandler(this.buttonApplySC_Click);
+            this.buttonApplySC.Click += new System.EventHandler(this.ButtonApplySC_Click);
             // 
             // buttonApplyAC
             // 
@@ -494,7 +494,7 @@ namespace ZenStatesDebugTool
             this.buttonApplyAC.TabIndex = 2;
             this.buttonApplyAC.Text = "Apply";
             this.buttonApplyAC.UseVisualStyleBackColor = true;
-            this.buttonApplyAC.Click += new System.EventHandler(this.buttonApplyAC_Click);
+            this.buttonApplyAC.Click += new System.EventHandler(this.ButtonApplyAC_Click);
             // 
             // label14
             // 
@@ -772,7 +772,7 @@ namespace ZenStatesDebugTool
             this.buttonPciScan.TabIndex = 10;
             this.buttonPciScan.Text = "Scan";
             this.buttonPciScan.UseVisualStyleBackColor = true;
-            this.buttonPciScan.Click += new System.EventHandler(this.buttonPciScan_Click);
+            this.buttonPciScan.Click += new System.EventHandler(this.ButtonPciScan_Click);
             // 
             // tabPageMsr
             // 
@@ -829,7 +829,7 @@ namespace ZenStatesDebugTool
             this.buttonMsrWrite.TabIndex = 5;
             this.buttonMsrWrite.Text = "Write";
             this.buttonMsrWrite.UseVisualStyleBackColor = true;
-            this.buttonMsrWrite.Click += new System.EventHandler(this.buttonMsrWrite_Click);
+            this.buttonMsrWrite.Click += new System.EventHandler(this.ButtonMsrWrite_Click);
             // 
             // label15
             // 
@@ -864,7 +864,7 @@ namespace ZenStatesDebugTool
             this.buttonMsrRead.TabIndex = 2;
             this.buttonMsrRead.Text = "Read";
             this.buttonMsrRead.UseVisualStyleBackColor = true;
-            this.buttonMsrRead.Click += new System.EventHandler(this.buttonMsrRead_Click);
+            this.buttonMsrRead.Click += new System.EventHandler(this.ButtonMsrRead_Click);
             // 
             // label17
             // 
@@ -942,7 +942,7 @@ namespace ZenStatesDebugTool
             this.buttonMsrScan.TabIndex = 10;
             this.buttonMsrScan.Text = "Scan";
             this.buttonMsrScan.UseVisualStyleBackColor = true;
-            this.buttonMsrScan.Click += new System.EventHandler(this.buttonMsrScan_Click);
+            this.buttonMsrScan.Click += new System.EventHandler(this.ButtonMsrScan_Click);
             // 
             // label20
             // 
@@ -1043,7 +1043,7 @@ namespace ZenStatesDebugTool
             this.buttonCPUIDRead.TabIndex = 2;
             this.buttonCPUIDRead.Text = "Read";
             this.buttonCPUIDRead.UseVisualStyleBackColor = true;
-            this.buttonCPUIDRead.Click += new System.EventHandler(this.buttonCPUIDRead_Click);
+            this.buttonCPUIDRead.Click += new System.EventHandler(this.ButtonCPUIDRead_Click);
             // 
             // label25
             // 
@@ -1149,7 +1149,7 @@ namespace ZenStatesDebugTool
             this.buttonCPUIDScan.TabIndex = 10;
             this.buttonCPUIDScan.Text = "Scan";
             this.buttonCPUIDScan.UseVisualStyleBackColor = true;
-            this.buttonCPUIDScan.Click += new System.EventHandler(this.buttonCPUIDScan_Click);
+            this.buttonCPUIDScan.Click += new System.EventHandler(this.ButtonCPUIDScan_Click);
             // 
             // tabPagePstates
             // 

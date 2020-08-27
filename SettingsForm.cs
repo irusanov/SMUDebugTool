@@ -129,6 +129,10 @@ namespace ZenStatesDebugTool
 
         private void ResetSmuAddresses()
         {
+            OPS.Smu.SMU_ADDR_MSG = SMU_ADDR_MSG;
+            OPS.Smu.SMU_ADDR_RSP = SMU_ADDR_RSP;
+            OPS.Smu.SMU_ADDR_ARG = SMU_ADDR_ARG;
+
             textBoxCMDAddress.Text = $"0x{Convert.ToString(SMU_ADDR_MSG, 16).ToUpper()}";
             textBoxRSPAddress.Text = $"0x{Convert.ToString(SMU_ADDR_RSP, 16).ToUpper()}";
             textBoxARGAddress.Text = $"0x{Convert.ToString(SMU_ADDR_ARG, 16).ToUpper()}";
@@ -374,10 +378,14 @@ namespace ZenStatesDebugTool
                 uint[] args = new uint[6];
                 string[] userArgs = textBoxARG0.Text.Trim().Split(',');
 
-                TryConvertToUint(textBoxCMDAddress.Text, out SMU_ADDR_MSG);
-                TryConvertToUint(textBoxRSPAddress.Text, out SMU_ADDR_RSP);
-                TryConvertToUint(textBoxARGAddress.Text, out SMU_ADDR_ARG);
+                TryConvertToUint(textBoxCMDAddress.Text, out uint addrMsg);
+                TryConvertToUint(textBoxRSPAddress.Text, out uint addrRsp);
+                TryConvertToUint(textBoxARGAddress.Text, out uint addrArg);
                 TryConvertToUint(textBoxCMD.Text, out uint command);
+
+                OPS.Smu.SMU_ADDR_MSG = addrMsg;
+                OPS.Smu.SMU_ADDR_RSP = addrRsp;
+                OPS.Smu.SMU_ADDR_ARG = addrArg;
 
                 for (var i = 0; i < userArgs.Length; i++)
                 {
@@ -389,9 +397,9 @@ namespace ZenStatesDebugTool
                 }
                 
 
-                Console.WriteLine("MSG Address:  0x" + Convert.ToString(SMU_ADDR_MSG, 16).ToUpper());
-                Console.WriteLine("RSP Address:  0x" + Convert.ToString(SMU_ADDR_RSP, 16).ToUpper());
-                Console.WriteLine("ARG0 Address: 0x" + Convert.ToString(SMU_ADDR_ARG, 16).ToUpper());
+                Console.WriteLine("MSG Address:  0x" + Convert.ToString(OPS.Smu.SMU_ADDR_MSG, 16).ToUpper());
+                Console.WriteLine("RSP Address:  0x" + Convert.ToString(OPS.Smu.SMU_ADDR_RSP, 16).ToUpper());
+                Console.WriteLine("ARG0 Address: 0x" + Convert.ToString(OPS.Smu.SMU_ADDR_ARG, 16).ToUpper());
                 Console.WriteLine("ARG0        : 0x" + Convert.ToString(args[0], 16).ToUpper());
 
                 SMU.Status status = OPS.SendSmuCommand(command, ref args);
@@ -599,6 +607,8 @@ namespace ZenStatesDebugTool
 
         private void BackgroundWorkerTrySettings_DoWork(object sender, DoWorkEventArgs e)
         {
+            ResetSmuAddresses();
+
             try
             {
                 Invoke(new MethodInvoker(delegate
@@ -652,7 +662,7 @@ namespace ZenStatesDebugTool
             );
 
             if (confirmResult == DialogResult.OK)
-                RunBackgroundTask(BackgroundWorkerTrySettings_DoWork, Scan_WorkerCompleted);
+                RunBackgroundTask(BackgroundWorkerTrySettings_DoWork, SmuScan_WorkerCompleted);
         }
 
         private void TabControl1_Selected(object sender, TabControlEventArgs e)
@@ -765,6 +775,7 @@ namespace ZenStatesDebugTool
                 sw.WriteLine(GenerateReportJson());
             }
 
+            ResetSmuAddresses();
             SetButtonsState();
             SetStatusText("Report Complete.");
             MessageBox.Show($"Report saved as {fileName}");
@@ -974,25 +985,32 @@ namespace ZenStatesDebugTool
             SetStatusText("Scan Complete.");
         }
 
-        private void buttonPciScan_Click(object sender, EventArgs e)
+        private void SmuScan_WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            SetButtonsState();
+            ResetSmuAddresses();
+            SetStatusText("Scan Complete.");
+        }
+
+        private void ButtonPciScan_Click(object sender, EventArgs e)
         {
             RunBackgroundTask(PciScan_DoWork, Scan_WorkerCompleted);
         }
 
-        private void buttonApplyAC_Click(object sender, EventArgs e)
+        private void ButtonApplyAC_Click(object sender, EventArgs e)
         {
             int frequency = (int)(((FrequencyListItem)comboBoxACF.SelectedItem).multi * 100.00);
             ApplyFrequencyAllCoreSetting(frequency);
         }
 
-        private void buttonApplySC_Click(object sender, EventArgs e)
+        private void ButtonApplySC_Click(object sender, EventArgs e)
         {
             ApplyFrequencyAllCoreSetting(550);
             int frequency = (int)(((FrequencyListItem)comboBoxSCF.SelectedItem).multi * 100.00);
             ApplyFrequencySingleCoreSetting((CoreListItem)comboBoxCore.SelectedItem, frequency);
         }
 
-        private void buttonApplyPROCHOT_Click(object sender, EventArgs e)
+        private void ButtonApplyPROCHOT_Click(object sender, EventArgs e)
         {
             if (checkBoxPROCHOT.Checked)
             {
@@ -1048,7 +1066,7 @@ namespace ZenStatesDebugTool
             }
         }
 
-        private void buttonMsrRead_Click(object sender, EventArgs e)
+        private void ButtonMsrRead_Click(object sender, EventArgs e)
         {
             TryConvertToUint(textBoxMsrAddress.Text, out uint msr);
             uint eax = default, edx = default;
@@ -1059,7 +1077,7 @@ namespace ZenStatesDebugTool
             }
         }
 
-        private void buttonMsrWrite_Click(object sender, EventArgs e)
+        private void ButtonMsrWrite_Click(object sender, EventArgs e)
         {
             TryConvertToUint(textBoxMsrEdx.Text, out uint edx);
             TryConvertToUint(textBoxMsrEax.Text, out uint eax);
@@ -1074,7 +1092,7 @@ namespace ZenStatesDebugTool
             SetStatusText("Write OK.");
         }
 
-        private void buttonMsrScan_Click(object sender, EventArgs e)
+        private void ButtonMsrScan_Click(object sender, EventArgs e)
         {
             RunBackgroundTask(ReadMsr_Task, Scan_WorkerCompleted);
         }
@@ -1124,7 +1142,7 @@ namespace ZenStatesDebugTool
             }
         }
 
-        private void buttonCPUIDRead_Click(object sender, EventArgs e)
+        private void ButtonCPUIDRead_Click(object sender, EventArgs e)
         {
             TryConvertToUint(textBoxCPUIDAddress.Text, out uint index);
             uint eax = 0, ebx = 0, ecx = 0, edx = 0;
@@ -1137,15 +1155,14 @@ namespace ZenStatesDebugTool
             }
         }
 
-        private void buttonCPUIDScan_Click(object sender, EventArgs e)
+        private void ButtonCPUIDScan_Click(object sender, EventArgs e)
         {
             RunBackgroundTask(ReadCPUID_Task, Scan_WorkerCompleted);
         }
 
-        private void buttonPMTable_Click(object sender, EventArgs e)
+        private void ButtonPMTable_Click(object sender, EventArgs e)
         {
-            Form pmWnd = new PowerTableMonitor(OPS);
-            pmWnd.Show();
+            new Thread(() => new PowerTableMonitor(OPS).ShowDialog()).Start();
         }
     }
 }
