@@ -16,11 +16,11 @@ namespace ZenStatesDebugTool
 {
     public partial class SettingsForm : Form
     {
-        private static readonly int Threads = Convert.ToInt32(Environment.GetEnvironmentVariable("NUMBER_OF_PROCESSORS"));
+        //private static readonly int Threads = Convert.ToInt32(Environment.GetEnvironmentVariable("NUMBER_OF_PROCESSORS"));
         private BackgroundWorker backgroundWorker1;
         private NUMAUtil _numaUtil;
+        private readonly List<BiosACPIFunction> biosFunctions = new List<BiosACPIFunction>();
         private readonly Ops OPS = new Ops();
-        private readonly PowerTable PowerTable;
         private SystemInfo SI;
         List<SmuAddressSet> matches;
         private int _coreCount;
@@ -105,6 +105,7 @@ namespace ZenStatesDebugTool
                 FusedCoreCount = coreCount[0],
                 Threads = coreCount[1],
                 CCDCount = OPS.GetCCDCount(),
+                CodeName = $"{OPS.CpuType}",
             };
 
             SI.Model = (SI.CpuId & 0xff) >> 4;
@@ -125,6 +126,11 @@ namespace ZenStatesDebugTool
                 SI.BiosVersion = ((string)obj["SMBIOSBIOSVersion"]).Trim();
             }
             if (searcher != null) searcher.Dispose();
+        }
+
+        private BiosACPIFunction GetFunctionByIdString(string name)
+        {
+            return biosFunctions.Find(x => x.IDString == name);
         }
 
         private void ResetSmuAddresses()

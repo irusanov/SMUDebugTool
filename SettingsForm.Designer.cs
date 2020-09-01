@@ -48,10 +48,10 @@ namespace ZenStatesDebugTool
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.labelStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.buttonApply = new System.Windows.Forms.Button();
-            this.buttonDefaults = new System.Windows.Forms.Button();
             this.buttonProbe = new System.Windows.Forms.Button();
             this.buttonPMTable = new System.Windows.Forms.Button();
+            this.buttonDefaults = new System.Windows.Forms.Button();
+            this.buttonApply = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPageCPU = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
@@ -359,28 +359,6 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel2.Size = new System.Drawing.Size(90, 126);
             this.tableLayoutPanel2.TabIndex = 2;
             // 
-            // buttonApply
-            // 
-            this.buttonApply.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonApply.Location = new System.Drawing.Point(7, 66);
-            this.buttonApply.Name = "buttonApply";
-            this.buttonApply.Size = new System.Drawing.Size(75, 23);
-            this.buttonApply.TabIndex = 0;
-            this.buttonApply.Text = "Send";
-            this.buttonApply.UseVisualStyleBackColor = true;
-            this.buttonApply.Click += new System.EventHandler(this.ButtonApply_Click);
-            // 
-            // buttonDefaults
-            // 
-            this.buttonDefaults.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonDefaults.Location = new System.Drawing.Point(7, 95);
-            this.buttonDefaults.Name = "buttonDefaults";
-            this.buttonDefaults.Size = new System.Drawing.Size(75, 23);
-            this.buttonDefaults.TabIndex = 1;
-            this.buttonDefaults.Text = "Reset";
-            this.buttonDefaults.UseVisualStyleBackColor = true;
-            this.buttonDefaults.Click += new System.EventHandler(this.ButtonDefaults_Click);
-            // 
             // buttonProbe
             // 
             this.buttonProbe.FlatStyle = System.Windows.Forms.FlatStyle.System;
@@ -401,6 +379,28 @@ namespace ZenStatesDebugTool
             this.buttonPMTable.Text = "PMTable";
             this.buttonPMTable.UseVisualStyleBackColor = true;
             this.buttonPMTable.Click += new System.EventHandler(this.ButtonPMTable_Click);
+            // 
+            // buttonDefaults
+            // 
+            this.buttonDefaults.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonDefaults.Location = new System.Drawing.Point(7, 95);
+            this.buttonDefaults.Name = "buttonDefaults";
+            this.buttonDefaults.Size = new System.Drawing.Size(75, 23);
+            this.buttonDefaults.TabIndex = 1;
+            this.buttonDefaults.Text = "Reset";
+            this.buttonDefaults.UseVisualStyleBackColor = true;
+            this.buttonDefaults.Click += new System.EventHandler(this.ButtonDefaults_Click);
+            // 
+            // buttonApply
+            // 
+            this.buttonApply.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonApply.Location = new System.Drawing.Point(7, 66);
+            this.buttonApply.Name = "buttonApply";
+            this.buttonApply.Size = new System.Drawing.Size(75, 23);
+            this.buttonApply.TabIndex = 0;
+            this.buttonApply.Text = "Send";
+            this.buttonApply.UseVisualStyleBackColor = true;
+            this.buttonApply.Click += new System.EventHandler(this.ButtonApply_Click);
             // 
             // tabControl1
             // 
