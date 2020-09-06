@@ -19,7 +19,6 @@ namespace ZenStatesDebugTool
         //private static readonly int Threads = Convert.ToInt32(Environment.GetEnvironmentVariable("NUMBER_OF_PROCESSORS"));
         private BackgroundWorker backgroundWorker1;
         private NUMAUtil _numaUtil;
-        private readonly List<BiosACPIFunction> biosFunctions = new List<BiosACPIFunction>();
         private readonly Ops OPS = new Ops();
         private SystemInfo SI;
         List<SmuAddressSet> matches;
@@ -126,11 +125,6 @@ namespace ZenStatesDebugTool
                 SI.BiosVersion = ((string)obj["SMBIOSBIOSVersion"]).Trim();
             }
             if (searcher != null) searcher.Dispose();
-        }
-
-        private BiosACPIFunction GetFunctionByIdString(string name)
-        {
-            return biosFunctions.Find(x => x.IDString == name);
         }
 
         private void ResetSmuAddresses()
@@ -287,6 +281,7 @@ namespace ZenStatesDebugTool
             buttonMsrRead.Enabled = enabled;
             buttonMsrScan.Enabled = enabled;
             buttonMsrWrite.Enabled = enabled;
+            buttonPMTable.Enabled = enabled;
 
             textBoxCMDAddress.Enabled = enabled;
             textBoxRSPAddress.Enabled = enabled;
@@ -426,10 +421,7 @@ namespace ZenStatesDebugTool
             }
         }
 
-        private void ButtonDefaults_Click(object sender, EventArgs e)
-        {
-            InitForm();
-        }
+        private void ButtonDefaults_Click(object sender, EventArgs e) => ResetSmuAddresses();
 
         private void ButtonApply_Click(object sender, EventArgs e)
         {
