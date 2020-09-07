@@ -922,7 +922,7 @@ namespace ZenStatesDebugTool
             if (OPS.Ols.Rdmsr(0xC0010015, ref eax, ref edx) != -1)
             {
                 eax |= 0x200000;
-                return OPS.Ols.Wrmsr(0xC0010015, eax, edx) != -1;
+                return OPS.WriteMsr(0xC0010015, eax, edx);
             }
 
             SetStatusText($@"Error applying TSC fix!");
@@ -935,7 +935,7 @@ namespace ZenStatesDebugTool
 
             if (!ApplyTscWorkaround()) return false;
 
-            if (OPS.Ols.Wrmsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx) != 1)
+            if (!OPS.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
             {
                 SetStatusText($@"Error writing PState {pstateId}!");
                 return false;
@@ -1081,7 +1081,7 @@ namespace ZenStatesDebugTool
             TryConvertToUint(textBoxMsrEax.Text, out uint eax);
             TryConvertToUint(textBoxMsrAddress.Text, out uint msr);
 
-            if (OPS.Ols.Wrmsr(msr, eax, edx) != 1)
+            if (!OPS.WriteMsr(msr, eax, edx))
             {
                 HandleError($@"Error writing MSR {textBoxMsrAddress.Text}!");
                 return;

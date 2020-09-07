@@ -8,6 +8,7 @@ namespace ZenStates
     {
         private static Mutex amdSmuMutex;
         private const ushort SMU_TIMEOUT = 8192;
+        private readonly int Threads;
 
         public Ops()
         {
@@ -18,6 +19,7 @@ namespace ZenStates
             CpuType = GetCPUType(GetPkgType());
             Smu = GetMaintainedSettings.GetByType(CpuType);
             Smu.Version = GetSmuVersion();
+            Threads = GetCoreCount()[1];
 
             //if (!SendTestMessage())
             //    throw new ApplicationException("SMU is not responding");
@@ -172,6 +174,18 @@ namespace ZenStates
         {
             Ols.WritePciConfigDword(Smu.SMU_PCI_ADDR, (byte)Smu.SMU_OFFSET_ADDR, value);
             return Ols.ReadPciConfigDword(Smu.SMU_PCI_ADDR, (byte)Smu.SMU_OFFSET_DATA);
+        }
+
+        public bool WriteMsr(uint msr, uint eax, uint edx)
+        {
+            bool res = true;
+
+            for (var i = 0; i < Threads; i++)
+            {
+                if (Ols.WrmsrTx(msr, eax, edx, (UIntPtr)(1 << i)) != 1) res = false;
+            }
+
+            return res;
         }
 
         public SMU.CpuFamily GetCpuFamily()
