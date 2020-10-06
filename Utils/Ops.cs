@@ -422,8 +422,10 @@ namespace ZenStates
             if (SendSmuCommand(Smu.SMU_MSG_GetPBOScalar, ref args) == SMU.Status.OK)
             {
                 byte[] bytes = BitConverter.GetBytes(args[0]);
+                float scalar = BitConverter.ToSingle(bytes, 0);
 
-                return BitConverter.ToSingle(bytes, 0);
+                if (scalar > 0)
+                    return scalar;
             }
             return 0f;
         }

@@ -48,6 +48,7 @@ namespace ZenStatesDebugTool
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.labelStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.buttonSmuLog = new System.Windows.Forms.Button();
             this.buttonProbe = new System.Windows.Forms.Button();
             this.buttonPMTable = new System.Windows.Forms.Button();
             this.buttonDefaults = new System.Windows.Forms.Button();
@@ -344,25 +345,37 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Controls.Add(this.buttonProbe, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.buttonSmuLog, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.buttonProbe, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.buttonPMTable, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.buttonDefaults, 0, 3);
-            this.tableLayoutPanel2.Controls.Add(this.buttonApply, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.buttonDefaults, 0, 4);
+            this.tableLayoutPanel2.Controls.Add(this.buttonApply, 0, 3);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(245, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.Padding = new System.Windows.Forms.Padding(4, 5, 5, 5);
-            this.tableLayoutPanel2.RowCount = 4;
+            this.tableLayoutPanel2.RowCount = 5;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(90, 126);
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(90, 155);
             this.tableLayoutPanel2.TabIndex = 2;
+            // 
+            // buttonSmuLog
+            // 
+            this.buttonSmuLog.Location = new System.Drawing.Point(7, 37);
+            this.buttonSmuLog.Name = "buttonSmuLog";
+            this.buttonSmuLog.Size = new System.Drawing.Size(75, 23);
+            this.buttonSmuLog.TabIndex = 5;
+            this.buttonSmuLog.Text = "Monitor";
+            this.buttonSmuLog.UseVisualStyleBackColor = true;
+            this.buttonSmuLog.Click += new System.EventHandler(this.ButtonSMUMonitor_Click);
             // 
             // buttonProbe
             // 
             this.buttonProbe.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonProbe.Location = new System.Drawing.Point(7, 37);
+            this.buttonProbe.Location = new System.Drawing.Point(7, 66);
             this.buttonProbe.Name = "buttonProbe";
             this.buttonProbe.Size = new System.Drawing.Size(75, 23);
             this.buttonProbe.TabIndex = 2;
@@ -383,7 +396,7 @@ namespace ZenStatesDebugTool
             // buttonDefaults
             // 
             this.buttonDefaults.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonDefaults.Location = new System.Drawing.Point(7, 95);
+            this.buttonDefaults.Location = new System.Drawing.Point(7, 124);
             this.buttonDefaults.Name = "buttonDefaults";
             this.buttonDefaults.Size = new System.Drawing.Size(75, 23);
             this.buttonDefaults.TabIndex = 1;
@@ -394,7 +407,7 @@ namespace ZenStatesDebugTool
             // buttonApply
             // 
             this.buttonApply.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonApply.Location = new System.Drawing.Point(7, 66);
+            this.buttonApply.Location = new System.Drawing.Point(7, 95);
             this.buttonApply.Name = "buttonApply";
             this.buttonApply.Size = new System.Drawing.Size(75, 23);
             this.buttonApply.TabIndex = 0;
@@ -581,7 +594,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel7.ColumnCount = 1;
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tableLayoutPanel7.Location = new System.Drawing.Point(0, 156);
+            this.tableLayoutPanel7.Location = new System.Drawing.Point(0, 161);
             this.tableLayoutPanel7.Name = "tableLayoutPanel7";
             this.tableLayoutPanel7.RowCount = 1;
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -602,7 +615,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.RowCount = 1;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel6.Size = new System.Drawing.Size(338, 156);
+            this.tableLayoutPanel6.Size = new System.Drawing.Size(338, 161);
             this.tableLayoutPanel6.TabIndex = 3;
             // 
             // tabPagePci
@@ -1845,6 +1858,7 @@ namespace ZenStatesDebugTool
         private Label label29;
         private Label configInfoLabel;
         private Button buttonPMTable;
+        private Button buttonSmuLog;
     }
 }
 

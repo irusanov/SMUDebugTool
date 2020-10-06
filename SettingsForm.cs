@@ -355,6 +355,8 @@ namespace ZenStatesDebugTool
                 Environment.NewLine +
                 $"INT: {Convert.ToString(data, 10).ToUpper()}" +
                 Environment.NewLine +
+                $"BIN: {Convert.ToString(data, 2).ToUpper().PadLeft(32, '0')}" +
+                Environment.NewLine +
                 Environment.NewLine;
             Console.WriteLine($"Response: {responseString}");
             textBoxResult.Text = responseString + textBoxResult.Text;
@@ -407,13 +409,10 @@ namespace ZenStatesDebugTool
 
                 if (status == SMU.Status.OK)
                 {
-                    SetStatusText(GetSMUStatus.GetByType(status));
                     ShowResultMessageBox(args);
                 }
-                else
-                {
-                    SetStatusText(GetSMUStatus.GetByType(status));
-                }
+
+                SetStatusText(GetSMUStatus.GetByType(status));
             }
             catch (ApplicationException ex)
             {
@@ -1161,6 +1160,15 @@ namespace ZenStatesDebugTool
         private void ButtonPMTable_Click(object sender, EventArgs e)
         {
             new Thread(() => new PowerTableMonitor(OPS).ShowDialog()).Start();
+        }
+
+        private void ButtonSMUMonitor_Click(object sender, EventArgs e)
+        {
+            TryConvertToUint(textBoxCMDAddress.Text, out uint addrMsg);
+            TryConvertToUint(textBoxRSPAddress.Text, out uint addrRsp);
+            TryConvertToUint(textBoxARGAddress.Text, out uint addrArg);
+
+            new Thread(() => new SMUMonitor(OPS, addrMsg, addrArg, addrRsp).ShowDialog()).Start();
         }
     }
 }

@@ -80,7 +80,8 @@ namespace ZenStates
 
         public uint PatchLevel { get; set; }
         public int PhysicalCoreCount { get; private set; }
-        public int CCDCount {
+        public int CCDCount
+        {
             get => ccdCount;
             set
             {

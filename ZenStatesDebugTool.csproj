@@ -61,6 +61,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SMUMonitor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SMUMonitor.Designer.cs">
+      <DependentUpon>SMUMonitor.cs</DependentUpon>
+    </Compile>
     <Compile Include="PowerTableMonitor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -90,6 +96,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="SMUMonitor.resx">
+      <DependentUpon>SMUMonitor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PowerTableMonitor.resx">
       <DependentUpon>PowerTableMonitor.cs</DependentUpon>
     </EmbeddedResource>
