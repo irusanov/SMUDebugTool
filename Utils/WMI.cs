@@ -147,17 +147,9 @@ namespace ZenStates
                 cmd = BitConverter.GetBytes(commandID);
                 args = BitConverter.GetBytes(commandArgs);
 
-                for (var i = 0; i < cmd.Length; ++i)
-                {
-                    buffer[i] = cmd[i];
-                }
+                Buffer.BlockCopy(cmd, 0, buffer, 0, cmd.Length);
+                Buffer.BlockCopy(args, 0, buffer, cmd.Length, args.Length);
 
-                for (var i = cmd.Length; i < args.Length; ++i)
-                {
-                    buffer[i] = args[i];
-                }
-
-                //buffer[4] = 0x01;
 
                 inParams["Inbuf"] = buffer;
 
@@ -166,7 +158,7 @@ namespace ZenStates
 
                 // return outParam
                 ManagementBaseObject pack = (ManagementBaseObject)outParams.Properties["Outbuf"].Value;
-                return (byte[])pack.GetPropertyValue("result");
+                return (byte[])pack.GetPropertyValue("Result");
             }
             catch (ManagementException err)
             {

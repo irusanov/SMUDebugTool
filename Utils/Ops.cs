@@ -16,7 +16,7 @@ namespace ZenStates
 
             Ols = new Ols();
             CheckOlsStatus();
-            CpuType = GetCPUType(GetPkgType());
+            CpuType = GetCPUType(GetPackageType());
             Smu = GetMaintainedSettings.GetByType(CpuType);
             Smu.Version = GetSmuVersion();
             Threads = GetCoreCount()[1];
@@ -208,7 +208,7 @@ namespace ZenStates
             {
                 case 0x00800F11: // CPU \ Zen \ Summit Ridge \ ZP - B0 \ 14nm
                 case 0x00800F00: // CPU \ Zen \ Summit Ridge \ ZP - A0 \ 14nm
-                    if (packageType == 7)
+                    if (packageType == 4 || packageType == 7)
                         cpuType = SMU.CPUType.Threadripper;
                     else
                         cpuType = SMU.CPUType.SummitRidge;
@@ -217,7 +217,7 @@ namespace ZenStates
                     cpuType = SMU.CPUType.Naples;
                     break;
                 case 0x00800F82: // CPU \ Zen + \ Pinnacle Ridge \ 12nm
-                    if (packageType == 7)
+                    if (packageType == 4 || packageType == 7)
                         cpuType = SMU.CPUType.Colfax;
                     else
                         cpuType = SMU.CPUType.PinnacleRidge;
@@ -248,6 +248,14 @@ namespace ZenStates
                 case 0x00860F01: // APU \ Renoir
                     cpuType = SMU.CPUType.Renoir;
                     break;
+                case 0x00A20F00: // CPU \ Vermeer
+                case 0x00A20F10:
+                    cpuType = SMU.CPUType.Vermeer;
+                    break;
+                //case 0x00A00F00: // CPU \ Genesis
+                //case 0x00A00F10:
+                    //cpuType = SMU.CPUType.Genesis;
+                    //break;
                 default:
                     cpuType = SMU.CPUType.Unsupported;
                     break;
@@ -266,7 +274,7 @@ namespace ZenStates
             return 0;
         }
 
-        public uint GetPkgType()
+        public uint GetPackageType()
         {
             uint eax = 0, ebx = 0, ecx = 0, edx = 0;
             if (Ols.Cpuid(0x80000001, ref eax, ref ebx, ref ecx, ref edx) == 1)
@@ -342,7 +350,8 @@ namespace ZenStates
 
             int i = 0;
             do {
-                if ((value1 & (1 << i)) == 1 && (value4 & (1 << i)) == 0)
+                uint mask = 1u << i;
+                if ((value1 & mask) == 1 && (value4 & mask) == 0)
                     ccdCount += 1;
             } while (++i < 8);
 
@@ -379,6 +388,17 @@ namespace ZenStates
                 model = model + IntToStr(eax) + IntToStr(ebx) + IntToStr(ecx) + IntToStr(edx);
 
             return model.Trim();
+        }
+
+        public int GetThreadsPerCore()
+        {
+            uint eax = 0, ebx = 0, ecx = 0, edx = 0;
+
+            if (Ols.Cpuid(0x8000001E, ref eax, ref ebx, ref ecx, ref edx) == 1)
+            {
+                return Convert.ToInt16(GetBits(ebx, 8, 8)) + 1; 
+            }
+            return 1;
         }
 
         public uint GetSmuVersion()
@@ -452,7 +472,7 @@ namespace ZenStates
 
             switch (Smu.SMU_TYPE)
             {
-                // SummitRidge, PinnacleRidge
+                // SummitRidge, PinnacleRidge, Colfax
                 case SMU.SmuType.TYPE_CPU0:
                 case SMU.SmuType.TYPE_CPU1:
                     args[0] = 0;
@@ -466,18 +486,18 @@ namespace ZenStates
 
                     address = args[0];
 
-                    args[0] = 0;
-                    status = SendSmuCommand(Smu.SMU_MSG_GetDramBaseAddress + 2, ref args);
-                    if (status != SMU.Status.OK)
-                        return 0;
+                    //args[0] = 0;
+                    //status = SendSmuCommand(Smu.SMU_MSG_GetDramBaseAddress + 2, ref args);
+                    //if (status != SMU.Status.OK)
+                        //return 0;
                     break;
 
-                // Matisse, CastlePeak, Rome
+                // Matisse, CastlePeak, Rome, Vermeer
                 case SMU.SmuType.TYPE_CPU2:
                     status = SendSmuCommand(Smu.SMU_MSG_GetDramBaseAddress, ref args);
                     if (status != SMU.Status.OK)
                         return 0;
-                    address = args[0];
+                    address = args[0] | ((ulong)args[1] << 32);
                     break;
 
                 // Renoir
@@ -548,7 +568,7 @@ namespace ZenStates
 
         public void Dispose()
         {
-            amdSmuMutex.Dispose();
+            amdSmuMutex.ReleaseMutex();
             Ols.Dispose();
         }
     }

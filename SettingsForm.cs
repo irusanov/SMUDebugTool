@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Management;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using ZenStates;
@@ -98,13 +99,14 @@ namespace ZenStatesDebugTool
                 CpuId = OPS.GetCpuId(),
                 CpuName = OPS.GetCpuName(),
                 NodesPerProcessor = OPS.GetCpuNodes(),
-                PackageType = OPS.GetPkgType(),
+                PackageType = OPS.GetPackageType(),
                 PatchLevel = OPS.GetPatchLevel(),
                 SmuVersion = OPS.Smu.Version,
                 FusedCoreCount = coreCount[0],
                 Threads = coreCount[1],
                 CCDCount = OPS.GetCCDCount(),
                 CodeName = $"{OPS.CpuType}",
+                SMT = OPS.GetThreadsPerCore() > 1,
             };
 
             SI.Model = (SI.CpuId & 0xff) >> 4;
@@ -687,53 +689,19 @@ namespace ZenStatesDebugTool
             writer.WritePropertyName("OSVersion");
             writer.WriteValue(new ComputerInfo().OSFullName);
 
-            writer.WritePropertyName("CpuId");
-            writer.WriteValue(SI.GetCpuIdString());
+            Type type = SI.GetType();
+            PropertyInfo[] properties = type.GetProperties();
 
-            writer.WritePropertyName("CpuCodeName");
-            writer.WriteValue(OPS.CpuType.ToString());
-
-            writer.WritePropertyName("CpuName");
-            writer.WriteValue(SI.CpuName);
-
-            writer.WritePropertyName("ExtendedModel");
-            writer.WriteValue($"{SI.ExtendedModel:X8}");
-
-            writer.WritePropertyName("PackageType");
-            writer.WriteValue(SI.PackageType);
-
-            writer.WritePropertyName("CCDCount");
-            writer.WriteValue(SI.CCDCount);
-
-            writer.WritePropertyName("CCXCount");
-            writer.WriteValue(SI.CCXCount);
-
-            writer.WritePropertyName("NumCoresInCCX");
-            writer.WriteValue(SI.NumCoresInCCX);
-
-            writer.WritePropertyName("FusedCoreCount");
-            writer.WriteValue(SI.FusedCoreCount);
-
-            writer.WritePropertyName("PhysicalCoreCount");
-            writer.WriteValue(SI.PhysicalCoreCount);
-
-            writer.WritePropertyName("Threads");
-            writer.WriteValue(SI.Threads);
-
-            writer.WritePropertyName("MbVendor");
-            writer.WriteValue(SI.MbVendor);
-
-            writer.WritePropertyName("MbName");
-            writer.WriteValue(SI.MbName);
-
-            writer.WritePropertyName("BiosVersion");
-            writer.WriteValue(SI.BiosVersion);
-
-            writer.WritePropertyName("Microcode");
-            writer.WriteValue($"{SI.PatchLevel:X8}");
-
-            writer.WritePropertyName("SmuVersion");
-            writer.WriteValue(SI.GetSmuVersionString());
+            foreach (PropertyInfo property in properties)
+            {
+                writer.WritePropertyName(property.Name);
+                if (property.Name == "CpuId" || property.Name == "PatchLevel")
+                    writer.WriteValue($"{property.GetValue(SI, null):X8}");
+                else if (property.Name == "SmuVersion")
+                    writer.WriteValue(SI.GetSmuVersionString());
+                else
+                    writer.WriteValue(property.GetValue(SI, null));
+            }
 
             // "SmuAddresses:"
             writer.WritePropertyName("Mailboxes");
@@ -947,15 +915,21 @@ namespace ZenStatesDebugTool
         {
             try
             {
+                TryConvertToUint(textBoxPciStartReg.Text, out uint startReg);
+                TryConvertToUint(textBoxPciEndReg.Text, out uint endReg);
+
+                if (endReg <= startReg)
+                {
+                    HandleError("End register is not greater than start register");
+                    return;
+                }
+
                 Invoke(new MethodInvoker(delegate
                 {
                     SetStatusText("Scanning PCI addresses, please wait...");
                 }));
 
                 string result = "REG         Value" + Environment.NewLine;
-
-                TryConvertToUint(textBoxPciStartReg.Text, out uint startReg);
-                TryConvertToUint(textBoxPciEndReg.Text, out uint endReg);
 
                 while (startReg <= endReg)
                 {

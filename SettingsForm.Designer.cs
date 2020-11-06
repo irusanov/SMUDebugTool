@@ -1383,12 +1383,13 @@ namespace ZenStatesDebugTool
             // buttonExport
             // 
             this.buttonExport.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.buttonExport.AutoSize = true;
             this.tableLayoutPanel3.SetColumnSpan(this.buttonExport, 2);
             this.buttonExport.Location = new System.Drawing.Point(3, 147);
             this.buttonExport.Name = "buttonExport";
-            this.buttonExport.Size = new System.Drawing.Size(75, 23);
+            this.buttonExport.Size = new System.Drawing.Size(84, 23);
             this.buttonExport.TabIndex = 1;
-            this.buttonExport.Text = "Export";
+            this.buttonExport.Text = "Debug Report";
             this.buttonExport.UseVisualStyleBackColor = true;
             this.buttonExport.Click += new System.EventHandler(this.buttonExport_Click);
             // 

@@ -2,7 +2,7 @@
 
 namespace ZenStates
 {
-    class BiosACPIFunction : IEnumerable
+    public class BiosACPIFunction : IEnumerable
     {
         public string IDString;
         public uint ID;

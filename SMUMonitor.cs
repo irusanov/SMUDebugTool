@@ -12,7 +12,6 @@ namespace ZenStatesDebugTool
         readonly System.Windows.Forms.Timer MonitorTimer = new System.Windows.Forms.Timer();
         private readonly BindingList<SmuMonitorItem> list = new BindingList<SmuMonitorItem>();
         private uint prevCmdValue;
-        private uint prevArgValue;
         private readonly uint SMU_ADDR_MSG;
         private readonly uint SMU_ADDR_ARG;
         private readonly uint SMU_ADDR_RSP;
@@ -53,8 +52,8 @@ namespace ZenStatesDebugTool
             if (msg != prevCmdValue)
             {
                 prevCmdValue = msg;
-                OPS.SmuReadReg(SMU_ADDR_RSP, ref rsp);
-                OPS.SmuReadReg(SMU_ADDR_ARG, ref arg);
+                if (OPS.SmuReadReg(SMU_ADDR_RSP, ref rsp))
+                    OPS.SmuReadReg(SMU_ADDR_ARG, ref arg);
 
                 new Thread(() => {
                     list.Add(new SmuMonitorItem
@@ -87,7 +86,6 @@ namespace ZenStatesDebugTool
             else
             {
                 prevCmdValue = 0;
-                prevArgValue = 0;
                 MonitorTimer.Start();
                 buttonStartStop.Text = "Stop";
             }

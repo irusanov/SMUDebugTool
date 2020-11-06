@@ -19,12 +19,37 @@ namespace ZenStates
         [DllImport("psapi.dll")]
         public static extern int EmptyWorkingSet(IntPtr hwProc);
 
-        [DllImport("inpoutx64.dll")]
+        [DllImport("inpout32.dll", EntryPoint = "GetPhysLong", CallingConvention = CallingConvention.StdCall)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetPhysLong(UIntPtr memAddress, out uint data);
+        public static extern bool GetPhysLong32(UIntPtr memAddress, out uint data);
 
-        [DllImport("inpoutx64.dll")]
+        [DllImport("inpoutx64.dll", EntryPoint = "GetPhysLong", CallingConvention = CallingConvention.StdCall)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool IsInpOutDriverOpen();
+        public static extern bool GetPhysLong64(UIntPtr memAddress, out uint data);
+
+        public static bool GetPhysLong(UIntPtr memAddress, out uint data)
+        {
+            if (Environment.Is64BitProcess)
+                return GetPhysLong64(memAddress, out data);
+
+            return GetPhysLong32(memAddress, out data);
+        }
+
+        [DllImport("inpout32.dll", EntryPoint = "IsInpOutDriverOpen", CallingConvention = CallingConvention.StdCall)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool IsInpOutDriverOpen32();
+
+        [DllImport("inpoutx64.dll", EntryPoint = "IsInpOutDriverOpen", CallingConvention = CallingConvention.StdCall)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool IsInpOutDriverOpen64();
+
+        public static bool IsInpOutDriverOpen()
+        {
+            if (Environment.Is64BitProcess)
+                return IsInpOutDriverOpen64();
+
+            return IsInpOutDriverOpen32();
+        }
+
     }
 }

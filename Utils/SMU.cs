@@ -38,7 +38,9 @@ namespace ZenStates
             Matisse,
             CastlePeak,
             Rome,
-            Renoir
+            Renoir,
+            Vermeer,
+            Genesis
         };
 
         public enum PackageType: int
@@ -160,11 +162,13 @@ namespace ZenStates
 
             SMU_MSG_TransferTableToDram = 0xA;
             SMU_MSG_GetDramBaseAddress = 0xC;
-            SMU_MSG_EnableOcMode = 0x63;
-            SMU_MSG_DisableOcMode = 0x64;
+            SMU_MSG_EnableOcMode = 0x6B; //0x63;
+            //SMU_MSG_DisableOcMode = 0x64;
             SMU_MSG_SetOverclockFrequencyAllCores = 0x6C;
             SMU_MSG_SetOverclockFrequencyPerCore = 0x6D;
             SMU_MSG_SetOverclockCpuVid = 0x6E;
+            SMU_MSG_SetPBOScalar = 0x6A;
+            SMU_MSG_GetPBOScalar = 0x6F;
         }
     }
 
@@ -190,6 +194,7 @@ namespace ZenStates
     }
 
     // Ryzen 3000 (Matisse), TR 3000 (Castle Peak)
+    // Ryzen 5000 (Vermeer), TR 5000 (Genesis)?
     public class Zen2Settings : SMU
     {
         public Zen2Settings()
@@ -215,7 +220,7 @@ namespace ZenStates
         }
     }
 
-    // Epyc 2 (Rome)
+    // Epyc 2 (Rome) ES
     public class RomeSettings : SMU
     {
         public RomeSettings()
@@ -248,6 +253,7 @@ namespace ZenStates
             SMU_MSG_GetDramBaseAddress = 0xB;
             SMU_MSG_TransferTableToDram = 0x3D;
 
+            SMU_MSG_GetPBOScalar = 0x62;
             SMU_MSG_EnableOcMode = 0x69;
             SMU_MSG_DisableOcMode = 0x6A;
             SMU_MSG_SetOverclockFrequencyAllCores = 0x7D;
@@ -294,6 +300,10 @@ namespace ZenStates
             { SMU.CPUType.Matisse, new Zen2Settings() },
             { SMU.CPUType.CastlePeak, new Zen2Settings() },
             { SMU.CPUType.Rome, new RomeSettings() },
+
+            // Zen3
+            { SMU.CPUType.Vermeer, new Zen2Settings() },
+            { SMU.CPUType.Genesis, new Zen2Settings() },
 
             // APU
             { SMU.CPUType.RavenRidge, new APUSettings0() },

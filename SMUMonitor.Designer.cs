@@ -126,8 +126,8 @@
             // 
             this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.ColumnCount = 4;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 90F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 90F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.dataGridView2, 0, 4);
@@ -157,7 +157,7 @@
             this.buttonStartStop.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonStartStop.Location = new System.Drawing.Point(3, 488);
             this.buttonStartStop.Name = "buttonStartStop";
-            this.buttonStartStop.Size = new System.Drawing.Size(82, 23);
+            this.buttonStartStop.Size = new System.Drawing.Size(84, 23);
             this.buttonStartStop.TabIndex = 1;
             this.buttonStartStop.Text = "Stop";
             this.buttonStartStop.UseVisualStyleBackColor = true;
@@ -166,9 +166,9 @@
             // ButtonClear
             // 
             this.ButtonClear.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ButtonClear.Location = new System.Drawing.Point(91, 488);
+            this.ButtonClear.Location = new System.Drawing.Point(93, 488);
             this.ButtonClear.Name = "ButtonClear";
-            this.ButtonClear.Size = new System.Drawing.Size(75, 23);
+            this.ButtonClear.Size = new System.Drawing.Size(84, 23);
             this.ButtonClear.TabIndex = 2;
             this.ButtonClear.Text = "Clear";
             this.ButtonClear.UseVisualStyleBackColor = true;
@@ -181,7 +181,7 @@
             this.label1.Location = new System.Drawing.Point(3, 5);
             this.label1.Name = "label1";
             this.label1.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            this.label1.Size = new System.Drawing.Size(82, 19);
+            this.label1.Size = new System.Drawing.Size(84, 19);
             this.label1.TabIndex = 3;
             this.label1.Text = "CMD Address";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -193,7 +193,7 @@
             this.label2.Location = new System.Drawing.Point(3, 24);
             this.label2.Name = "label2";
             this.label2.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            this.label2.Size = new System.Drawing.Size(82, 19);
+            this.label2.Size = new System.Drawing.Size(84, 19);
             this.label2.TabIndex = 4;
             this.label2.Text = "RSP Address";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -205,7 +205,7 @@
             this.label3.Location = new System.Drawing.Point(3, 43);
             this.label3.Name = "label3";
             this.label3.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            this.label3.Size = new System.Drawing.Size(82, 19);
+            this.label3.Size = new System.Drawing.Size(84, 19);
             this.label3.TabIndex = 5;
             this.label3.Text = "ARG Address";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -215,10 +215,10 @@
             this.labelCmdAddr.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.labelCmdAddr, 3);
             this.labelCmdAddr.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCmdAddr.Location = new System.Drawing.Point(91, 5);
+            this.labelCmdAddr.Location = new System.Drawing.Point(93, 5);
             this.labelCmdAddr.Name = "labelCmdAddr";
             this.labelCmdAddr.Padding = new System.Windows.Forms.Padding(0, 3, 5, 3);
-            this.labelCmdAddr.Size = new System.Drawing.Size(248, 19);
+            this.labelCmdAddr.Size = new System.Drawing.Size(246, 19);
             this.labelCmdAddr.TabIndex = 6;
             this.labelCmdAddr.Text = "-";
             this.labelCmdAddr.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -228,10 +228,10 @@
             this.labelRspAddr.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.labelRspAddr, 3);
             this.labelRspAddr.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelRspAddr.Location = new System.Drawing.Point(91, 24);
+            this.labelRspAddr.Location = new System.Drawing.Point(93, 24);
             this.labelRspAddr.Name = "labelRspAddr";
             this.labelRspAddr.Padding = new System.Windows.Forms.Padding(0, 3, 5, 3);
-            this.labelRspAddr.Size = new System.Drawing.Size(248, 19);
+            this.labelRspAddr.Size = new System.Drawing.Size(246, 19);
             this.labelRspAddr.TabIndex = 7;
             this.labelRspAddr.Text = "-";
             this.labelRspAddr.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -241,10 +241,10 @@
             this.labelArgAddr.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.labelArgAddr, 3);
             this.labelArgAddr.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelArgAddr.Location = new System.Drawing.Point(91, 43);
+            this.labelArgAddr.Location = new System.Drawing.Point(93, 43);
             this.labelArgAddr.Name = "labelArgAddr";
             this.labelArgAddr.Padding = new System.Windows.Forms.Padding(0, 3, 5, 3);
-            this.labelArgAddr.Size = new System.Drawing.Size(248, 19);
+            this.labelArgAddr.Size = new System.Drawing.Size(246, 19);
             this.labelArgAddr.TabIndex = 8;
             this.labelArgAddr.Text = "-";
             this.labelArgAddr.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
