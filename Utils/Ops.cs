@@ -176,6 +176,18 @@ namespace ZenStates
             return Ols.ReadPciConfigDword(Smu.SMU_PCI_ADDR, (byte)Smu.SMU_OFFSET_DATA);
         }
 
+        private double GetCoreMulti(int index)
+        {
+            uint eax = default, edx = default;
+            if (Ols.RdmsrTx(0xC0010293, ref eax, ref edx, (UIntPtr)(1 << index)) != 1)
+            {
+                return 0;
+            }
+
+            double multi = 25 * (eax & 0xFF) / (12.5 * (eax >> 8 & 0x3F));
+            return Math.Round(multi * 4, MidpointRounding.ToEven) / 4;
+        }
+        
         public bool WriteMsr(uint msr, uint eax, uint edx)
         {
             bool res = true;
@@ -494,6 +506,7 @@ namespace ZenStates
 
                 // Matisse, CastlePeak, Rome, Vermeer
                 case SMU.SmuType.TYPE_CPU2:
+                case SMU.SmuType.TYPE_CPU3:
                     status = SendSmuCommand(Smu.SMU_MSG_GetDramBaseAddress, ref args);
                     if (status != SMU.Status.OK)
                         return 0;
