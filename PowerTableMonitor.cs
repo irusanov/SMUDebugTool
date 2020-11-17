@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using ZenStates;
+using ZenStates.Core;
 
 namespace ZenStatesDebugTool
 {
@@ -39,7 +39,7 @@ namespace ZenStatesDebugTool
 
                     for (int i = 0; i < table.Length; ++i)
                     {
-                        NativeMethods.GetPhysLong(dramPtr + (i * 0x4), out data);
+                        InteropMethods.GetPhysLong(dramPtr + (i * 0x4), out data);
                         table[i] = data;
                     }
 

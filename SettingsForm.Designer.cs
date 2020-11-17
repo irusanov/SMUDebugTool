@@ -18,7 +18,7 @@ namespace ZenStatesDebugTool
         {
             if (disposing && (components != null))
             {
-                OPS.Dispose();
+                m.Dispose();
                 hMutexPci.Dispose();
                 components.Dispose();
             }

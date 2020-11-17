@@ -81,13 +81,7 @@
       <DependentUpon>ResultForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Utils\FrequencyListItem.cs" />
-    <Compile Include="Utils\NativeMethods.cs" />
     <Compile Include="Utils\NUMAUtil.cs" />
-    <Compile Include="Utils\Ops.cs" />
-    <Compile Include="Utils\PowerTable.cs" />
-    <Compile Include="Utils\SystemInfo.cs" />
-    <Compile Include="Utils\SMU.cs" />
-    <Compile Include="Utils\Ols.cs" />
     <Compile Include="SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -124,6 +118,12 @@
     <None Include="app.manifest" />
     <None Include="packages.config" />
     <None Include="Resources\ZenStates.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ZenStates.Core\ZenStates.Core.csproj">
+      <Project>{39C55831-97A2-498D-A9DD-27BF677E579A}</Project>
+      <Name>ZenStates.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
