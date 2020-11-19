@@ -59,7 +59,6 @@ namespace ZenStatesDebugTool
 
         private void FillInData(uint[] table)
         {
-
             list.Clear();
 
             for (var i = 0; i < table.Length; i++)
@@ -97,7 +96,7 @@ namespace ZenStatesDebugTool
         public PowerTableMonitor(Ops ops)
         {
             OPS = ops;
-            PowerTable = new PowerTable(OPS.Smu.SMU_TYPE);
+            PowerTable = new PowerTable(OPS.cpuinfo.smu.SMU_TYPE);
             PowerCfgTimer.Interval = 2000;
             PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick);
 

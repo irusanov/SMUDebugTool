@@ -19,10 +19,11 @@ namespace ZenStatesDebugTool
         //private static readonly int Threads = Convert.ToInt32(Environment.GetEnvironmentVariable("NUMBER_OF_PROCESSORS"));
         private BackgroundWorker backgroundWorker1;
         private NUMAUtil _numaUtil;
-        private readonly Zen m;
+        private readonly ZenCpu cpu;
         private SystemInfo SI;
         List<SmuAddressSet> matches;
         private int _coreCount;
+        private Ops.CPUInfo cpuinfo;
 
         readonly Mutex hMutexPci;
 
@@ -64,7 +65,8 @@ namespace ZenStatesDebugTool
 
             try
             {
-                m = new Zen();
+                cpu = new ZenCpu();
+                cpuinfo = cpu.Ops.cpuinfo;
                 InitForm();
             }
             catch (ApplicationException ex)
@@ -85,8 +87,6 @@ namespace ZenStatesDebugTool
 
         private void InitSystemInfo()
         {
-            Ops.CPUInfo cpuinfo = m.Ops.GetCpuInfo();
-
             if (cpuinfo.family != SMU.CpuFamily.FAMILY_17H && cpuinfo.family != SMU.CpuFamily.FAMILY_19H)
             {
                 MessageBox.Show("CPU is not supported.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -95,18 +95,18 @@ namespace ZenStatesDebugTool
 
             SI = new SystemInfo
             {
-                CpuId = m.Ops.GetCpuId(),
-                CpuName = m.Ops.GetCpuName(),
-                NodesPerProcessor = m.Ops.GetCpuNodes(),
-                PackageType = m.Ops.GetPackageType(),
-                PatchLevel = m.Ops.GetPatchLevel(),
-                SmuVersion = m.Ops.Smu.Version,
+                CpuId = cpuinfo.cpuid,
+                CpuName = cpuinfo.cpuName,
+                NodesPerProcessor = cpu.Ops.GetCpuNodes(),
+                PackageType = cpuinfo.packageType,
+                PatchLevel = cpuinfo.patchLevel,
+                SmuVersion = cpuinfo.smuVersion,
                 FusedCoreCount = (int)cpuinfo.cores,
                 Threads = (int)cpuinfo.logicalCores,
                 CCDCount = (int)cpuinfo.ccds,
                 CCXCount = (int)cpuinfo.ccxs,
                 NumCoresInCCX = (int)cpuinfo.coresPerCcx,
-                CodeName = $"{m.Ops.CpuType}",
+                CodeName = $"{cpuinfo.codeName}",
                 SMT = (int)cpuinfo.threadsPerCore > 1,
                 Model = cpuinfo.model,
                 ExtendedModel = cpuinfo.extModel,
@@ -130,9 +130,9 @@ namespace ZenStatesDebugTool
 
         private void ResetSmuAddresses()
         {
-            m.Ops.Smu.SMU_ADDR_MSG = SMU_ADDR_MSG;
-            m.Ops.Smu.SMU_ADDR_RSP = SMU_ADDR_RSP;
-            m.Ops.Smu.SMU_ADDR_ARG = SMU_ADDR_ARG;
+            cpuinfo.smu.SMU_ADDR_MSG = SMU_ADDR_MSG;
+            cpuinfo.smu.SMU_ADDR_RSP = SMU_ADDR_RSP;
+            cpuinfo.smu.SMU_ADDR_ARG = SMU_ADDR_ARG;
 
             textBoxCMDAddress.Text = $"0x{Convert.ToString(SMU_ADDR_MSG, 16).ToUpper()}";
             textBoxRSPAddress.Text = $"0x{Convert.ToString(SMU_ADDR_RSP, 16).ToUpper()}";
@@ -152,7 +152,7 @@ namespace ZenStatesDebugTool
             biosInfoLabel.Text = SI.BiosVersion;
             smuInfoLabel.Text = SI.GetSmuVersionString();
             firmwareInfoLabel.Text = $"{SI.PatchLevel:X8}";
-            cpuIdLabel.Text = $"{SI.GetCpuIdString()} ({m.Ops.CpuType})";
+            cpuIdLabel.Text = $"{SI.GetCpuIdString()} ({cpuinfo.codeName})";
             configInfoLabel.Text = $"{SI.CCDCount} CCD / {SI.CCXCount} CCX / {SI.PhysicalCoreCount} physical cores";
         }
 
@@ -160,7 +160,7 @@ namespace ZenStatesDebugTool
         {
             InitSystemInfo();
 
-            if (m.Ops.Smu.Version == 0)
+            if (cpuinfo.smu.Version == 0)
             {
                 MessageBox.Show("Error getting SMU version!\n" +
                     "Default SMU addresses are not responding to commands.",
@@ -169,9 +169,9 @@ namespace ZenStatesDebugTool
             }
 
             // Cache default addresses
-            SMU_ADDR_MSG = m.Ops.Smu.SMU_ADDR_MSG;
-            SMU_ADDR_RSP = m.Ops.Smu.SMU_ADDR_RSP;
-            SMU_ADDR_ARG = m.Ops.Smu.SMU_ADDR_ARG;
+            SMU_ADDR_MSG = cpuinfo.smu.SMU_ADDR_MSG;
+            SMU_ADDR_RSP = cpuinfo.smu.SMU_ADDR_RSP;
+            SMU_ADDR_ARG = cpuinfo.smu.SMU_ADDR_ARG;
 
             ResetSmuAddresses();
             DisplaySystemInfo();
@@ -195,7 +195,7 @@ namespace ZenStatesDebugTool
             comboBoxACF.SelectedIndex = index;
             comboBoxSCF.SelectedIndex = index;
 
-            var prochotEnabled = m.Ops.IsProchotEnabled();
+            var prochotEnabled = cpu.Ops.IsProchotEnabled();
             checkBoxPROCHOT.Checked = prochotEnabled;
             //checkBoxPROCHOT.Enabled = prochotEnabled;
             //buttonApplyPROCHOT.Enabled = prochotEnabled;
@@ -203,14 +203,14 @@ namespace ZenStatesDebugTool
             ToolTip toolTip = new ToolTip();
             toolTip.SetToolTip(checkBoxPROCHOT, "Disables temperature throttling. Can be useful on extreme cooling.");
 
-            SetStatusText($"{m.Ops.CpuType}. Ready.");
+            SetStatusText($"{cpuinfo.codeName}. Ready.");
         }
 
         // TODO: Detect OC Mode and return PState freq if on auto
         private double GetCurrentMulti()
         {
             uint eax = default, edx = default;
-            if (m.Ols.Rdmsr(0xC0010293, ref eax, ref edx) != 1)
+            if (cpu.Ols.Rdmsr(0xC0010293, ref eax, ref edx) != 1)
             {
                 SetStatusText($@"Error getting current frequency!");
                 return 0;
@@ -235,7 +235,7 @@ namespace ZenStatesDebugTool
 
         private void ApplyFrequencyAllCoreSetting(int frequency)
         {
-            if (m.Ops.SendSmuCommand(m.Ops.Smu.SMU_MSG_SetOverclockFrequencyAllCores, Convert.ToUInt32(frequency)))
+            if (cpu.Ops.SendSmuCommand(cpuinfo.smu.SMU_MSG_SetOverclockFrequencyAllCores, Convert.ToUInt32(frequency)))
                 SetStatusText(string.Format("Set frequency to {0} MHz!", (object)frequency));
             else
                 HandleError("Error setting frequency!");
@@ -243,7 +243,7 @@ namespace ZenStatesDebugTool
 
         private void ApplyFrequencySingleCoreSetting(CoreListItem i, int frequency)
         {
-            if (m.Ops.SendSmuCommand(m.Ops.Smu.SMU_MSG_SetOverclockFrequencyPerCore, Convert.ToUInt32(((i.CCD << 4 | i.CCX % 2 & 15) << 4 | i.CORE % 4 & 15) << 20 | frequency & 0xFFFFF)))
+            if (cpu.Ops.SendSmuCommand(cpuinfo.smu.SMU_MSG_SetOverclockFrequencyPerCore, Convert.ToUInt32(((i.CCD << 4 | i.CCX % 2 & 15) << 4 | i.CORE % 4 & 15) << 20 | frequency & 0xFFFFF)))
                 SetStatusText(string.Format("Set core {0} frequency to {1} MHz!", (object)i, (object)frequency));
             else
                 HandleError("Error setting frequency!");
@@ -251,7 +251,7 @@ namespace ZenStatesDebugTool
 
         private void EnableOCMode(bool prochotEnabled = true)
         {
-            if (m.Ops.SendSmuCommand(m.Ops.Smu.SMU_MSG_EnableOcMode, prochotEnabled ? 0U : 0x1000000))
+            if (cpu.Ops.SendSmuCommand(cpuinfo.smu.SMU_MSG_EnableOcMode, prochotEnabled ? 0U : 0x1000000))
                 SetStatusText(prochotEnabled ? "PROCHOT enabled." : "PROCHOT disabled.");
             else
                 HandleError("Error setting OC Mode!");
@@ -259,7 +259,7 @@ namespace ZenStatesDebugTool
 
         private void DisableOCMode()
         {
-            if (m.Ops.SendSmuCommand(m.Ops.Smu.SMU_MSG_DisableOcMode, 0U))
+            if (cpu.Ops.SendSmuCommand(cpuinfo.smu.SMU_MSG_DisableOcMode, 0U))
                 SetStatusText(string.Format("Set OK!"));
             else
                 HandleError("Error disabling OC Mode!");
@@ -387,9 +387,9 @@ namespace ZenStatesDebugTool
                 TryConvertToUint(textBoxARGAddress.Text, out uint addrArg);
                 TryConvertToUint(textBoxCMD.Text, out uint command);
 
-                m.Ops.Smu.SMU_ADDR_MSG = addrMsg;
-                m.Ops.Smu.SMU_ADDR_RSP = addrRsp;
-                m.Ops.Smu.SMU_ADDR_ARG = addrArg;
+                cpuinfo.smu.SMU_ADDR_MSG = addrMsg;
+                cpuinfo.smu.SMU_ADDR_RSP = addrRsp;
+                cpuinfo.smu.SMU_ADDR_ARG = addrArg;
 
                 for (var i = 0; i < userArgs.Length; i++)
                 {
@@ -401,12 +401,12 @@ namespace ZenStatesDebugTool
                 }
                 
 
-                Console.WriteLine("MSG Address:  0x" + Convert.ToString(m.Ops.Smu.SMU_ADDR_MSG, 16).ToUpper());
-                Console.WriteLine("RSP Address:  0x" + Convert.ToString(m.Ops.Smu.SMU_ADDR_RSP, 16).ToUpper());
-                Console.WriteLine("ARG0 Address: 0x" + Convert.ToString(m.Ops.Smu.SMU_ADDR_ARG, 16).ToUpper());
+                Console.WriteLine("MSG Address:  0x" + Convert.ToString(cpuinfo.smu.SMU_ADDR_MSG, 16).ToUpper());
+                Console.WriteLine("RSP Address:  0x" + Convert.ToString(cpuinfo.smu.SMU_ADDR_RSP, 16).ToUpper());
+                Console.WriteLine("ARG0 Address: 0x" + Convert.ToString(cpuinfo.smu.SMU_ADDR_ARG, 16).ToUpper());
                 Console.WriteLine("ARG0        : 0x" + Convert.ToString(args[0], 16).ToUpper());
 
-                SMU.Status status = m.Ops.SendSmuCommand(command, ref args);
+                SMU.Status status = cpu.Ops.SendSmuCommand(command, ref args);
 
                 if (status == SMU.Status.OK)
                 {
@@ -443,7 +443,7 @@ namespace ZenStatesDebugTool
                 SetButtonsState(false);
 
                 TryConvertToUint(textBoxPciAddress.Text, out uint address);
-                uint data = m.Ops.ReadDword(address);
+                uint data = cpu.Ops.ReadDword(address);
 
                 textBoxPciValue.Text = $"0x{data:X8}";
 
@@ -468,7 +468,7 @@ namespace ZenStatesDebugTool
                 TryConvertToUint(textBoxPciAddress.Text, out uint address);
                 TryConvertToUint(textBoxPciValue.Text, out uint data);
 
-                if (m.Ops.SmuWriteReg(address, data))
+                if (cpu.Ops.SmuWriteReg(address, data))
                     SetStatusText("Write OK.");
                 else
                     SetStatusText(Resources.Error);
@@ -509,11 +509,11 @@ namespace ZenStatesDebugTool
             uint[] args = new uint[6];
             args[0] = value;
 
-            m.Ops.Smu.SMU_ADDR_MSG = msgAddr;
-            m.Ops.Smu.SMU_ADDR_RSP = rspAddr;
-            m.Ops.Smu.SMU_ADDR_ARG = argAddress;
+            cpuinfo.smu.SMU_ADDR_MSG = msgAddr;
+            cpuinfo.smu.SMU_ADDR_RSP = rspAddr;
+            cpuinfo.smu.SMU_ADDR_ARG = argAddress;
 
-            return m.Ops.SendSmuCommand(cmd, ref args);
+            return cpu.Ops.SendSmuCommand(cmd, ref args);
         }
 
         private void ScanSmuRange(uint start, uint end, int step, byte offset)
@@ -525,13 +525,13 @@ namespace ZenStatesDebugTool
                 uint smuRspAddress = start + offset;
                 uint smuArgAddress = 0xF;
 
-                if (m.Ops.ReadDword(start) != 0xFFFFFFFF)
+                if (cpu.Ops.ReadDword(start) != 0xFFFFFFFF)
                 {
                     // Check if CMD-RSP pair returns correct status, while using a placeholder ARG address
-                    if (TrySettings(start, smuRspAddress, smuArgAddress, m.Ops.Smu.SMU_MSG_TestMessage, 0x0) == SMU.Status.OK)
+                    if (TrySettings(start, smuRspAddress, smuArgAddress, cpuinfo.smu.SMU_MSG_TestMessage, 0x0) == SMU.Status.OK)
                     {
                         // Send smu version command, so the corresponding ARG0 address changes its value
-                        TrySettings(start, smuRspAddress, smuArgAddress, m.Ops.Smu.SMU_MSG_GetSmuVersion, 0x0);
+                        TrySettings(start, smuRspAddress, smuArgAddress, cpuinfo.smu.SMU_MSG_GetSmuVersion, 0x0);
                         bool match = false;
 
                         smuArgAddress = smuRspAddress + 4;
@@ -540,14 +540,14 @@ namespace ZenStatesDebugTool
                         while ((smuArgAddress <= end) && !match)
                         {
                             // Check if smu version major is in range
-                            var currentRegValue = (m.Ops.ReadDword(smuArgAddress) & 0x00FF0000) >> 16;
+                            var currentRegValue = (cpu.Ops.ReadDword(smuArgAddress) & 0x00FF0000) >> 16;
                             Console.WriteLine($"REG: 0x{smuArgAddress:X8} Value: 0x{currentRegValue:X8}");
                             if (currentRegValue > 1 && currentRegValue <= 99)
                             {
                                 // Send test message with an argument, using the potential ARG0 address
                                 var argValue = (uint)matches.Count * 2 + 99;
-                                TrySettings(start, smuRspAddress, smuArgAddress, m.Ops.Smu.SMU_MSG_TestMessage, argValue);
-                                currentRegValue = m.Ops.ReadDword(smuArgAddress);
+                                TrySettings(start, smuRspAddress, smuArgAddress, cpuinfo.smu.SMU_MSG_TestMessage, argValue);
+                                currentRegValue = cpu.Ops.ReadDword(smuArgAddress);
                                 Console.WriteLine($"REG: 0x{smuArgAddress:X8} Value: 0x{currentRegValue:X8}");
 
                                 // Check the address for expected value (argument + 1)
@@ -614,23 +614,23 @@ namespace ZenStatesDebugTool
                     SetStatusText("Scanning SMU addresses, please wait...");
                 }));
 
-                switch (m.Ops.CpuType)
+                switch (cpuinfo.codeName)
                 {
-                    case SMU.CPUType.RavenRidge:
-                    case SMU.CPUType.Picasso:
-                    case SMU.CPUType.Fenghuang:
-                    case SMU.CPUType.Renoir:
+                    case SMU.CodeName.RavenRidge:
+                    case SMU.CodeName.Picasso:
+                    case SMU.CodeName.Fenghuang:
+                    case SMU.CodeName.Renoir:
                         ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
                         ScanSmuRange(0x03B10A00, 0x03B10AFF, 4, 0x60);
                         break;
-                    case SMU.CPUType.PinnacleRidge:
-                    case SMU.CPUType.SummitRidge:
-                    case SMU.CPUType.Matisse:
-                    case SMU.CPUType.Threadripper:
+                    case SMU.CodeName.PinnacleRidge:
+                    case SMU.CodeName.SummitRidge:
+                    case SMU.CodeName.Matisse:
+                    case SMU.CodeName.Threadripper:
                         ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
                         ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
                         break;
-                    case SMU.CPUType.Rome:
+                    case SMU.CodeName.Rome:
                         ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
                         break;
                     default:
@@ -801,7 +801,7 @@ namespace ZenStatesDebugTool
         {
             uint eax = default, edx = default;
             var pstateId = pstateIdBox.SelectedIndex;
-            if (m.Ols.Rdmsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx) != 1)
+            if (cpu.Ols.Rdmsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx) != 1)
             {
                 SetStatusText($@"Error reading PState {pstateId}!");
                 return;
@@ -854,7 +854,7 @@ namespace ZenStatesDebugTool
             uint CpuDfsId = 0x0;
             uint CpuFid = 0x0;
 
-            if (m.Ols.Rdmsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx) != 1)
+            if (cpu.Ols.Rdmsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx) != 1)
             {
                 SetStatusText($@"Error reading PState {pstateId}!");
                 return;
@@ -885,10 +885,10 @@ namespace ZenStatesDebugTool
         {
             uint eax = 0, edx = 0;
 
-            if (m.Ols.Rdmsr(0xC0010015, ref eax, ref edx) != -1)
+            if (cpu.Ols.Rdmsr(0xC0010015, ref eax, ref edx) != -1)
             {
                 eax |= 0x200000;
-                return m.Ops.WriteMsr(0xC0010015, eax, edx);
+                return cpu.Ops.WriteMsr(0xC0010015, eax, edx);
             }
 
             SetStatusText($@"Error applying TSC fix!");
@@ -901,7 +901,7 @@ namespace ZenStatesDebugTool
 
             if (!ApplyTscWorkaround()) return false;
 
-            if (!m.Ops.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
+            if (!cpu.Ops.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
             {
                 SetStatusText($@"Error writing PState {pstateId}!");
                 return false;
@@ -932,7 +932,7 @@ namespace ZenStatesDebugTool
 
                 while (startReg <= endReg)
                 {
-                    var data = m.Ops.ReadDword(startReg);
+                    var data = cpu.Ops.ReadDword(startReg);
                     result += $"0x{startReg:X8}: 0x{data:X8}" + Environment.NewLine;
                     startReg += 4;
                 }
@@ -987,7 +987,7 @@ namespace ZenStatesDebugTool
                 DisableOCMode();
             }
             EnableOCMode(checkBoxPROCHOT.Checked);
-            if (!checkBoxPROCHOT.Checked && m.Ops.IsProchotEnabled())
+            if (!checkBoxPROCHOT.Checked && cpu.Ops.IsProchotEnabled())
             {
                 checkBoxPROCHOT.Checked = true;
                 HandleError($@"Error, PROCHOT could not be disabled!");
@@ -1016,7 +1016,7 @@ namespace ZenStatesDebugTool
                 while (startReg <= endReg)
                 {
                     uint eax = default, edx = default;
-                    if (m.Ols.Rdmsr(startReg, ref eax, ref edx) == 1)
+                    if (cpu.Ols.Rdmsr(startReg, ref eax, ref edx) == 1)
                     {
                         result += $"0x{startReg:X8}: 0x{edx:X8} 0x{eax:X8}" + Environment.NewLine;
                     }
@@ -1040,7 +1040,7 @@ namespace ZenStatesDebugTool
         {
             TryConvertToUint(textBoxMsrAddress.Text, out uint msr);
             uint eax = default, edx = default;
-            if (m.Ols.Rdmsr(msr, ref eax, ref edx) == 1)
+            if (cpu.Ols.Rdmsr(msr, ref eax, ref edx) == 1)
             {
                 textBoxMsrEdx.Text = $"0x{edx:X8}";
                 textBoxMsrEax.Text = $"0x{eax:X8}";
@@ -1053,7 +1053,7 @@ namespace ZenStatesDebugTool
             TryConvertToUint(textBoxMsrEax.Text, out uint eax);
             TryConvertToUint(textBoxMsrAddress.Text, out uint msr);
 
-            if (!m.Ops.WriteMsr(msr, eax, edx))
+            if (!cpu.Ops.WriteMsr(msr, eax, edx))
             {
                 HandleError($@"Error writing MSR {textBoxMsrAddress.Text}!");
                 return;
@@ -1080,23 +1080,23 @@ namespace ZenStatesDebugTool
                 uint LFuncStd = 0, LFuncExt = 0;
                 uint eax = 0, ebx = 0, ecx = 0, edx = 0;
 
-                if (m.Ols.Cpuid(0x00000000, ref eax, ref ebx, ref ecx, ref edx) == 1)
+                if (cpu.Ols.Cpuid(0x00000000, ref eax, ref ebx, ref ecx, ref edx) == 1)
                     LFuncStd = eax;
 
-                if (m.Ols.Cpuid(0x80000000, ref eax, ref ebx, ref ecx, ref edx) == 1)
+                if (cpu.Ols.Cpuid(0x80000000, ref eax, ref ebx, ref ecx, ref edx) == 1)
                     LFuncExt = eax - 0x80000000;
 
                 for (uint i = 0; i <= LFuncStd; ++i)
                 {
                     var index = 0x00000000 + i;
-                    m.Ols.Cpuid(index, ref eax, ref ebx, ref ecx, ref edx);
+                    cpu.Ols.Cpuid(index, ref eax, ref ebx, ref ecx, ref edx);
                     result += $"0x{index:X8}: 0x{eax:X8} 0x{ebx:X8} 0x{ecx:X8} 0x{edx:X8}" + Environment.NewLine;
                 }
 
                 for (uint i = 0; i <= LFuncExt; ++i)
                 {
                     var index = 0x80000000 + i;
-                    m.Ols.Cpuid(index, ref eax, ref ebx, ref ecx, ref edx);
+                    cpu.Ols.Cpuid(index, ref eax, ref ebx, ref ecx, ref edx);
                     result += $"0x{index:X8}: 0x{eax:X8} 0x{ebx:X8} 0x{ecx:X8} 0x{edx:X8}" + Environment.NewLine;
                 }
 
@@ -1116,7 +1116,7 @@ namespace ZenStatesDebugTool
         {
             TryConvertToUint(textBoxCPUIDAddress.Text, out uint index);
             uint eax = 0, ebx = 0, ecx = 0, edx = 0;
-            if (m.Ols.Cpuid(index, ref eax, ref ebx, ref ecx, ref edx) == 1)
+            if (cpu.Ols.Cpuid(index, ref eax, ref ebx, ref ecx, ref edx) == 1)
             {
                 textBoxCPUIDeax.Text = $"0x{eax:X8}";
                 textBoxCPUIDebx.Text = $"0x{ebx:X8}";
@@ -1132,7 +1132,7 @@ namespace ZenStatesDebugTool
 
         private void ButtonPMTable_Click(object sender, EventArgs e)
         {
-            new Thread(() => new PowerTableMonitor(m.Ops).ShowDialog()).Start();
+            new Thread(() => new PowerTableMonitor(cpu.Ops).ShowDialog()).Start();
         }
 
         private void ButtonSMUMonitor_Click(object sender, EventArgs e)
@@ -1141,7 +1141,7 @@ namespace ZenStatesDebugTool
             TryConvertToUint(textBoxRSPAddress.Text, out uint addrRsp);
             TryConvertToUint(textBoxARGAddress.Text, out uint addrArg);
 
-            new Thread(() => new SMUMonitor(m.Ops, addrMsg, addrArg, addrRsp).ShowDialog()).Start();
+            new Thread(() => new SMUMonitor(cpu.Ops, addrMsg, addrArg, addrRsp).ShowDialog()).Start();
         }
     }
 }
