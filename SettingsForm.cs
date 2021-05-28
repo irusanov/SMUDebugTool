@@ -18,35 +18,11 @@ namespace ZenStatesDebugTool
     {
         //private static readonly int Threads = Convert.ToInt32(Environment.GetEnvironmentVariable("NUMBER_OF_PROCESSORS"));
         private BackgroundWorker backgroundWorker1;
-        private NUMAUtil _numaUtil;
-        private Cpu cpu = new Cpu();
+        private readonly NUMAUtil _numaUtil;
+        private readonly Cpu cpu = new Cpu();
         List<SmuAddressSet> matches;
-        private int _coreCount;
-
-        private uint SMU_ADDR_MSG;
-        private uint SMU_ADDR_RSP;
-        private uint SMU_ADDR_ARG;
-
-        private class SmuAddressSet
-        {
-            public uint MsgAddress;
-            public uint RspAddress;
-            public uint ArgAddress;
-
-            public SmuAddressSet()
-            {
-                MsgAddress = 0;
-                RspAddress = 0;
-                ArgAddress = 0;
-            }
-
-            public SmuAddressSet(uint msgAddress, uint rspAddress, uint argAddress)
-            {
-                MsgAddress = msgAddress;
-                RspAddress = rspAddress;
-                ArgAddress = argAddress;
-            }
-        }
+        private readonly int _coreCount;
+        private readonly Mailbox testMailbox = new Mailbox();
 
         public SettingsForm()
         {
@@ -77,15 +53,27 @@ namespace ZenStatesDebugTool
                 Environment.Exit(1);
         }
 
+        private void InitTestMailbox(uint msgAddr, uint rspAddr, uint argAddr)
+        {
+            testMailbox.SMU_ADDR_MSG = msgAddr;
+            testMailbox.SMU_ADDR_RSP = rspAddr;
+            testMailbox.SMU_ADDR_ARG = argAddr;
+            ResetSmuAddresses();
+        }
+
+        private void InitTestMailbox(Mailbox mailbox)
+        {
+            testMailbox.SMU_ADDR_MSG = mailbox.SMU_ADDR_MSG;
+            testMailbox.SMU_ADDR_RSP = mailbox.SMU_ADDR_RSP;
+            testMailbox.SMU_ADDR_ARG = mailbox.SMU_ADDR_ARG;
+            ResetSmuAddresses();
+        }
+
         private void ResetSmuAddresses()
         {
-            cpu.smu.Rsmu.SMU_ADDR_MSG = SMU_ADDR_MSG;
-            cpu.smu.Rsmu.SMU_ADDR_RSP = SMU_ADDR_RSP;
-            cpu.smu.Rsmu.SMU_ADDR_ARG = SMU_ADDR_ARG;
-
-            textBoxCMDAddress.Text = $"0x{Convert.ToString(SMU_ADDR_MSG, 16).ToUpper()}";
-            textBoxRSPAddress.Text = $"0x{Convert.ToString(SMU_ADDR_RSP, 16).ToUpper()}";
-            textBoxARGAddress.Text = $"0x{Convert.ToString(SMU_ADDR_ARG, 16).ToUpper()}";
+            textBoxCMDAddress.Text = $"0x{Convert.ToString(testMailbox.SMU_ADDR_MSG, 16).ToUpper()}";
+            textBoxRSPAddress.Text = $"0x{Convert.ToString(testMailbox.SMU_ADDR_RSP, 16).ToUpper()}";
+            textBoxARGAddress.Text = $"0x{Convert.ToString(testMailbox.SMU_ADDR_ARG, 16).ToUpper()}";
 
             textBoxCMD.Text = "0x1";
             textBoxARG0.Text = "0x0";
@@ -115,12 +103,7 @@ namespace ZenStatesDebugTool
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            // Cache default addresses
-            SMU_ADDR_MSG = cpu.smu.Rsmu.SMU_ADDR_MSG;
-            SMU_ADDR_RSP = cpu.smu.Rsmu.SMU_ADDR_RSP;
-            SMU_ADDR_ARG = cpu.smu.Rsmu.SMU_ADDR_ARG;
-
-            ResetSmuAddresses();
+            InitTestMailbox(cpu.smu.Rsmu);
             DisplaySystemInfo();
 
             pstateIdBox.SelectedIndex = 0;
@@ -135,6 +118,7 @@ namespace ZenStatesDebugTool
             PopulateFrequencyList(comboBoxACF.Items);
             PopulateFrequencyList(comboBoxSCF.Items);
             PopulateCCDList(comboBoxCore.Items);
+            PopulateMailboxesList(comboBoxMailboxSelect.Items);
 
             comboBoxCore.SelectedIndex = 0;
 
@@ -146,6 +130,8 @@ namespace ZenStatesDebugTool
             checkBoxPROCHOT.Checked = prochotEnabled;
             //checkBoxPROCHOT.Enabled = prochotEnabled;
             //buttonApplyPROCHOT.Enabled = prochotEnabled;
+
+            comboBoxMailboxSelect.SelectedIndex = 0;
 
             ToolTip toolTip = new ToolTip();
             toolTip.SetToolTip(checkBoxPROCHOT, "Disables temperature throttling. Can be useful on extreme cooling.");
@@ -175,6 +161,19 @@ namespace ZenStatesDebugTool
         {
             for (int core = 0; core < this._coreCount; ++core)
                 l.Add((object)new CoreListItem(core / 8, core / 4, core));
+        }
+
+        private void PopulateMailboxesList(ComboBox.ObjectCollection l)
+        {
+            l.Clear();
+            l.Add(new MailboxListItem("RSMU", cpu.smu.Rsmu));
+            l.Add(new MailboxListItem("MP1", cpu.smu.Mp1smu));
+            l.Add(new MailboxListItem("HSMP", cpu.smu.Hsmp));
+        }
+
+        private void AddMailboxToList(string label, SmuAddressSet addressSet)
+        {
+            comboBoxMailboxSelect.Items.Add(new MailboxListItem(label, addressSet));
         }
 
         private void ApplyFrequencyAllCoreSetting(int frequency)
@@ -227,6 +226,7 @@ namespace ZenStatesDebugTool
             buttonMsrScan.Enabled = enabled;
             buttonMsrWrite.Enabled = enabled;
             buttonPMTable.Enabled = enabled;
+            buttonSmuLog.Enabled = enabled;
 
             textBoxCMDAddress.Enabled = enabled;
             textBoxRSPAddress.Enabled = enabled;
@@ -242,6 +242,7 @@ namespace ZenStatesDebugTool
             textBoxMsrEax.Enabled = enabled;
             textBoxMsrStart.Enabled = enabled;
             textBoxMsrEnd.Enabled = enabled;
+            comboBoxMailboxSelect.Enabled = enabled;
             // textBoxResult.Enabled = enabled;
         }
 
@@ -331,9 +332,9 @@ namespace ZenStatesDebugTool
                 TryConvertToUint(textBoxARGAddress.Text, out uint addrArg);
                 TryConvertToUint(textBoxCMD.Text, out uint command);
 
-                cpu.smu.Rsmu.SMU_ADDR_MSG = addrMsg;
-                cpu.smu.Rsmu.SMU_ADDR_RSP = addrRsp;
-                cpu.smu.Rsmu.SMU_ADDR_ARG = addrArg;
+                testMailbox.SMU_ADDR_MSG = addrMsg;
+                testMailbox.SMU_ADDR_RSP = addrRsp;
+                testMailbox.SMU_ADDR_ARG = addrArg;
 
                 for (var i = 0; i < userArgs.Length; i++)
                 {
@@ -345,12 +346,12 @@ namespace ZenStatesDebugTool
                 }
                 
 
-                Console.WriteLine("MSG Address:  0x" + Convert.ToString(cpu.smu.Rsmu.SMU_ADDR_MSG, 16).ToUpper());
-                Console.WriteLine("RSP Address:  0x" + Convert.ToString(cpu.smu.Rsmu.SMU_ADDR_RSP, 16).ToUpper());
-                Console.WriteLine("ARG0 Address: 0x" + Convert.ToString(cpu.smu.Rsmu.SMU_ADDR_ARG, 16).ToUpper());
+                Console.WriteLine("MSG Address:  0x" + Convert.ToString(testMailbox.SMU_ADDR_MSG, 16).ToUpper());
+                Console.WriteLine("RSP Address:  0x" + Convert.ToString(testMailbox.SMU_ADDR_RSP, 16).ToUpper());
+                Console.WriteLine("ARG0 Address: 0x" + Convert.ToString(testMailbox.SMU_ADDR_ARG, 16).ToUpper());
                 Console.WriteLine("ARG0        : 0x" + Convert.ToString(args[0], 16).ToUpper());
 
-                SMU.Status status = cpu.SendSmuCommand(cpu.smu.Rsmu, command, ref args);
+                SMU.Status status = cpu.SendSmuCommand(testMailbox, command, ref args);
 
                 if (status == SMU.Status.OK)
                 {
@@ -365,7 +366,11 @@ namespace ZenStatesDebugTool
             }
         }
 
-        private void ButtonDefaults_Click(object sender, EventArgs e) => ResetSmuAddresses();
+        private void ButtonDefaults_Click(object sender, EventArgs e)
+        {
+            InitTestMailbox(cpu.smu.Rsmu);
+            comboBoxMailboxSelect.SelectedIndex = 0;
+        }
 
         private void ButtonApply_Click(object sender, EventArgs e)
         {
@@ -457,11 +462,11 @@ namespace ZenStatesDebugTool
             uint[] args = new uint[6];
             args[0] = value;
 
-            cpu.smu.Rsmu.SMU_ADDR_MSG = msgAddr;
-            cpu.smu.Rsmu.SMU_ADDR_RSP = rspAddr;
-            cpu.smu.Rsmu.SMU_ADDR_ARG = argAddress;
+            testMailbox.SMU_ADDR_MSG = msgAddr;
+            testMailbox.SMU_ADDR_RSP = rspAddr;
+            testMailbox.SMU_ADDR_ARG = argAddress;
 
-            return cpu.SendSmuCommand(cpu.smu.Rsmu, cmd, ref args);
+            return cpu.SendSmuCommand(testMailbox, cmd, ref args);
         }
 
         private void ScanSmuRange(uint start, uint end, int step, byte offset)
@@ -476,10 +481,10 @@ namespace ZenStatesDebugTool
                 if (cpu.ReadDword(start) != 0xFFFFFFFF)
                 {
                     // Check if CMD-RSP pair returns correct status, while using a placeholder ARG address
-                    if (TrySettings(start, smuRspAddress, smuArgAddress, cpu.smu.Rsmu.SMU_MSG_TestMessage, 0x0) == SMU.Status.OK)
+                    if (TrySettings(start, smuRspAddress, smuArgAddress, testMailbox.SMU_MSG_TestMessage, 0x0) == SMU.Status.OK)
                     {
                         // Send smu version command, so the corresponding ARG0 address changes its value
-                        TrySettings(start, smuRspAddress, smuArgAddress, cpu.smu.Rsmu.SMU_MSG_GetSmuVersion, 0x0);
+                        TrySettings(start, smuRspAddress, smuArgAddress, testMailbox.SMU_MSG_GetSmuVersion, 0x0);
                         bool match = false;
 
                         smuArgAddress = smuRspAddress + 4;
@@ -494,7 +499,7 @@ namespace ZenStatesDebugTool
                             {
                                 // Send test message with an argument, using the potential ARG0 address
                                 var argValue = (uint)matches.Count * 2 + 99;
-                                TrySettings(start, smuRspAddress, smuArgAddress, cpu.smu.Rsmu.SMU_MSG_TestMessage, argValue);
+                                TrySettings(start, smuRspAddress, smuArgAddress, testMailbox.SMU_MSG_TestMessage, argValue);
                                 currentRegValue = cpu.ReadDword(smuArgAddress);
                                 Console.WriteLine($"REG: 0x{smuArgAddress:X8} Value: 0x{currentRegValue:X8}");
 
@@ -553,8 +558,6 @@ namespace ZenStatesDebugTool
 
         private void BackgroundWorkerTrySettings_DoWork(object sender, DoWorkEventArgs e)
         {
-            ResetSmuAddresses();
-
             try
             {
                 Invoke(new MethodInvoker(delegate
@@ -691,7 +694,7 @@ namespace ZenStatesDebugTool
                 sw.WriteLine(GenerateReportJson());
             }
 
-            ResetSmuAddresses();
+            //ResetSmuAddresses();
             SetButtonsState();
             SetStatusText("Report Complete.");
             MessageBox.Show($"Report saved as {fileName}");
@@ -909,8 +912,20 @@ namespace ZenStatesDebugTool
 
         private void SmuScan_WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            int index = comboBoxMailboxSelect.SelectedIndex;
+            PopulateMailboxesList(comboBoxMailboxSelect.Items);
+
+            for (var i = 0; i < matches.Count; i++)
+            {
+                AddMailboxToList($"Mailbox {i + 1}", matches[i]);
+            }
+
+            if (index > comboBoxMailboxSelect.Items.Count)
+                index = 0;
+
+            comboBoxMailboxSelect.SelectedIndex = index;
             SetButtonsState();
-            ResetSmuAddresses();
+            //ResetSmuAddresses();
             SetStatusText("Scan Complete.");
         }
 
@@ -1097,6 +1112,12 @@ namespace ZenStatesDebugTool
             TryConvertToUint(textBoxARGAddress.Text, out uint addrArg);
 
             new Thread(() => new SMUMonitor(cpu, addrMsg, addrArg, addrRsp).ShowDialog()).Start();
+        }
+
+        private void ComboBoxMailboxSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            MailboxListItem item = comboBoxMailboxSelect.SelectedItem as MailboxListItem;
+            InitTestMailbox(item.msgAddr, item.rspAddr, item.argAddr);
         }
     }
 }

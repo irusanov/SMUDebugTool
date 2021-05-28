@@ -77,6 +77,7 @@
     <Compile Include="PowerTableMonitor.Designer.cs">
       <DependentUpon>PowerTableMonitor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utils\SmuAddressSet.cs" />
     <Compile Include="Utils\CoreListItem.cs" />
     <Compile Include="ResultForm.cs">
       <SubType>Form</SubType>
@@ -84,6 +85,7 @@
     <Compile Include="ResultForm.Designer.cs">
       <DependentUpon>ResultForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utils\MailboxListItem.cs" />
     <Compile Include="Utils\FrequencyListItem.cs" />
     <Compile Include="Utils\NUMAUtil.cs" />
     <Compile Include="SettingsForm.cs">

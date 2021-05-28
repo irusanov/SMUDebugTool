@@ -44,6 +44,8 @@ namespace ZenStatesDebugTool
             this.textBoxCMD = new System.Windows.Forms.TextBox();
             this.labelARGAddress = new System.Windows.Forms.Label();
             this.textBoxARGAddress = new System.Windows.Forms.TextBox();
+            this.label30 = new System.Windows.Forms.Label();
+            this.comboBoxMailboxSelect = new System.Windows.Forms.ComboBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.labelStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -178,33 +180,36 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.labelCMDAddress, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.labelRSP, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.textBoxCMDAddress, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.textBoxRSPAddress, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.labelARG0, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.textBoxARG0, 1, 4);
-            this.tableLayoutPanel1.Controls.Add(this.labelCMD, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.textBoxCMD, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.labelARGAddress, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.textBoxARGAddress, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.labelCMDAddress, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.labelRSP, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.textBoxCMDAddress, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.textBoxRSPAddress, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.labelARG0, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.textBoxARG0, 1, 5);
+            this.tableLayoutPanel1.Controls.Add(this.labelCMD, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.textBoxCMD, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.labelARGAddress, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.textBoxARGAddress, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.label30, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.comboBoxMailboxSelect, 1, 0);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(0, 5, 0, 5);
-            this.tableLayoutPanel1.RowCount = 5;
+            this.tableLayoutPanel1.RowCount = 6;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(200, 150);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(200, 179);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // labelCMDAddress
             // 
             this.labelCMDAddress.AutoSize = true;
             this.labelCMDAddress.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCMDAddress.Location = new System.Drawing.Point(3, 5);
+            this.labelCMDAddress.Location = new System.Drawing.Point(3, 34);
             this.labelCMDAddress.MinimumSize = new System.Drawing.Size(77, 27);
             this.labelCMDAddress.Name = "labelCMDAddress";
             this.labelCMDAddress.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
@@ -217,7 +222,7 @@ namespace ZenStatesDebugTool
             // 
             this.labelRSP.AutoSize = true;
             this.labelRSP.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelRSP.Location = new System.Drawing.Point(3, 33);
+            this.labelRSP.Location = new System.Drawing.Point(3, 62);
             this.labelRSP.MinimumSize = new System.Drawing.Size(77, 27);
             this.labelRSP.Name = "labelRSP";
             this.labelRSP.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
@@ -231,7 +236,7 @@ namespace ZenStatesDebugTool
             this.textBoxCMDAddress.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCMDAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCMDAddress.HideSelection = false;
-            this.textBoxCMDAddress.Location = new System.Drawing.Point(104, 9);
+            this.textBoxCMDAddress.Location = new System.Drawing.Point(104, 38);
             this.textBoxCMDAddress.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxCMDAddress.Name = "textBoxCMDAddress";
             this.textBoxCMDAddress.Size = new System.Drawing.Size(92, 20);
@@ -242,7 +247,7 @@ namespace ZenStatesDebugTool
             this.textBoxRSPAddress.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxRSPAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRSPAddress.HideSelection = false;
-            this.textBoxRSPAddress.Location = new System.Drawing.Point(104, 37);
+            this.textBoxRSPAddress.Location = new System.Drawing.Point(104, 66);
             this.textBoxRSPAddress.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxRSPAddress.Name = "textBoxRSPAddress";
             this.textBoxRSPAddress.Size = new System.Drawing.Size(92, 20);
@@ -252,7 +257,7 @@ namespace ZenStatesDebugTool
             // 
             this.labelARG0.AutoSize = true;
             this.labelARG0.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelARG0.Location = new System.Drawing.Point(3, 117);
+            this.labelARG0.Location = new System.Drawing.Point(3, 146);
             this.labelARG0.MinimumSize = new System.Drawing.Size(77, 27);
             this.labelARG0.Name = "labelARG0";
             this.labelARG0.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
@@ -266,7 +271,7 @@ namespace ZenStatesDebugTool
             this.textBoxARG0.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxARG0.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxARG0.HideSelection = false;
-            this.textBoxARG0.Location = new System.Drawing.Point(104, 121);
+            this.textBoxARG0.Location = new System.Drawing.Point(104, 150);
             this.textBoxARG0.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxARG0.Name = "textBoxARG0";
             this.textBoxARG0.Size = new System.Drawing.Size(92, 20);
@@ -276,7 +281,7 @@ namespace ZenStatesDebugTool
             // 
             this.labelCMD.AutoSize = true;
             this.labelCMD.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCMD.Location = new System.Drawing.Point(3, 89);
+            this.labelCMD.Location = new System.Drawing.Point(3, 118);
             this.labelCMD.MinimumSize = new System.Drawing.Size(77, 27);
             this.labelCMD.Name = "labelCMD";
             this.labelCMD.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
@@ -290,7 +295,7 @@ namespace ZenStatesDebugTool
             this.textBoxCMD.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCMD.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCMD.HideSelection = false;
-            this.textBoxCMD.Location = new System.Drawing.Point(104, 93);
+            this.textBoxCMD.Location = new System.Drawing.Point(104, 122);
             this.textBoxCMD.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxCMD.Name = "textBoxCMD";
             this.textBoxCMD.Size = new System.Drawing.Size(92, 20);
@@ -300,7 +305,7 @@ namespace ZenStatesDebugTool
             // 
             this.labelARGAddress.AutoSize = true;
             this.labelARGAddress.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelARGAddress.Location = new System.Drawing.Point(3, 61);
+            this.labelARGAddress.Location = new System.Drawing.Point(3, 90);
             this.labelARGAddress.MinimumSize = new System.Drawing.Size(77, 27);
             this.labelARGAddress.Name = "labelARGAddress";
             this.labelARGAddress.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
@@ -313,11 +318,37 @@ namespace ZenStatesDebugTool
             // 
             this.textBoxARGAddress.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxARGAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxARGAddress.Location = new System.Drawing.Point(104, 65);
+            this.textBoxARGAddress.Location = new System.Drawing.Point(104, 94);
             this.textBoxARGAddress.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxARGAddress.Name = "textBoxARGAddress";
             this.textBoxARGAddress.Size = new System.Drawing.Size(92, 20);
             this.textBoxARGAddress.TabIndex = 11;
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label30.Location = new System.Drawing.Point(3, 5);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(94, 29);
+            this.label30.TabIndex = 12;
+            this.label30.Text = "Mailbox";
+            this.label30.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // comboBoxMailboxSelect
+            // 
+            this.comboBoxMailboxSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxMailboxSelect.FormattingEnabled = true;
+            this.comboBoxMailboxSelect.Items.AddRange(new object[] {
+            "RSMU",
+            "MP1",
+            "HSMP"});
+            this.comboBoxMailboxSelect.Location = new System.Drawing.Point(104, 9);
+            this.comboBoxMailboxSelect.Margin = new System.Windows.Forms.Padding(4);
+            this.comboBoxMailboxSelect.Name = "comboBoxMailboxSelect";
+            this.comboBoxMailboxSelect.Size = new System.Drawing.Size(92, 21);
+            this.comboBoxMailboxSelect.TabIndex = 13;
+            this.comboBoxMailboxSelect.SelectedIndexChanged += new System.EventHandler(this.ComboBoxMailboxSelect_SelectedIndexChanged);
             // 
             // statusStrip1
             // 
@@ -593,7 +624,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel7.ColumnCount = 1;
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tableLayoutPanel7.Location = new System.Drawing.Point(0, 161);
+            this.tableLayoutPanel7.Location = new System.Drawing.Point(0, 185);
             this.tableLayoutPanel7.Name = "tableLayoutPanel7";
             this.tableLayoutPanel7.RowCount = 1;
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -614,7 +645,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.RowCount = 1;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel6.Size = new System.Drawing.Size(338, 161);
+            this.tableLayoutPanel6.Size = new System.Drawing.Size(338, 185);
             this.tableLayoutPanel6.TabIndex = 3;
             // 
             // tabPagePci
@@ -1859,6 +1890,8 @@ namespace ZenStatesDebugTool
         private Label configInfoLabel;
         private Button buttonPMTable;
         private Button buttonSmuLog;
+        private Label label30;
+        private ComboBox comboBoxMailboxSelect;
     }
 }
 
