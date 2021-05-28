@@ -59,6 +59,10 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="ZenStates-Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Prebuilt\ZenStates-Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SMUMonitor.cs">
@@ -119,11 +123,6 @@
     <None Include="packages.config" />
     <None Include="Resources\ZenStates.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ZenStates.Core\ZenStates.Core.csproj">
-      <Project>{39C55831-97A2-498D-A9DD-27BF677E579A}</Project>
-      <Name>ZenStates.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

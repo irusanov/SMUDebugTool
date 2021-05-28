@@ -19,7 +19,6 @@ namespace ZenStatesDebugTool
             if (disposing && (components != null))
             {
                 cpu.Dispose();
-                hMutexPci.Dispose();
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -141,7 +140,7 @@ namespace ZenStatesDebugTool
             this.firmwareInfoLabel = new System.Windows.Forms.Label();
             this.label24 = new System.Windows.Forms.Label();
             this.label28 = new System.Windows.Forms.Label();
-            this.extendedModelInfoLabel = new System.Windows.Forms.Label();
+            this.modelInfoLabel = new System.Windows.Forms.Label();
             this.packageTypeInfoLabel = new System.Windows.Forms.Label();
             this.label29 = new System.Windows.Forms.Label();
             this.configInfoLabel = new System.Windows.Forms.Label();
@@ -1309,7 +1308,7 @@ namespace ZenStatesDebugTool
             this.btnPstateWrite.TabIndex = 11;
             this.btnPstateWrite.Text = "Write";
             this.btnPstateWrite.UseVisualStyleBackColor = true;
-            this.btnPstateWrite.Click += new System.EventHandler(this.btnPstateWrite_Click);
+            this.btnPstateWrite.Click += new System.EventHandler(this.BtnPstateWrite_Click);
             // 
             // btnPstateRead
             // 
@@ -1320,7 +1319,7 @@ namespace ZenStatesDebugTool
             this.btnPstateRead.TabIndex = 12;
             this.btnPstateRead.Text = "Read";
             this.btnPstateRead.UseVisualStyleBackColor = true;
-            this.btnPstateRead.Click += new System.EventHandler(this.btnPstateRead_Click);
+            this.btnPstateRead.Click += new System.EventHandler(this.BtnPstateRead_Click);
             // 
             // tabPageInfo
             // 
@@ -1356,7 +1355,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel3.Controls.Add(this.firmwareInfoLabel, 1, 8);
             this.tableLayoutPanel3.Controls.Add(this.label24, 0, 2);
             this.tableLayoutPanel3.Controls.Add(this.label28, 0, 3);
-            this.tableLayoutPanel3.Controls.Add(this.extendedModelInfoLabel, 1, 2);
+            this.tableLayoutPanel3.Controls.Add(this.modelInfoLabel, 1, 2);
             this.tableLayoutPanel3.Controls.Add(this.packageTypeInfoLabel, 1, 3);
             this.tableLayoutPanel3.Controls.Add(this.label29, 0, 4);
             this.tableLayoutPanel3.Controls.Add(this.configInfoLabel, 1, 4);
@@ -1391,7 +1390,7 @@ namespace ZenStatesDebugTool
             this.buttonExport.TabIndex = 1;
             this.buttonExport.Text = "Debug Report";
             this.buttonExport.UseVisualStyleBackColor = true;
-            this.buttonExport.Click += new System.EventHandler(this.buttonExport_Click);
+            this.buttonExport.Click += new System.EventHandler(this.ButtonExport_Click);
             // 
             // smuInfoLabel
             // 
@@ -1573,7 +1572,7 @@ namespace ZenStatesDebugTool
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(65, 23);
             this.label24.TabIndex = 14;
-            this.label24.Text = "Ext. Model";
+            this.label24.Text = "Model";
             this.label24.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label28
@@ -1587,17 +1586,17 @@ namespace ZenStatesDebugTool
             this.label28.Text = "Package";
             this.label28.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // extendedModelInfoLabel
+            // modelInfoLabel
             // 
-            this.extendedModelInfoLabel.AutoSize = true;
-            this.extendedModelInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.extendedModelInfoLabel.Location = new System.Drawing.Point(74, 51);
-            this.extendedModelInfoLabel.Name = "extendedModelInfoLabel";
-            this.extendedModelInfoLabel.Padding = new System.Windows.Forms.Padding(5);
-            this.extendedModelInfoLabel.Size = new System.Drawing.Size(250, 23);
-            this.extendedModelInfoLabel.TabIndex = 16;
-            this.extendedModelInfoLabel.Text = "-";
-            this.extendedModelInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.modelInfoLabel.AutoSize = true;
+            this.modelInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.modelInfoLabel.Location = new System.Drawing.Point(74, 51);
+            this.modelInfoLabel.Name = "modelInfoLabel";
+            this.modelInfoLabel.Padding = new System.Windows.Forms.Padding(5);
+            this.modelInfoLabel.Size = new System.Drawing.Size(250, 23);
+            this.modelInfoLabel.TabIndex = 16;
+            this.modelInfoLabel.Text = "-";
+            this.modelInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // packageTypeInfoLabel
             // 
@@ -1854,7 +1853,7 @@ namespace ZenStatesDebugTool
         private Label firmwareInfoLabel;
         private Label label24;
         private Label label28;
-        private Label extendedModelInfoLabel;
+        private Label modelInfoLabel;
         private Label packageTypeInfoLabel;
         private Label label29;
         private Label configInfoLabel;

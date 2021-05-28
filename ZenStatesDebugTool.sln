@@ -4,11 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenStatesDebugTool", "ZenStatesDebugTool.csproj", "{056A457F-B9D4-4BB9-A9B3-033F2A1E265C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{39C55831-97A2-498D-A9DD-27BF677E579A} = {39C55831-97A2-498D-A9DD-27BF677E579A}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenStates.Core", "..\ZenStates.Core\ZenStates.Core.csproj", "{39C55831-97A2-498D-A9DD-27BF677E579A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,10 +15,6 @@ Global
 		{056A457F-B9D4-4BB9-A9B3-033F2A1E265C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{056A457F-B9D4-4BB9-A9B3-033F2A1E265C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{056A457F-B9D4-4BB9-A9B3-033F2A1E265C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{39C55831-97A2-498D-A9DD-27BF677E579A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{39C55831-97A2-498D-A9DD-27BF677E579A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{39C55831-97A2-498D-A9DD-27BF677E579A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{39C55831-97A2-498D-A9DD-27BF677E579A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

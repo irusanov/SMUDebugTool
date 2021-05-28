@@ -12,11 +12,7 @@ namespace ZenStatesDebugTool
 {
     public partial class PowerTableMonitor : Form
     {
-        private readonly PowerTable PowerTable;
-        private uint dramBaseAddress = 0;
-        private readonly UIntPtr dramPtr;
-        private readonly Ops OPS;
-        private readonly uint[] table = new uint[PowerTable.tableSize / 4];
+        private readonly Cpu CPU;
         readonly Timer PowerCfgTimer = new Timer();
         private readonly BindingList<PowerMonitorItem> list = new BindingList<PowerMonitorItem>();
         private class PowerMonitorItem
@@ -24,37 +20,6 @@ namespace ZenStatesDebugTool
             public string Index { get; set; }
             public string Offset { get; set; }
             public string Value { get; set; }
-        }
-
-        private void ReadPowerConfig()
-        {
-            if (dramBaseAddress > 0)
-            {
-                try
-                {
-                    uint data = 0;
-
-                    if (OPS.TransferTableToDram() != SMU.Status.OK)
-                        OPS.TransferTableToDram(); // retry
-
-                    for (int i = 0; i < table.Length; ++i)
-                    {
-                        InteropMethods.GetPhysLong(dramPtr + (i * 0x4), out data);
-                        table[i] = data;
-                    }
-
-                    if (table.Any(v => v != 0))
-                        PowerTable.Table = table;
-                }
-                catch (EntryPointNotFoundException ex)
-                {
-                    throw new ApplicationException(ex.Message);
-                }
-                catch (DllNotFoundException ex)
-                {
-                    throw new ApplicationException(ex.Message);
-                }
-            }
         }
 
         private void FillInData(uint[] table)
@@ -89,30 +54,23 @@ namespace ZenStatesDebugTool
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
         {
             Console.WriteLine("refreshing");
-            ReadPowerConfig();
-            RefreshData(PowerTable.Table);
+            if (CPU.RefreshPowerTable() == SMU.Status.OK)
+                RefreshData(CPU.powerTable.Table);
         }
 
-        public PowerTableMonitor(Ops ops)
+        public PowerTableMonitor(Cpu cpu)
         {
-            OPS = ops;
-            PowerTable = new PowerTable(OPS.cpuinfo.smu.SMU_TYPE);
+            CPU = cpu;
             PowerCfgTimer.Interval = 2000;
             PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick);
 
             InitializeComponent();
 
             dataGridView1.DataSource = list;
-            
-            // Get first base address
-            dramBaseAddress = (uint)(OPS.GetDramBaseAddress() & 0xFFFFFFFF);
-            if (dramBaseAddress > 0)
-            {
-                dramPtr = new UIntPtr(dramBaseAddress);
-                ReadPowerConfig();
-            }
 
-            FillInData(PowerTable.Table);
+            cpu.RefreshPowerTable();
+
+            FillInData(cpu.powerTable.Table);
         }
 
         private void PowerTableMonitor_FormClosing(object sender, FormClosingEventArgs e)
