@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Management;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
@@ -19,25 +18,22 @@ namespace ZenStatesDebugTool
         //private static readonly int Threads = Convert.ToInt32(Environment.GetEnvironmentVariable("NUMBER_OF_PROCESSORS"));
         private BackgroundWorker backgroundWorker1;
         private readonly NUMAUtil _numaUtil;
-        private readonly Cpu cpu = new Cpu();
+        private readonly Cpu cpu;
         List<SmuAddressSet> matches;
-        private readonly int _coreCount;
         private readonly Mailbox testMailbox = new Mailbox();
 
         public SettingsForm()
         {
             InitializeComponent();
-
             _numaUtil = new NUMAUtil();
             textBoxResult.Text = $@"Detected NUMA nodes. ({_numaUtil.HighestNumaNode + 1})" + textBoxResult.Text;
 
-            _coreCount = new ManagementObjectSearcher("Select * from Win32_Processor").Get().Cast<ManagementBaseObject>().Sum(item => int.Parse(item["NumberOfCores"].ToString()));
-
             try
             {
+                cpu = new Cpu();
                 InitForm();
             }
-            catch (ApplicationException ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, Resources.Error);
                 Dispose();
@@ -74,9 +70,6 @@ namespace ZenStatesDebugTool
             textBoxCMDAddress.Text = $"0x{Convert.ToString(testMailbox.SMU_ADDR_MSG, 16).ToUpper()}";
             textBoxRSPAddress.Text = $"0x{Convert.ToString(testMailbox.SMU_ADDR_RSP, 16).ToUpper()}";
             textBoxARGAddress.Text = $"0x{Convert.ToString(testMailbox.SMU_ADDR_ARG, 16).ToUpper()}";
-
-            textBoxCMD.Text = "0x1";
-            textBoxARG0.Text = "0x0";
         }
 
         private void DisplaySystemInfo()
@@ -95,6 +88,12 @@ namespace ZenStatesDebugTool
 
         private void InitForm()
         {
+            /*if (cpu.Status == Utils.LibStatus.PARTIALLY_OK)
+            {
+                if (cpu.LastError != null)
+                    MessageBox.Show(cpu.LastError.Message, Resources.Error);
+            }*/
+
             if (cpu.smu.Version == 0)
             {
                 MessageBox.Show("Error getting SMU version!\n" +
@@ -159,15 +158,15 @@ namespace ZenStatesDebugTool
 
         private void PopulateCCDList(ComboBox.ObjectCollection l)
         {
-            for (int core = 0; core < this._coreCount; ++core)
-                l.Add((object)new CoreListItem(core / 8, core / 4, core));
+            for (int core = 0; core < cpu.info.cores; ++core)
+                l.Add(new CoreListItem(core / 8, core / 4, core));
         }
 
         private void PopulateMailboxesList(ComboBox.ObjectCollection l)
         {
             l.Clear();
             l.Add(new MailboxListItem("RSMU", cpu.smu.Rsmu));
-            l.Add(new MailboxListItem("MP1", cpu.smu.Mp1smu));
+            l.Add(new MailboxListItem("MP1", cpu.smu.Mp1Smu));
             l.Add(new MailboxListItem("HSMP", cpu.smu.Hsmp));
         }
 
@@ -370,6 +369,8 @@ namespace ZenStatesDebugTool
         {
             InitTestMailbox(cpu.smu.Rsmu);
             comboBoxMailboxSelect.SelectedIndex = 0;
+            textBoxCMD.Value = 1;
+            textBoxARG0.Text = "0";
         }
 
         private void ButtonApply_Click(object sender, EventArgs e)
@@ -457,26 +458,134 @@ namespace ZenStatesDebugTool
                 HandlePciWriteBtnClick();
         }
 
-        private SMU.Status TrySettings(uint msgAddr, uint rspAddr, uint argAddress, uint cmd, uint value)
+        private SMU.Status TrySettings(uint msgAddr, uint rspAddr, uint argAddr, uint cmd, uint value)
         {
             uint[] args = new uint[6];
             args[0] = value;
 
             testMailbox.SMU_ADDR_MSG = msgAddr;
             testMailbox.SMU_ADDR_RSP = rspAddr;
-            testMailbox.SMU_ADDR_ARG = argAddress;
+            testMailbox.SMU_ADDR_ARG = argAddr;
 
             return cpu.SendSmuCommand(testMailbox, cmd, ref args);
         }
 
-        private void ScanSmuRange(uint start, uint end, int step, byte offset)
+        private void ScanSmuRange(uint start, uint end, uint step, uint offset)
+        {
+            matches = new List<SmuAddressSet>();
+
+            List<KeyValuePair<uint, uint>> temp = new List<KeyValuePair<uint, uint>>();
+
+            while (start <= end)
+            {
+                uint smuRspAddress = start + offset;
+ 
+                if (cpu.ReadDword(start) != 0xFFFFFFFF)
+                {
+                    // Send unknown command 0xFF to each pair of this start and possible response addresses
+                    if (cpu.WriteDwordEx(start, 0xFF))
+                    {
+                        Thread.Sleep(10);
+
+                        while (smuRspAddress <= end)
+                        {
+                            // Expect UNKNOWN_CMD status to be returned if the mailbox works
+                            if (cpu.ReadDword(smuRspAddress) == 0xFE)
+                            {
+                                // Send Get_SMU_Version command
+                                if (cpu.WriteDwordEx(start, 0x2))
+                                {
+                                    Thread.Sleep(10);
+                                    if (cpu.ReadDword(smuRspAddress) == 0x1)
+                                        temp.Add(new KeyValuePair<uint, uint>(start, smuRspAddress));
+                                }
+                            }
+                            smuRspAddress += step;
+                        }
+                    }
+                }
+
+                start += step;
+            }
+
+            if (temp.Count > 0)
+            {
+                for (var i = 0; i < temp.Count; i++)
+                {
+                    Console.WriteLine($"{temp[i].Key:X8}: {temp[i].Value:X8}");
+                }
+
+                Console.WriteLine();
+            }
+
+            List<uint> possibleArgAddresses = new List<uint>();
+
+            foreach (var pair in temp)
+            {
+                Console.WriteLine($"Testing {pair.Key:X8}: {pair.Value:X8}");
+
+                if (TrySettings(pair.Key, pair.Value, 0xFFFFFFFF, 0x2, 0xFF) == SMU.Status.OK)
+                {
+                    var smuArgAddress = pair.Value + 4;
+                    while (smuArgAddress <= end)
+                    {
+                        if (cpu.ReadDword(smuArgAddress) == cpu.smu.Version)
+                        {
+                            possibleArgAddresses.Add(smuArgAddress);
+                        }
+                        smuArgAddress += step;
+                    }
+                }
+
+                // Verify the arg address returns correct value (should be test argument + 1)
+                foreach (var address in possibleArgAddresses)
+                {
+                    uint testArg = 0xFAFAFAFA;
+                    var retries = 3;
+
+                    while (retries > 0)
+                    {
+                        testArg++;
+                        retries--;
+
+                        // Send test command
+                        if (TrySettings(pair.Key, pair.Value, address, 0x1, testArg) == SMU.Status.OK)
+                            if (cpu.ReadDword(address) != testArg + 1)
+                                retries = -1;
+                    }
+
+                    if (retries == 0)
+                    {
+                        matches.Add(new SmuAddressSet(pair.Key, pair.Value, address));
+
+                        string responseString =
+                                $"CMD:  0x{pair.Key:X8}" +
+                                Environment.NewLine +
+                                $"RSP:  0x{pair.Value:X8}" +
+                                Environment.NewLine +
+                                $"ARG:  0x{address:X8}" +
+                                Environment.NewLine +
+                                Environment.NewLine;
+
+                        Invoke(new MethodInvoker(delegate
+                        {
+                            textBoxResult.Text += responseString;
+                        }));
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        /*private void ScanSmuRange_old(uint start, uint end, int step, byte offset)
         {
             matches = new List<SmuAddressSet>();
 
             while (start <= end)
             {
                 uint smuRspAddress = start + offset;
-                uint smuArgAddress = 0xF;
+                uint smuArgAddress = 0xFFFFFFFF;
 
                 if (cpu.ReadDword(start) != 0xFFFFFFFF)
                 {
@@ -534,7 +643,7 @@ namespace ZenStatesDebugTool
 
                 start += (uint)step;
             }
-        }
+        }*/
 
         private void RunBackgroundTask(DoWorkEventHandler task, RunWorkerCompletedEventHandler completedHandler)
         {

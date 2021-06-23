@@ -41,11 +41,11 @@ namespace ZenStatesDebugTool
             this.labelARG0 = new System.Windows.Forms.Label();
             this.textBoxARG0 = new System.Windows.Forms.TextBox();
             this.labelCMD = new System.Windows.Forms.Label();
-            this.textBoxCMD = new System.Windows.Forms.TextBox();
             this.labelARGAddress = new System.Windows.Forms.Label();
             this.textBoxARGAddress = new System.Windows.Forms.TextBox();
             this.label30 = new System.Windows.Forms.Label();
             this.comboBoxMailboxSelect = new System.Windows.Forms.ComboBox();
+            this.textBoxCMD = new System.Windows.Forms.NumericUpDown();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.labelStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -150,6 +150,7 @@ namespace ZenStatesDebugTool
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel11 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.textBoxCMD)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -187,11 +188,11 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel1.Controls.Add(this.labelARG0, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.textBoxARG0, 1, 5);
             this.tableLayoutPanel1.Controls.Add(this.labelCMD, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.textBoxCMD, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.labelARGAddress, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.textBoxARGAddress, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.label30, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.comboBoxMailboxSelect, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.textBoxCMD, 1, 4);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(0, 5, 0, 5);
@@ -276,6 +277,7 @@ namespace ZenStatesDebugTool
             this.textBoxARG0.Name = "textBoxARG0";
             this.textBoxARG0.Size = new System.Drawing.Size(92, 20);
             this.textBoxARG0.TabIndex = 6;
+            this.textBoxARG0.Text = "0";
             // 
             // labelCMD
             // 
@@ -289,17 +291,6 @@ namespace ZenStatesDebugTool
             this.labelCMD.TabIndex = 8;
             this.labelCMD.Text = "Command ID";
             this.labelCMD.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // textBoxCMD
-            // 
-            this.textBoxCMD.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBoxCMD.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxCMD.HideSelection = false;
-            this.textBoxCMD.Location = new System.Drawing.Point(104, 122);
-            this.textBoxCMD.Margin = new System.Windows.Forms.Padding(4);
-            this.textBoxCMD.Name = "textBoxCMD";
-            this.textBoxCMD.Size = new System.Drawing.Size(92, 20);
-            this.textBoxCMD.TabIndex = 9;
             // 
             // labelARGAddress
             // 
@@ -349,6 +340,26 @@ namespace ZenStatesDebugTool
             this.comboBoxMailboxSelect.Size = new System.Drawing.Size(92, 21);
             this.comboBoxMailboxSelect.TabIndex = 13;
             this.comboBoxMailboxSelect.SelectedIndexChanged += new System.EventHandler(this.ComboBoxMailboxSelect_SelectedIndexChanged);
+            // 
+            // textBoxCMD
+            // 
+            this.textBoxCMD.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxCMD.Hexadecimal = true;
+            this.textBoxCMD.Location = new System.Drawing.Point(104, 122);
+            this.textBoxCMD.Margin = new System.Windows.Forms.Padding(4);
+            this.textBoxCMD.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.textBoxCMD.Name = "textBoxCMD";
+            this.textBoxCMD.Size = new System.Drawing.Size(92, 20);
+            this.textBoxCMD.TabIndex = 14;
+            this.textBoxCMD.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // statusStrip1
             // 
@@ -1731,6 +1742,7 @@ namespace ZenStatesDebugTool
             this.Text = "SMU Debug Tool";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.textBoxCMD)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
@@ -1787,7 +1799,6 @@ namespace ZenStatesDebugTool
         private System.Windows.Forms.Label labelARG0;
         private System.Windows.Forms.TextBox textBoxARG0;
         private System.Windows.Forms.Label labelCMD;
-        private System.Windows.Forms.TextBox textBoxCMD;
         private System.Windows.Forms.Label labelARGAddress;
         private System.Windows.Forms.TextBox textBoxARGAddress;
         private System.Windows.Forms.Button buttonApply;
@@ -1892,6 +1903,7 @@ namespace ZenStatesDebugTool
         private Button buttonSmuLog;
         private Label label30;
         private ComboBox comboBoxMailboxSelect;
+        private NumericUpDown textBoxCMD;
     }
 }
 
