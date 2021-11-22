@@ -22,29 +22,27 @@ namespace ZenStatesDebugTool
             public string Value { get; set; }
         }
 
-        private void FillInData(uint[] table)
+        private void FillInData(float[] table)
         {
             list.Clear();
 
             for (var i = 0; i < table.Length; i++)
             {
-                var bytes = BitConverter.GetBytes(table[i]);
                 list.Add(new PowerMonitorItem {
                     Index = $"{i:D4}",
                     Offset = $"0x{(i*4):X4}",
-                    Value = $"{BitConverter.ToSingle(bytes, 0):F6}"
+                    Value = $"{table[i]:F6}"
                 });;
             }
         }
 
-        private void RefreshData(uint[] table)
+        private void RefreshData(float[] table)
         {
             int index = 0;
 
             foreach (var item in list)
             {
-                var bytes = BitConverter.GetBytes(table[index]);
-                item.Value = $"{BitConverter.ToSingle(bytes, 0):F6}";
+                item.Value = $"{table[index]:F6}";
                 index++;
             }
 

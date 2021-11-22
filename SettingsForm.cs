@@ -122,8 +122,11 @@ namespace ZenStatesDebugTool
             comboBoxCore.SelectedIndex = 0;
 
             int index = (int)((GetCurrentMulti() - 5.50) / 0.25);
-            comboBoxACF.SelectedIndex = index;
-            comboBoxSCF.SelectedIndex = index;
+            if (index > -1)
+            {
+                comboBoxACF.SelectedIndex = index;
+                comboBoxSCF.SelectedIndex = index;
+            }
 
             var prochotEnabled = cpu.IsProchotEnabled();
             checkBoxPROCHOT.Checked = prochotEnabled;
@@ -419,8 +422,8 @@ namespace ZenStatesDebugTool
                 TryConvertToUint(textBoxPciValue.Text, out uint data);
 
                 bool res = false;
-                if (cpu.Ols.WritePciConfigDwordEx(cpu.smu.SMU_PCI_ADDR, cpu.smu.SMU_OFFSET_ADDR, address) == 1)
-                    res = (cpu.Ols.WritePciConfigDwordEx(cpu.smu.SMU_PCI_ADDR, cpu.smu.SMU_OFFSET_DATA, data) == 1);
+                if (cpu.WriteDwordEx(cpu.smu.SMU_OFFSET_ADDR, address))
+                    res = cpu.WriteDwordEx(cpu.smu.SMU_OFFSET_DATA, data);
 
                 if (res)
                     SetStatusText("Write OK.");
@@ -865,7 +868,7 @@ namespace ZenStatesDebugTool
         {
             uint eax = default, edx = default;
             var pstateId = pstateIdBox.SelectedIndex;
-            if (cpu.Ols.Rdmsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx) != 1)
+            if (!cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx))
             {
                 SetStatusText($@"Error reading PState {pstateId}!");
                 return;
@@ -918,7 +921,7 @@ namespace ZenStatesDebugTool
             uint CpuDfsId = 0x0;
             uint CpuFid = 0x0;
 
-            if (cpu.Ols.Rdmsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx) != 1)
+            if (!cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx))
             {
                 SetStatusText($@"Error reading PState {pstateId}!");
                 return;
@@ -949,7 +952,7 @@ namespace ZenStatesDebugTool
         {
             uint eax = 0, edx = 0;
 
-            if (cpu.Ols.Rdmsr(0xC0010015, ref eax, ref edx) != -1)
+            if (cpu.ReadMsr(0xC0010015, ref eax, ref edx))
             {
                 eax |= 0x200000;
                 return cpu.WriteMsr(0xC0010015, eax, edx);
@@ -1092,7 +1095,7 @@ namespace ZenStatesDebugTool
                 while (startReg <= endReg)
                 {
                     uint eax = default, edx = default;
-                    if (cpu.Ols.Rdmsr(startReg, ref eax, ref edx) == 1)
+                    if (cpu.ReadMsr(startReg, ref eax, ref edx))
                     {
                         result += $"0x{startReg:X8}: 0x{edx:X8} 0x{eax:X8}" + Environment.NewLine;
                     }
@@ -1116,7 +1119,7 @@ namespace ZenStatesDebugTool
         {
             TryConvertToUint(textBoxMsrAddress.Text, out uint msr);
             uint eax = default, edx = default;
-            if (cpu.Ols.Rdmsr(msr, ref eax, ref edx) == 1)
+            if (cpu.ReadMsr(msr, ref eax, ref edx))
             {
                 textBoxMsrEdx.Text = $"0x{edx:X8}";
                 textBoxMsrEax.Text = $"0x{eax:X8}";
@@ -1156,23 +1159,23 @@ namespace ZenStatesDebugTool
                 uint LFuncStd = 0, LFuncExt = 0;
                 uint eax = 0, ebx = 0, ecx = 0, edx = 0;
 
-                if (cpu.Ols.Cpuid(0x00000000, ref eax, ref ebx, ref ecx, ref edx) == 1)
+                if (cpu.Cpuid(0x00000000, ref eax, ref ebx, ref ecx, ref edx))
                     LFuncStd = eax;
 
-                if (cpu.Ols.Cpuid(0x80000000, ref eax, ref ebx, ref ecx, ref edx) == 1)
+                if (cpu.Cpuid(0x80000000, ref eax, ref ebx, ref ecx, ref edx))
                     LFuncExt = eax - 0x80000000;
 
                 for (uint i = 0; i <= LFuncStd; ++i)
                 {
                     var index = 0x00000000 + i;
-                    cpu.Ols.Cpuid(index, ref eax, ref ebx, ref ecx, ref edx);
+                    cpu.Cpuid(index, ref eax, ref ebx, ref ecx, ref edx);
                     result += $"0x{index:X8}: 0x{eax:X8} 0x{ebx:X8} 0x{ecx:X8} 0x{edx:X8}" + Environment.NewLine;
                 }
 
                 for (uint i = 0; i <= LFuncExt; ++i)
                 {
                     var index = 0x80000000 + i;
-                    cpu.Ols.Cpuid(index, ref eax, ref ebx, ref ecx, ref edx);
+                    cpu.Cpuid(index, ref eax, ref ebx, ref ecx, ref edx);
                     result += $"0x{index:X8}: 0x{eax:X8} 0x{ebx:X8} 0x{ecx:X8} 0x{edx:X8}" + Environment.NewLine;
                 }
 
@@ -1192,7 +1195,7 @@ namespace ZenStatesDebugTool
         {
             TryConvertToUint(textBoxCPUIDAddress.Text, out uint index);
             uint eax = 0, ebx = 0, ecx = 0, edx = 0;
-            if (cpu.Ols.Cpuid(index, ref eax, ref ebx, ref ecx, ref edx) == 1)
+            if (cpu.Cpuid(index, ref eax, ref ebx, ref ecx, ref edx))
             {
                 textBoxCPUIDeax.Text = $"0x{eax:X8}";
                 textBoxCPUIDebx.Text = $"0x{ebx:X8}";
