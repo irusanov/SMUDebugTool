@@ -6,17 +6,13 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using ZenStates;
+using ZenStates.Core;
 
 namespace ZenStatesDebugTool
 {
     public partial class PowerTableMonitor : Form
     {
-        private readonly PowerTable PowerTable;
-        private uint dramBaseAddress = 0;
-        private readonly UIntPtr dramPtr;
-        private readonly Ops OPS;
-        private readonly uint[] table = new uint[PowerTable.tableSize / 4];
+        private readonly Cpu CPU;
         readonly Timer PowerCfgTimer = new Timer();
         private readonly BindingList<PowerMonitorItem> list = new BindingList<PowerMonitorItem>();
         private class PowerMonitorItem
@@ -26,61 +22,27 @@ namespace ZenStatesDebugTool
             public string Value { get; set; }
         }
 
-        private void ReadPowerConfig()
+        private void FillInData(float[] table)
         {
-            if (dramBaseAddress > 0)
-            {
-                try
-                {
-                    uint data = 0;
-
-                    if (OPS.TransferTableToDram() != SMU.Status.OK)
-                        OPS.TransferTableToDram(); // retry
-
-                    for (int i = 0; i < table.Length; ++i)
-                    {
-                        NativeMethods.GetPhysLong(dramPtr + (i * 0x4), out data);
-                        table[i] = data;
-                    }
-
-                    if (table.Any(v => v != 0))
-                        PowerTable.Table = table;
-                }
-                catch (EntryPointNotFoundException ex)
-                {
-                    throw new ApplicationException(ex.Message);
-                }
-                catch (DllNotFoundException ex)
-                {
-                    throw new ApplicationException(ex.Message);
-                }
-            }
-        }
-
-        private void FillInData(uint[] table)
-        {
-
             list.Clear();
 
             for (var i = 0; i < table.Length; i++)
             {
-                var bytes = BitConverter.GetBytes(table[i]);
                 list.Add(new PowerMonitorItem {
                     Index = $"{i:D4}",
                     Offset = $"0x{(i*4):X4}",
-                    Value = $"{BitConverter.ToSingle(bytes, 0):F6}"
+                    Value = $"{table[i]:F6}"
                 });;
             }
         }
 
-        private void RefreshData(uint[] table)
+        private void RefreshData(float[] table)
         {
             int index = 0;
 
             foreach (var item in list)
             {
-                var bytes = BitConverter.GetBytes(table[index]);
-                item.Value = $"{BitConverter.ToSingle(bytes, 0):F6}";
+                item.Value = $"{table[index]:F6}";
                 index++;
             }
 
@@ -90,30 +52,23 @@ namespace ZenStatesDebugTool
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
         {
             Console.WriteLine("refreshing");
-            ReadPowerConfig();
-            RefreshData(PowerTable.Table);
+            if (CPU.RefreshPowerTable() == SMU.Status.OK)
+                RefreshData(CPU.powerTable.Table);
         }
 
-        public PowerTableMonitor(Ops ops)
+        public PowerTableMonitor(Cpu cpu)
         {
-            OPS = ops;
-            PowerTable = new PowerTable(OPS.Smu.SMU_TYPE);
+            CPU = cpu;
             PowerCfgTimer.Interval = 2000;
             PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick);
 
             InitializeComponent();
 
             dataGridView1.DataSource = list;
-            
-            // Get first base address
-            dramBaseAddress = (uint)(OPS.GetDramBaseAddress() & 0xFFFFFFFF);
-            if (dramBaseAddress > 0)
-            {
-                dramPtr = new UIntPtr(dramBaseAddress);
-                ReadPowerConfig();
-            }
 
-            FillInData(PowerTable.Table);
+            cpu.RefreshPowerTable();
+
+            FillInData(cpu.powerTable.Table);
         }
 
         private void PowerTableMonitor_FormClosing(object sender, FormClosingEventArgs e)

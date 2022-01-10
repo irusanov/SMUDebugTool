@@ -59,6 +59,10 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="ZenStates-Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Prebuilt\ZenStates-Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SMUMonitor.cs">
@@ -73,6 +77,7 @@
     <Compile Include="PowerTableMonitor.Designer.cs">
       <DependentUpon>PowerTableMonitor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utils\SmuAddressSet.cs" />
     <Compile Include="Utils\CoreListItem.cs" />
     <Compile Include="ResultForm.cs">
       <SubType>Form</SubType>
@@ -80,14 +85,9 @@
     <Compile Include="ResultForm.Designer.cs">
       <DependentUpon>ResultForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utils\MailboxListItem.cs" />
     <Compile Include="Utils\FrequencyListItem.cs" />
-    <Compile Include="Utils\NativeMethods.cs" />
     <Compile Include="Utils\NUMAUtil.cs" />
-    <Compile Include="Utils\Ops.cs" />
-    <Compile Include="Utils\PowerTable.cs" />
-    <Compile Include="Utils\SystemInfo.cs" />
-    <Compile Include="Utils\SMU.cs" />
-    <Compile Include="Utils\Ols.cs" />
     <Compile Include="SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -125,5 +125,6 @@
     <None Include="packages.config" />
     <None Include="Resources\ZenStates.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

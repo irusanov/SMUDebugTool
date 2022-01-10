@@ -2,13 +2,13 @@ using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows.Forms;
-using ZenStates;
+using ZenStates.Core;
 
 namespace ZenStatesDebugTool
 {
     public partial class SMUMonitor : Form
     {
-        private readonly Ops OPS;
+        private readonly Cpu CPU;
         readonly System.Windows.Forms.Timer MonitorTimer = new System.Windows.Forms.Timer();
         private readonly BindingList<SmuMonitorItem> list = new BindingList<SmuMonitorItem>();
         private uint prevCmdValue;
@@ -23,9 +23,9 @@ namespace ZenStatesDebugTool
             public string Rsp { get; set; }
         }
 
-        public SMUMonitor(Ops ops, uint addrMsg, uint addrArg, uint addrRsp)
+        public SMUMonitor(Cpu cpu, uint addrMsg, uint addrArg, uint addrRsp)
         {
-            OPS = ops;
+            CPU = cpu;
             SMU_ADDR_MSG = addrMsg;
             SMU_ADDR_ARG = addrArg;
             SMU_ADDR_RSP = addrRsp;
@@ -47,13 +47,14 @@ namespace ZenStatesDebugTool
             uint rsp = 0;
             uint arg = 0;
 
-            OPS.SmuReadReg(SMU_ADDR_MSG, ref msg);
+            msg = CPU.ReadDword(SMU_ADDR_MSG);
 
             if (msg != prevCmdValue)
             {
                 prevCmdValue = msg;
-                if (OPS.SmuReadReg(SMU_ADDR_RSP, ref rsp))
-                    OPS.SmuReadReg(SMU_ADDR_ARG, ref arg);
+                rsp = CPU.ReadDword(SMU_ADDR_RSP);
+                if (rsp != 0)
+                    arg = CPU.ReadDword(SMU_ADDR_ARG);
 
                 new Thread(() => {
                     list.Add(new SmuMonitorItem
