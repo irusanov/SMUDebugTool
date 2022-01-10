@@ -41,8 +41,10 @@ namespace ZenStatesDebugTool
             }
         }
 
-        private static void ExitApplication()
+        private void ExitApplication()
         {
+            if (cpu != null) cpu.Dispose();
+
             if (Application.MessageLoop)
                 Application.Exit();
             else
@@ -74,16 +76,20 @@ namespace ZenStatesDebugTool
 
         private void DisplaySystemInfo()
         {
-            cpuInfoLabel.Text = cpu.systemInfo.CpuName;
-            modelInfoLabel.Text = $"{cpu.systemInfo.Model:X2}";
-            packageTypeInfoLabel.Text = $"{cpu.systemInfo.PackageType} ({(Cpu.PackageType)cpu.systemInfo.PackageType})";
-            mbVendorInfoLabel.Text = cpu.systemInfo.MbVendor;
-            mbModelInfoLabel.Text = cpu.systemInfo.MbName;
-            biosInfoLabel.Text = cpu.systemInfo.BiosVersion;
-            smuInfoLabel.Text = cpu.systemInfo.GetSmuVersionString();
-            firmwareInfoLabel.Text = $"{cpu.systemInfo.PatchLevel:X8}";
-            cpuIdLabel.Text = $"{cpu.systemInfo.GetCpuIdString()} ({cpu.info.codeName})";
-            configInfoLabel.Text = $"{cpu.systemInfo.CCDCount} CCD / {cpu.systemInfo.CCXCount} CCX / {cpu.systemInfo.PhysicalCoreCount} physical cores";
+            try
+            {
+                cpuInfoLabel.Text = cpu.systemInfo.CpuName;
+                modelInfoLabel.Text = $"{cpu.systemInfo.Model:X2}";
+                packageTypeInfoLabel.Text = cpu.systemInfo.PackageType;
+                mbVendorInfoLabel.Text = cpu.systemInfo.MbVendor;
+                mbModelInfoLabel.Text = cpu.systemInfo.MbName;
+                biosInfoLabel.Text = cpu.systemInfo.BiosVersion;
+                smuInfoLabel.Text = cpu.systemInfo.GetSmuVersionString();
+                firmwareInfoLabel.Text = $"{cpu.systemInfo.PatchLevel:X8}";
+                cpuIdLabel.Text = $"{cpu.systemInfo.GetCpuIdString()} ({cpu.info.codeName})";
+                configInfoLabel.Text = $"{cpu.systemInfo.CCDCount} CCD / {cpu.systemInfo.CCXCount} CCX / {cpu.systemInfo.PhysicalCoreCount} physical cores";
+            }
+            catch { }
         }
 
         private void InitForm()
@@ -679,6 +685,9 @@ namespace ZenStatesDebugTool
 
                 switch (cpu.info.codeName)
                 {
+                    case Cpu.CodeName.BristolRidge:
+                        //ScanSmuRange(0x13000000, 0x13000F00, 4, 0x10);
+                        break;
                     case Cpu.CodeName.RavenRidge:
                     case Cpu.CodeName.Picasso:
                     case Cpu.CodeName.FireFlight:
@@ -1230,6 +1239,11 @@ namespace ZenStatesDebugTool
         {
             MailboxListItem item = comboBoxMailboxSelect.SelectedItem as MailboxListItem;
             InitTestMailbox(item.msgAddr, item.rspAddr, item.argAddr);
+        }
+
+        private void SettingsForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            ExitApplication();
         }
     }
 }
