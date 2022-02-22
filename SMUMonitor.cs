@@ -12,6 +12,7 @@ namespace ZenStatesDebugTool
         readonly System.Windows.Forms.Timer MonitorTimer = new System.Windows.Forms.Timer();
         private readonly BindingList<SmuMonitorItem> list = new BindingList<SmuMonitorItem>();
         private uint prevCmdValue;
+        private uint prevArgValue;
         private readonly uint SMU_ADDR_MSG;
         private readonly uint SMU_ADDR_ARG;
         private readonly uint SMU_ADDR_RSP;
@@ -48,11 +49,14 @@ namespace ZenStatesDebugTool
             uint arg = 0;
 
             msg = CPU.ReadDword(SMU_ADDR_MSG);
+            arg = CPU.ReadDword(SMU_ADDR_ARG);
 
-            if (msg != prevCmdValue)
+            if (msg != prevCmdValue || arg != prevArgValue)
             {
                 prevCmdValue = msg;
+                prevArgValue = arg;
                 rsp = CPU.ReadDword(SMU_ADDR_RSP);
+
                 if (rsp != 0)
                     arg = CPU.ReadDword(SMU_ADDR_ARG);
 

@@ -32,6 +32,7 @@ namespace ZenStatesDebugTool
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsForm));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.labelCMDAddress = new System.Windows.Forms.Label();
@@ -111,6 +112,42 @@ namespace ZenStatesDebugTool
             this.textBoxCPUIDebx = new System.Windows.Forms.TextBox();
             this.textBoxCPUIDecx = new System.Windows.Forms.TextBox();
             this.buttonCPUIDScan = new System.Windows.Forms.Button();
+            this.tabPagePbo = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel12 = new System.Windows.Forms.TableLayoutPanel();
+            this.numericUpDownCO_8 = new System.Windows.Forms.NumericUpDown();
+            this.buttonApplyCO = new System.Windows.Forms.Button();
+            this.label31 = new System.Windows.Forms.Label();
+            this.label32 = new System.Windows.Forms.Label();
+            this.label33 = new System.Windows.Forms.Label();
+            this.label34 = new System.Windows.Forms.Label();
+            this.label35 = new System.Windows.Forms.Label();
+            this.label36 = new System.Windows.Forms.Label();
+            this.label37 = new System.Windows.Forms.Label();
+            this.label38 = new System.Windows.Forms.Label();
+            this.label39 = new System.Windows.Forms.Label();
+            this.label40 = new System.Windows.Forms.Label();
+            this.label41 = new System.Windows.Forms.Label();
+            this.label42 = new System.Windows.Forms.Label();
+            this.label43 = new System.Windows.Forms.Label();
+            this.label44 = new System.Windows.Forms.Label();
+            this.label45 = new System.Windows.Forms.Label();
+            this.label46 = new System.Windows.Forms.Label();
+            this.buttonGetCO = new System.Windows.Forms.Button();
+            this.numericUpDownCO_0 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownCO_1 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownCO_2 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownCO_3 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownCO_4 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownCO_5 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownCO_6 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownCO_7 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownCO_9 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownCO_10 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownCO_11 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownCO_12 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownCO_13 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownCO_14 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownCO_15 = new System.Windows.Forms.NumericUpDown();
             this.tabPagePstates = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.label10 = new System.Windows.Forms.Label();
@@ -149,6 +186,7 @@ namespace ZenStatesDebugTool
             this.textBoxResult = new System.Windows.Forms.TextBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel11 = new System.Windows.Forms.TableLayoutPanel();
+            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textBoxCMD)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -164,6 +202,24 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel9.SuspendLayout();
             this.tabPageCPUID.SuspendLayout();
             this.tableLayoutPanel10.SuspendLayout();
+            this.tabPagePbo.SuspendLayout();
+            this.tableLayoutPanel12.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_8)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_0)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_7)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_9)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_10)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_11)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_12)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_13)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_14)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_15)).BeginInit();
             this.tabPagePstates.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
             this.tabPageInfo.SuspendLayout();
@@ -173,6 +229,7 @@ namespace ZenStatesDebugTool
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.tableLayoutPanel11.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -463,6 +520,7 @@ namespace ZenStatesDebugTool
             this.tabControl1.Controls.Add(this.tabPagePci);
             this.tabControl1.Controls.Add(this.tabPageMsr);
             this.tabControl1.Controls.Add(this.tabPageCPUID);
+            this.tabControl1.Controls.Add(this.tabPagePbo);
             this.tabControl1.Controls.Add(this.tabPagePstates);
             this.tabControl1.Controls.Add(this.tabPageInfo);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1205,6 +1263,560 @@ namespace ZenStatesDebugTool
             this.buttonCPUIDScan.UseVisualStyleBackColor = true;
             this.buttonCPUIDScan.Click += new System.EventHandler(this.ButtonCPUIDScan_Click);
             // 
+            // tabPagePbo
+            // 
+            this.tabPagePbo.Controls.Add(this.tableLayoutPanel12);
+            this.tabPagePbo.Location = new System.Drawing.Point(4, 22);
+            this.tabPagePbo.Name = "tabPagePbo";
+            this.tabPagePbo.Size = new System.Drawing.Size(338, 184);
+            this.tabPagePbo.TabIndex = 7;
+            this.tabPagePbo.Text = "PBO";
+            this.tabPagePbo.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel12
+            // 
+            this.tableLayoutPanel12.ColumnCount = 6;
+            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel12.Controls.Add(this.numericUpDownCO_8, 3, 0);
+            this.tableLayoutPanel12.Controls.Add(this.buttonApplyCO, 5, 0);
+            this.tableLayoutPanel12.Controls.Add(this.label31, 0, 0);
+            this.tableLayoutPanel12.Controls.Add(this.label32, 0, 1);
+            this.tableLayoutPanel12.Controls.Add(this.label33, 0, 2);
+            this.tableLayoutPanel12.Controls.Add(this.label34, 0, 3);
+            this.tableLayoutPanel12.Controls.Add(this.label35, 0, 4);
+            this.tableLayoutPanel12.Controls.Add(this.label36, 0, 5);
+            this.tableLayoutPanel12.Controls.Add(this.label37, 0, 6);
+            this.tableLayoutPanel12.Controls.Add(this.label38, 0, 7);
+            this.tableLayoutPanel12.Controls.Add(this.label39, 2, 0);
+            this.tableLayoutPanel12.Controls.Add(this.label40, 2, 1);
+            this.tableLayoutPanel12.Controls.Add(this.label41, 2, 2);
+            this.tableLayoutPanel12.Controls.Add(this.label42, 2, 3);
+            this.tableLayoutPanel12.Controls.Add(this.label43, 2, 4);
+            this.tableLayoutPanel12.Controls.Add(this.label44, 2, 5);
+            this.tableLayoutPanel12.Controls.Add(this.label45, 2, 6);
+            this.tableLayoutPanel12.Controls.Add(this.label46, 2, 7);
+            this.tableLayoutPanel12.Controls.Add(this.buttonGetCO, 5, 2);
+            this.tableLayoutPanel12.Controls.Add(this.numericUpDownCO_0, 1, 0);
+            this.tableLayoutPanel12.Controls.Add(this.numericUpDownCO_1, 1, 1);
+            this.tableLayoutPanel12.Controls.Add(this.numericUpDownCO_2, 1, 2);
+            this.tableLayoutPanel12.Controls.Add(this.numericUpDownCO_3, 1, 3);
+            this.tableLayoutPanel12.Controls.Add(this.numericUpDownCO_4, 1, 4);
+            this.tableLayoutPanel12.Controls.Add(this.numericUpDownCO_5, 1, 5);
+            this.tableLayoutPanel12.Controls.Add(this.numericUpDownCO_6, 1, 6);
+            this.tableLayoutPanel12.Controls.Add(this.numericUpDownCO_7, 1, 7);
+            this.tableLayoutPanel12.Controls.Add(this.numericUpDownCO_9, 3, 1);
+            this.tableLayoutPanel12.Controls.Add(this.numericUpDownCO_10, 3, 2);
+            this.tableLayoutPanel12.Controls.Add(this.numericUpDownCO_11, 3, 3);
+            this.tableLayoutPanel12.Controls.Add(this.numericUpDownCO_12, 3, 4);
+            this.tableLayoutPanel12.Controls.Add(this.numericUpDownCO_13, 3, 5);
+            this.tableLayoutPanel12.Controls.Add(this.numericUpDownCO_14, 3, 6);
+            this.tableLayoutPanel12.Controls.Add(this.numericUpDownCO_15, 3, 7);
+            this.tableLayoutPanel12.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel12.Name = "tableLayoutPanel12";
+            this.tableLayoutPanel12.RowCount = 8;
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+            this.tableLayoutPanel12.Size = new System.Drawing.Size(331, 178);
+            this.tableLayoutPanel12.TabIndex = 0;
+            // 
+            // numericUpDownCO_8
+            // 
+            this.numericUpDownCO_8.Enabled = false;
+            this.numericUpDownCO_8.Location = new System.Drawing.Point(173, 3);
+            this.numericUpDownCO_8.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDownCO_8.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownCO_8.Name = "numericUpDownCO_8";
+            this.numericUpDownCO_8.Size = new System.Drawing.Size(44, 20);
+            this.numericUpDownCO_8.TabIndex = 41;
+            // 
+            // buttonApplyCO
+            // 
+            this.buttonApplyCO.Dock = System.Windows.Forms.DockStyle.Top;
+            this.buttonApplyCO.Location = new System.Drawing.Point(243, 3);
+            this.buttonApplyCO.Name = "buttonApplyCO";
+            this.tableLayoutPanel12.SetRowSpan(this.buttonApplyCO, 2);
+            this.buttonApplyCO.Size = new System.Drawing.Size(85, 23);
+            this.buttonApplyCO.TabIndex = 5;
+            this.buttonApplyCO.Text = "Apply";
+            this.buttonApplyCO.UseVisualStyleBackColor = true;
+            this.buttonApplyCO.Click += new System.EventHandler(this.buttonApplyCO_Click);
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label31.Location = new System.Drawing.Point(3, 0);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(54, 22);
+            this.label31.TabIndex = 0;
+            this.label31.Text = "Core 0";
+            this.label31.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label32.Location = new System.Drawing.Point(3, 22);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(54, 22);
+            this.label32.TabIndex = 1;
+            this.label32.Text = "Core 1";
+            this.label32.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label33.Location = new System.Drawing.Point(3, 44);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(54, 22);
+            this.label33.TabIndex = 2;
+            this.label33.Text = "Core 2";
+            this.label33.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label34.Location = new System.Drawing.Point(3, 66);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(54, 22);
+            this.label34.TabIndex = 3;
+            this.label34.Text = "Core 3";
+            this.label34.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label35.Location = new System.Drawing.Point(3, 88);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(54, 22);
+            this.label35.TabIndex = 4;
+            this.label35.Text = "Core 4";
+            this.label35.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label36.Location = new System.Drawing.Point(3, 110);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(54, 22);
+            this.label36.TabIndex = 5;
+            this.label36.Text = "Core 5";
+            this.label36.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label37.Location = new System.Drawing.Point(3, 132);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(54, 22);
+            this.label37.TabIndex = 6;
+            this.label37.Text = "Core 6";
+            this.label37.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label38
+            // 
+            this.label38.AutoSize = true;
+            this.label38.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label38.Location = new System.Drawing.Point(3, 154);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(54, 24);
+            this.label38.TabIndex = 7;
+            this.label38.Text = "Core 7";
+            this.label38.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label39.Location = new System.Drawing.Point(113, 0);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(54, 22);
+            this.label39.TabIndex = 8;
+            this.label39.Text = "Core 8";
+            this.label39.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label40
+            // 
+            this.label40.AutoSize = true;
+            this.label40.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label40.Location = new System.Drawing.Point(113, 22);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(54, 22);
+            this.label40.TabIndex = 9;
+            this.label40.Text = "Core 9";
+            this.label40.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label41.Location = new System.Drawing.Point(113, 44);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(54, 22);
+            this.label41.TabIndex = 10;
+            this.label41.Text = "Core 10";
+            this.label41.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label42.Location = new System.Drawing.Point(113, 66);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(54, 22);
+            this.label42.TabIndex = 11;
+            this.label42.Text = "Core 11";
+            this.label42.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label43.Location = new System.Drawing.Point(113, 88);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(54, 22);
+            this.label43.TabIndex = 12;
+            this.label43.Text = "Core 12";
+            this.label43.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label44.Location = new System.Drawing.Point(113, 110);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(54, 22);
+            this.label44.TabIndex = 13;
+            this.label44.Text = "Core 13";
+            this.label44.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label45.Location = new System.Drawing.Point(113, 132);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(54, 22);
+            this.label45.TabIndex = 14;
+            this.label45.Text = "Core 14";
+            this.label45.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label46
+            // 
+            this.label46.AutoSize = true;
+            this.label46.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label46.Location = new System.Drawing.Point(113, 154);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(54, 24);
+            this.label46.TabIndex = 15;
+            this.label46.Text = "Core 15";
+            this.label46.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // buttonGetCO
+            // 
+            this.buttonGetCO.Location = new System.Drawing.Point(243, 47);
+            this.buttonGetCO.Name = "buttonGetCO";
+            this.tableLayoutPanel12.SetRowSpan(this.buttonGetCO, 2);
+            this.buttonGetCO.Size = new System.Drawing.Size(85, 23);
+            this.buttonGetCO.TabIndex = 32;
+            this.buttonGetCO.Text = "Refresh";
+            this.buttonGetCO.UseVisualStyleBackColor = true;
+            this.buttonGetCO.Click += new System.EventHandler(this.buttonGetCO_Click);
+            // 
+            // numericUpDownCO_0
+            // 
+            this.numericUpDownCO_0.Enabled = false;
+            this.numericUpDownCO_0.Location = new System.Drawing.Point(63, 3);
+            this.numericUpDownCO_0.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDownCO_0.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownCO_0.Name = "numericUpDownCO_0";
+            this.numericUpDownCO_0.Size = new System.Drawing.Size(44, 20);
+            this.numericUpDownCO_0.TabIndex = 33;
+            // 
+            // numericUpDownCO_1
+            // 
+            this.numericUpDownCO_1.Enabled = false;
+            this.numericUpDownCO_1.Location = new System.Drawing.Point(63, 25);
+            this.numericUpDownCO_1.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDownCO_1.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownCO_1.Name = "numericUpDownCO_1";
+            this.numericUpDownCO_1.Size = new System.Drawing.Size(44, 20);
+            this.numericUpDownCO_1.TabIndex = 34;
+            // 
+            // numericUpDownCO_2
+            // 
+            this.numericUpDownCO_2.Enabled = false;
+            this.numericUpDownCO_2.Location = new System.Drawing.Point(63, 47);
+            this.numericUpDownCO_2.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDownCO_2.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownCO_2.Name = "numericUpDownCO_2";
+            this.numericUpDownCO_2.Size = new System.Drawing.Size(44, 20);
+            this.numericUpDownCO_2.TabIndex = 35;
+            // 
+            // numericUpDownCO_3
+            // 
+            this.numericUpDownCO_3.Enabled = false;
+            this.numericUpDownCO_3.Location = new System.Drawing.Point(63, 69);
+            this.numericUpDownCO_3.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDownCO_3.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownCO_3.Name = "numericUpDownCO_3";
+            this.numericUpDownCO_3.Size = new System.Drawing.Size(44, 20);
+            this.numericUpDownCO_3.TabIndex = 36;
+            // 
+            // numericUpDownCO_4
+            // 
+            this.numericUpDownCO_4.Enabled = false;
+            this.numericUpDownCO_4.Location = new System.Drawing.Point(63, 91);
+            this.numericUpDownCO_4.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDownCO_4.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownCO_4.Name = "numericUpDownCO_4";
+            this.numericUpDownCO_4.Size = new System.Drawing.Size(44, 20);
+            this.numericUpDownCO_4.TabIndex = 37;
+            // 
+            // numericUpDownCO_5
+            // 
+            this.numericUpDownCO_5.Enabled = false;
+            this.numericUpDownCO_5.Location = new System.Drawing.Point(63, 113);
+            this.numericUpDownCO_5.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDownCO_5.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownCO_5.Name = "numericUpDownCO_5";
+            this.numericUpDownCO_5.Size = new System.Drawing.Size(44, 20);
+            this.numericUpDownCO_5.TabIndex = 38;
+            // 
+            // numericUpDownCO_6
+            // 
+            this.numericUpDownCO_6.Enabled = false;
+            this.numericUpDownCO_6.Location = new System.Drawing.Point(63, 135);
+            this.numericUpDownCO_6.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDownCO_6.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownCO_6.Name = "numericUpDownCO_6";
+            this.numericUpDownCO_6.Size = new System.Drawing.Size(44, 20);
+            this.numericUpDownCO_6.TabIndex = 39;
+            // 
+            // numericUpDownCO_7
+            // 
+            this.numericUpDownCO_7.Enabled = false;
+            this.numericUpDownCO_7.Location = new System.Drawing.Point(63, 157);
+            this.numericUpDownCO_7.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDownCO_7.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownCO_7.Name = "numericUpDownCO_7";
+            this.numericUpDownCO_7.Size = new System.Drawing.Size(44, 20);
+            this.numericUpDownCO_7.TabIndex = 40;
+            // 
+            // numericUpDownCO_9
+            // 
+            this.numericUpDownCO_9.Enabled = false;
+            this.numericUpDownCO_9.Location = new System.Drawing.Point(173, 25);
+            this.numericUpDownCO_9.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDownCO_9.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownCO_9.Name = "numericUpDownCO_9";
+            this.numericUpDownCO_9.Size = new System.Drawing.Size(44, 20);
+            this.numericUpDownCO_9.TabIndex = 42;
+            // 
+            // numericUpDownCO_10
+            // 
+            this.numericUpDownCO_10.Enabled = false;
+            this.numericUpDownCO_10.Location = new System.Drawing.Point(173, 47);
+            this.numericUpDownCO_10.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDownCO_10.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownCO_10.Name = "numericUpDownCO_10";
+            this.numericUpDownCO_10.Size = new System.Drawing.Size(44, 20);
+            this.numericUpDownCO_10.TabIndex = 43;
+            // 
+            // numericUpDownCO_11
+            // 
+            this.numericUpDownCO_11.Enabled = false;
+            this.numericUpDownCO_11.Location = new System.Drawing.Point(173, 69);
+            this.numericUpDownCO_11.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDownCO_11.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownCO_11.Name = "numericUpDownCO_11";
+            this.numericUpDownCO_11.Size = new System.Drawing.Size(44, 20);
+            this.numericUpDownCO_11.TabIndex = 44;
+            // 
+            // numericUpDownCO_12
+            // 
+            this.numericUpDownCO_12.Enabled = false;
+            this.numericUpDownCO_12.Location = new System.Drawing.Point(173, 91);
+            this.numericUpDownCO_12.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDownCO_12.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownCO_12.Name = "numericUpDownCO_12";
+            this.numericUpDownCO_12.Size = new System.Drawing.Size(44, 20);
+            this.numericUpDownCO_12.TabIndex = 45;
+            // 
+            // numericUpDownCO_13
+            // 
+            this.numericUpDownCO_13.Enabled = false;
+            this.numericUpDownCO_13.Location = new System.Drawing.Point(173, 113);
+            this.numericUpDownCO_13.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDownCO_13.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownCO_13.Name = "numericUpDownCO_13";
+            this.numericUpDownCO_13.Size = new System.Drawing.Size(44, 20);
+            this.numericUpDownCO_13.TabIndex = 46;
+            // 
+            // numericUpDownCO_14
+            // 
+            this.numericUpDownCO_14.Enabled = false;
+            this.numericUpDownCO_14.Location = new System.Drawing.Point(173, 135);
+            this.numericUpDownCO_14.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDownCO_14.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownCO_14.Name = "numericUpDownCO_14";
+            this.numericUpDownCO_14.Size = new System.Drawing.Size(44, 20);
+            this.numericUpDownCO_14.TabIndex = 47;
+            // 
+            // numericUpDownCO_15
+            // 
+            this.numericUpDownCO_15.Enabled = false;
+            this.numericUpDownCO_15.Location = new System.Drawing.Point(173, 157);
+            this.numericUpDownCO_15.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDownCO_15.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownCO_15.Name = "numericUpDownCO_15";
+            this.numericUpDownCO_15.Size = new System.Drawing.Size(44, 20);
+            this.numericUpDownCO_15.TabIndex = 48;
+            // 
             // tabPagePstates
             // 
             this.tabPagePstates.Controls.Add(this.tableLayoutPanel5);
@@ -1686,7 +2298,7 @@ namespace ZenStatesDebugTool
             this.textBoxResult.Name = "textBoxResult";
             this.textBoxResult.ReadOnly = true;
             this.textBoxResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxResult.Size = new System.Drawing.Size(347, 136);
+            this.textBoxResult.Size = new System.Drawing.Size(347, 116);
             this.textBoxResult.TabIndex = 4;
             // 
             // splitContainer1
@@ -1722,8 +2334,9 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel11.Location = new System.Drawing.Point(0, 5);
             this.tableLayoutPanel11.Name = "tableLayoutPanel11";
             this.tableLayoutPanel11.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.tableLayoutPanel11.RowCount = 1;
+            this.tableLayoutPanel11.RowCount = 2;
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel11.Size = new System.Drawing.Size(350, 136);
             this.tableLayoutPanel11.TabIndex = 5;
             // 
@@ -1768,6 +2381,25 @@ namespace ZenStatesDebugTool
             this.tabPageCPUID.PerformLayout();
             this.tableLayoutPanel10.ResumeLayout(false);
             this.tableLayoutPanel10.PerformLayout();
+            this.tabPagePbo.ResumeLayout(false);
+            this.tableLayoutPanel12.ResumeLayout(false);
+            this.tableLayoutPanel12.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_8)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_0)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_9)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_10)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_11)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_12)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_13)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_14)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_15)).EndInit();
             this.tabPagePstates.ResumeLayout(false);
             this.tabPagePstates.PerformLayout();
             this.tableLayoutPanel5.ResumeLayout(false);
@@ -1782,6 +2414,7 @@ namespace ZenStatesDebugTool
             this.splitContainer1.ResumeLayout(false);
             this.tableLayoutPanel11.ResumeLayout(false);
             this.tableLayoutPanel11.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1905,6 +2538,43 @@ namespace ZenStatesDebugTool
         private Label label30;
         private ComboBox comboBoxMailboxSelect;
         private NumericUpDown textBoxCMD;
+        private TabPage tabPagePbo;
+        private TableLayoutPanel tableLayoutPanel12;
+        private NumericUpDown numericUpDownCO_8;
+        private Button buttonApplyCO;
+        private Label label31;
+        private Label label32;
+        private Label label33;
+        private Label label34;
+        private Label label35;
+        private Label label36;
+        private Label label37;
+        private Label label38;
+        private Label label39;
+        private Label label40;
+        private Label label41;
+        private Label label42;
+        private Label label43;
+        private Label label44;
+        private Label label45;
+        private Label label46;
+        private Button buttonGetCO;
+        private NumericUpDown numericUpDownCO_0;
+        private NumericUpDown numericUpDownCO_1;
+        private NumericUpDown numericUpDownCO_2;
+        private NumericUpDown numericUpDownCO_3;
+        private NumericUpDown numericUpDownCO_4;
+        private NumericUpDown numericUpDownCO_5;
+        private NumericUpDown numericUpDownCO_6;
+        private NumericUpDown numericUpDownCO_7;
+        private NumericUpDown numericUpDownCO_9;
+        private NumericUpDown numericUpDownCO_10;
+        private NumericUpDown numericUpDownCO_11;
+        private NumericUpDown numericUpDownCO_12;
+        private NumericUpDown numericUpDownCO_13;
+        private NumericUpDown numericUpDownCO_14;
+        private NumericUpDown numericUpDownCO_15;
+        private BindingSource bindingSource1;
     }
 }
 

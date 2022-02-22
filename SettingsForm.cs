@@ -134,6 +134,8 @@ namespace ZenStatesDebugTool
                 comboBoxSCF.SelectedIndex = index;
             }
 
+            InitPBO();
+
             var prochotEnabled = cpu.IsProchotEnabled();
             checkBoxPROCHOT.Checked = prochotEnabled;
             //checkBoxPROCHOT.Enabled = prochotEnabled;
@@ -182,6 +184,37 @@ namespace ZenStatesDebugTool
         private void AddMailboxToList(string label, SmuAddressSet addressSet)
         {
             comboBoxMailboxSelect.Items.Add(new MailboxListItem(label, addressSet));
+        }
+
+        private uint GetCoreMask(int coreIndex)
+        {
+            uint ccxInCcd = cpu.info.family == Cpu.Family.FAMILY_19H ? 1U : 2U;
+            uint coresInCcx = 8 / ccxInCcd;
+
+            uint ccd = Convert.ToUInt32(coreIndex / 8);
+            uint ccx = Convert.ToUInt32(coreIndex / coresInCcx - ccxInCcd * ccd);
+            uint core = Convert.ToUInt32(coreIndex % coresInCcx);
+            return cpu.MakeCoreMask(core, ccd, ccx);
+        }
+
+        private void InitPBO()
+        {
+            if (cpu.info.family == Cpu.Family.FAMILY_19H)
+            {
+                for (var i = 0; i < cpu.info.physicalCores; i++)
+                {
+                    if ((~cpu.info.coreDisableMap >> i & 1) == 1)
+                    {
+                        NumericUpDown control = (NumericUpDown)Controls.Find($"numericUpDownCO_{i}", true)[0];
+                        if (control != null)
+                        {
+                            control.Enabled = true;
+                            int margin = cpu.GetPsmMarginSingleCore(GetCoreMask(i));
+                            control.Value = Convert.ToDecimal(margin);
+                        }
+                    }
+                }
+            }
         }
 
         private void ApplyFrequencyAllCoreSetting(int frequency)
@@ -1244,6 +1277,31 @@ namespace ZenStatesDebugTool
         private void SettingsForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             ExitApplication();
+        }
+
+        private void buttonGetCO_Click(object sender, EventArgs e)
+        {
+            InitPBO();
+        }
+
+        private void buttonApplyCO_Click(object sender, EventArgs e)
+        {
+            if (cpu.info.family == Cpu.Family.FAMILY_19H)
+            {
+                for (var i = 0; i < cpu.info.physicalCores; i++)
+                {
+                    if ((~cpu.info.coreDisableMap >> i & 1) == 1)
+                    {
+                        NumericUpDown control = (NumericUpDown)Controls.Find($"numericUpDownCO_{i}", true)[0];
+                        if (control != null)
+                        {
+                            cpu.SetPsmMarginSingleCore(GetCoreMask(i), Convert.ToInt32(control.Value));
+                        }
+                    }
+                }
+            }
+
+            InitPBO();
         }
     }
 }
