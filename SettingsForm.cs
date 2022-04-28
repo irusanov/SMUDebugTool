@@ -209,8 +209,9 @@ namespace ZenStatesDebugTool
                         if (control != null)
                         {
                             control.Enabled = true;
-                            int margin = cpu.GetPsmMarginSingleCore(GetCoreMask(i));
-                            control.Value = Convert.ToDecimal(margin);
+                            int? margin = cpu.GetPsmMarginSingleCore(GetCoreMask(i));
+                            if (margin != null)
+                                control.Value = Convert.ToDecimal(margin);
                         }
                     }
                 }
@@ -219,23 +220,24 @@ namespace ZenStatesDebugTool
 
         private void ApplyFrequencyAllCoreSetting(int frequency)
         {
-            if (cpu.SendSmuCommand(cpu.smu.Rsmu, cpu.smu.Rsmu.SMU_MSG_SetOverclockFrequencyAllCores, Convert.ToUInt32(frequency)))
-                SetStatusText(string.Format("Set frequency to {0} MHz!", (object)frequency));
+            if (cpu.SetFrequencyAllCore(Convert.ToUInt32(frequency)))
+                SetStatusText(string.Format("Set frequency to {0} MHz!", frequency));
             else
                 HandleError("Error setting frequency!");
         }
 
         private void ApplyFrequencySingleCoreSetting(CoreListItem i, int frequency)
         {
-            if (cpu.SendSmuCommand(cpu.smu.Rsmu, cpu.smu.Rsmu.SMU_MSG_SetOverclockFrequencyPerCore, Convert.ToUInt32(((i.CCD << 4 | i.CCX % 2 & 15) << 4 | i.CORE % 4 & 15) << 20 | frequency & 0xFFFFF)))
-                SetStatusText(string.Format("Set core {0} frequency to {1} MHz!", (object)i, (object)frequency));
+            uint coreMask = Convert.ToUInt32(((i.CCD << 4 | i.CCX % 2 & 15) << 4 | i.CORE % 4 & 15) << 20);
+            if (cpu.SetFrequencySingleCore(coreMask, Convert.ToUInt32(frequency)))
+                SetStatusText(string.Format("Set core {0} frequency to {1} MHz!", i, frequency));
             else
                 HandleError("Error setting frequency!");
         }
 
         private void EnableOCMode(bool prochotEnabled = true)
         {
-            if (cpu.SendSmuCommand(cpu.smu.Rsmu, cpu.smu.Rsmu.SMU_MSG_EnableOcMode, prochotEnabled ? 0U : 0x1000000))
+            if (cpu.smu.SendSmuCommand(cpu.smu.Rsmu, cpu.smu.Rsmu.SMU_MSG_EnableOcMode, prochotEnabled ? 0U : 0x1000000))
                 SetStatusText(prochotEnabled ? "PROCHOT enabled." : "PROCHOT disabled.");
             else
                 HandleError("Error setting OC Mode!");
@@ -315,17 +317,21 @@ namespace ZenStatesDebugTool
         {
             string responseString = "";
             string[] hexArray = new string[data.Length];
-            string[] intArray = new string[data.Length];
+            string[] decArray = new string[data.Length];
+            string[] binArray = new string[data.Length];
 
             for (var i = 0; i < data.Length; i++)
             {
                 hexArray[i] = $"0x{Convert.ToString(data[i], 16).ToUpper()}";
-                intArray[i] = $"{Convert.ToString(data[i], 10).ToUpper()}";
+                decArray[i] = $"{Convert.ToString(data[i], 10).ToUpper()}";
+                binArray[i] = $"{Convert.ToString(data[i], 2).ToUpper()}";
             }
 
             responseString += "HEX: " + string.Join(", ", hexArray);
             responseString += Environment.NewLine;
-            responseString += "INT: " + string.Join(", ", intArray);
+            responseString += "DEC: " + string.Join(", ", decArray);
+            responseString += Environment.NewLine;
+            responseString += "BIN: " + string.Join(", ", binArray);
             responseString += Environment.NewLine;
             responseString += Environment.NewLine;
 
@@ -365,7 +371,7 @@ namespace ZenStatesDebugTool
         {
             try
             {
-                uint[] args = new uint[6];
+                uint[] args = Utils.MakeCmdArgs();
                 string[] userArgs = textBoxARG0.Text.Trim().Split(',');
 
                 TryConvertToUint(textBoxCMDAddress.Text, out uint addrMsg);
@@ -392,7 +398,7 @@ namespace ZenStatesDebugTool
                 Console.WriteLine("ARG0 Address: 0x" + Convert.ToString(testMailbox.SMU_ADDR_ARG, 16).ToUpper());
                 Console.WriteLine("ARG0        : 0x" + Convert.ToString(args[0], 16).ToUpper());
 
-                SMU.Status status = cpu.SendSmuCommand(testMailbox, command, ref args);
+                SMU.Status status = cpu.smu.SendSmuCommand(testMailbox, command, ref args);
 
                 if (status == SMU.Status.OK)
                 {
@@ -509,7 +515,7 @@ namespace ZenStatesDebugTool
             testMailbox.SMU_ADDR_RSP = rspAddr;
             testMailbox.SMU_ADDR_ARG = argAddr;
 
-            return cpu.SendSmuCommand(testMailbox, cmd, ref args);
+            return cpu.smu.SendSmuCommand(testMailbox, cmd, ref args);
         }
 
         private void ScanSmuRange(uint start, uint end, uint step, uint offset)
@@ -1253,7 +1259,7 @@ namespace ZenStatesDebugTool
 
         private void ButtonPMTable_Click(object sender, EventArgs e)
         {
-            if (cpu.Status == Utils.LibStatus.OK)
+            if (cpu.Status == IOModule.LibStatus.OK)
                 new Thread(() => new PowerTableMonitor(cpu).ShowDialog()).Start();
             else
                 HandleError("IO driver is not responding or not loaded.");
