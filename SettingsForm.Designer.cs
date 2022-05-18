@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace ZenStatesDebugTool
@@ -148,6 +148,15 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_13 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownCO_14 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownCO_15 = new System.Windows.Forms.NumericUpDown();
+            this.tabPageWmi = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel13 = new System.Windows.Forms.TableLayoutPanel();
+            this.label49 = new System.Windows.Forms.Label();
+            this.label47 = new System.Windows.Forms.Label();
+            this.comboBoxAvailableCommands = new System.Windows.Forms.ComboBox();
+            this.comboBoxAvailableValues = new System.Windows.Forms.ComboBox();
+            this.label48 = new System.Windows.Forms.Label();
+            this.textBoxWmiArgument = new System.Windows.Forms.TextBox();
+            this.buttonWmiCmdSend = new System.Windows.Forms.Button();
             this.tabPagePstates = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.label10 = new System.Windows.Forms.Label();
@@ -220,6 +229,8 @@ namespace ZenStatesDebugTool
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_13)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_14)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_15)).BeginInit();
+            this.tabPageWmi.SuspendLayout();
+            this.tableLayoutPanel13.SuspendLayout();
             this.tabPagePstates.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
             this.tabPageInfo.SuspendLayout();
@@ -521,6 +532,7 @@ namespace ZenStatesDebugTool
             this.tabControl1.Controls.Add(this.tabPageMsr);
             this.tabControl1.Controls.Add(this.tabPageCPUID);
             this.tabControl1.Controls.Add(this.tabPagePbo);
+            this.tabControl1.Controls.Add(this.tabPageWmi);
             this.tabControl1.Controls.Add(this.tabPagePstates);
             this.tabControl1.Controls.Add(this.tabPageInfo);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1817,6 +1829,113 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_15.Size = new System.Drawing.Size(44, 20);
             this.numericUpDownCO_15.TabIndex = 48;
             // 
+            // tabPageWmi
+            // 
+            this.tabPageWmi.Controls.Add(this.tableLayoutPanel13);
+            this.tabPageWmi.Location = new System.Drawing.Point(4, 22);
+            this.tabPageWmi.Name = "tabPageWmi";
+            this.tabPageWmi.Size = new System.Drawing.Size(338, 184);
+            this.tabPageWmi.TabIndex = 8;
+            this.tabPageWmi.Text = "AMD ACPI";
+            this.tabPageWmi.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel13
+            // 
+            this.tableLayoutPanel13.ColumnCount = 2;
+            this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel13.Controls.Add(this.label49, 0, 2);
+            this.tableLayoutPanel13.Controls.Add(this.label47, 0, 0);
+            this.tableLayoutPanel13.Controls.Add(this.comboBoxAvailableCommands, 1, 0);
+            this.tableLayoutPanel13.Controls.Add(this.comboBoxAvailableValues, 1, 1);
+            this.tableLayoutPanel13.Controls.Add(this.label48, 0, 1);
+            this.tableLayoutPanel13.Controls.Add(this.textBoxWmiArgument, 1, 2);
+            this.tableLayoutPanel13.Controls.Add(this.buttonWmiCmdSend, 1, 3);
+            this.tableLayoutPanel13.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel13.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel13.Name = "tableLayoutPanel13";
+            this.tableLayoutPanel13.RowCount = 5;
+            this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel13.Size = new System.Drawing.Size(338, 184);
+            this.tableLayoutPanel13.TabIndex = 0;
+            // 
+            // label49
+            // 
+            this.label49.AutoSize = true;
+            this.label49.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label49.Location = new System.Drawing.Point(3, 54);
+            this.label49.Name = "label49";
+            this.label49.Size = new System.Drawing.Size(94, 26);
+            this.label49.TabIndex = 4;
+            this.label49.Text = "Argument";
+            this.label49.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label47.Location = new System.Drawing.Point(3, 0);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(94, 27);
+            this.label47.TabIndex = 0;
+            this.label47.Text = "Command";
+            this.label47.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // comboBoxAvailableCommands
+            // 
+            this.comboBoxAvailableCommands.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.comboBoxAvailableCommands.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxAvailableCommands.FormattingEnabled = true;
+            this.comboBoxAvailableCommands.Location = new System.Drawing.Point(103, 3);
+            this.comboBoxAvailableCommands.Name = "comboBoxAvailableCommands";
+            this.comboBoxAvailableCommands.Size = new System.Drawing.Size(232, 21);
+            this.comboBoxAvailableCommands.TabIndex = 1;
+            this.comboBoxAvailableCommands.SelectedIndexChanged += new System.EventHandler(this.ComboBoxAvailableCommands_SelectedIndexChanged);
+            // 
+            // comboBoxAvailableValues
+            // 
+            this.comboBoxAvailableValues.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.comboBoxAvailableValues.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxAvailableValues.FormattingEnabled = true;
+            this.comboBoxAvailableValues.Location = new System.Drawing.Point(103, 30);
+            this.comboBoxAvailableValues.Name = "comboBoxAvailableValues";
+            this.comboBoxAvailableValues.Size = new System.Drawing.Size(232, 21);
+            this.comboBoxAvailableValues.TabIndex = 2;
+            this.comboBoxAvailableValues.SelectedIndexChanged += new System.EventHandler(this.ComboBoxAvailableValues_SelectedIndexChanged);
+            // 
+            // label48
+            // 
+            this.label48.AutoSize = true;
+            this.label48.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label48.Location = new System.Drawing.Point(3, 27);
+            this.label48.Name = "label48";
+            this.label48.Size = new System.Drawing.Size(94, 27);
+            this.label48.TabIndex = 3;
+            this.label48.Text = "Values";
+            this.label48.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // textBoxWmiArgument
+            // 
+            this.textBoxWmiArgument.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxWmiArgument.Location = new System.Drawing.Point(103, 57);
+            this.textBoxWmiArgument.Name = "textBoxWmiArgument";
+            this.textBoxWmiArgument.Size = new System.Drawing.Size(232, 20);
+            this.textBoxWmiArgument.TabIndex = 5;
+            // 
+            // buttonWmiCmdSend
+            // 
+            this.buttonWmiCmdSend.Location = new System.Drawing.Point(103, 83);
+            this.buttonWmiCmdSend.Name = "buttonWmiCmdSend";
+            this.buttonWmiCmdSend.Size = new System.Drawing.Size(75, 23);
+            this.buttonWmiCmdSend.TabIndex = 6;
+            this.buttonWmiCmdSend.Text = "Send";
+            this.buttonWmiCmdSend.UseVisualStyleBackColor = true;
+            this.buttonWmiCmdSend.Click += new System.EventHandler(this.ButtonWmiCmdSend_Click);
+            // 
             // tabPagePstates
             // 
             this.tabPagePstates.Controls.Add(this.tableLayoutPanel5);
@@ -2400,6 +2519,9 @@ namespace ZenStatesDebugTool
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_13)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_14)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_15)).EndInit();
+            this.tabPageWmi.ResumeLayout(false);
+            this.tableLayoutPanel13.ResumeLayout(false);
+            this.tableLayoutPanel13.PerformLayout();
             this.tabPagePstates.ResumeLayout(false);
             this.tabPagePstates.PerformLayout();
             this.tableLayoutPanel5.ResumeLayout(false);
@@ -2575,6 +2697,15 @@ namespace ZenStatesDebugTool
         private NumericUpDown numericUpDownCO_14;
         private NumericUpDown numericUpDownCO_15;
         private BindingSource bindingSource1;
+        private TabPage tabPageWmi;
+        private TableLayoutPanel tableLayoutPanel13;
+        private Label label47;
+        private ComboBox comboBoxAvailableCommands;
+        private ComboBox comboBoxAvailableValues;
+        private Label label48;
+        private Label label49;
+        private TextBox textBoxWmiArgument;
+        private Button buttonWmiCmdSend;
     }
 }
 

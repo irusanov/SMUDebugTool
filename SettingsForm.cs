@@ -5,11 +5,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using ZenStates.Core;
 using ZenStatesDebugTool.Properties;
+using ZenStatesDebugTool.Utils;
 
 namespace ZenStatesDebugTool
 {
@@ -21,6 +23,11 @@ namespace ZenStatesDebugTool
         private readonly Cpu cpu;
         List<SmuAddressSet> matches;
         private readonly Mailbox testMailbox = new Mailbox();
+        private readonly string wmiAMDACPI = "AMD_ACPI";
+        private readonly string wmiScope = "root\\wmi";
+        private ManagementObject classInstance;
+        private string instanceName;
+        private ManagementBaseObject pack;
 
         public SettingsForm()
         {
@@ -135,6 +142,7 @@ namespace ZenStatesDebugTool
             }
 
             InitPBO();
+            PopulateWmiFunctions();
 
             var prochotEnabled = cpu.IsProchotEnabled();
             checkBoxPROCHOT.Checked = prochotEnabled;
@@ -169,7 +177,7 @@ namespace ZenStatesDebugTool
 
         private void PopulateCCDList(ComboBox.ObjectCollection l)
         {
-            for (int core = 0; core < cpu.info.cores; ++core)
+            for (int core = 0; core < cpu.info.topology.cores; ++core)
                 l.Add(new CoreListItem(core / 8, core / 4, core));
         }
 
@@ -201,9 +209,9 @@ namespace ZenStatesDebugTool
         {
             if (cpu.info.family == Cpu.Family.FAMILY_19H)
             {
-                for (var i = 0; i < cpu.info.physicalCores; i++)
+                for (var i = 0; i < cpu.info.topology.physicalCores; i++)
                 {
-                    if ((~cpu.info.coreDisableMap >> i & 1) == 1)
+                    if ((~cpu.info.topology.coreDisableMap >> i & 1) == 1)
                     {
                         NumericUpDown control = (NumericUpDown)Controls.Find($"numericUpDownCO_{i}", true)[0];
                         if (control != null)
@@ -371,7 +379,7 @@ namespace ZenStatesDebugTool
         {
             try
             {
-                uint[] args = Utils.MakeCmdArgs();
+                uint[] args = ZenStates.Core.Utils.MakeCmdArgs();
                 string[] userArgs = textBoxARG0.Text.Trim().Split(',');
 
                 TryConvertToUint(textBoxCMDAddress.Text, out uint addrMsg);
@@ -1294,9 +1302,9 @@ namespace ZenStatesDebugTool
         {
             if (cpu.info.family == Cpu.Family.FAMILY_19H)
             {
-                for (var i = 0; i < cpu.info.physicalCores; i++)
+                for (var i = 0; i < cpu.info.topology.physicalCores; i++)
                 {
-                    if ((~cpu.info.coreDisableMap >> i & 1) == 1)
+                    if ((~cpu.info.topology.coreDisableMap >> i & 1) == 1)
                     {
                         NumericUpDown control = (NumericUpDown)Controls.Find($"numericUpDownCO_{i}", true)[0];
                         if (control != null)
@@ -1308,6 +1316,146 @@ namespace ZenStatesDebugTool
             }
 
             InitPBO();
+        }
+
+        private string GetWmiInstanceName()
+        {
+            try
+            {
+                instanceName = WMI.GetInstanceName(wmiScope, wmiAMDACPI);
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return instanceName;
+        }
+
+        private void PopulateWmiFunctions()
+        {
+            try
+            {
+                instanceName = GetWmiInstanceName();
+                classInstance = new ManagementObject(wmiScope,
+                    $"{wmiAMDACPI}.InstanceName='{instanceName}'",
+                    null);
+
+                // Get function names with their IDs
+                string[] functionObjects = { "GetObjectID", "GetObjectID2" };
+                var index = 1;
+
+                foreach (var functionObject in functionObjects)
+                {
+                    try
+                    {
+                        pack = WMI.InvokeMethod(classInstance, functionObject, "pack", null, 0);
+
+                        if (pack != null)
+                        {
+                            var ID = (uint[])pack.GetPropertyValue("ID");
+                            var IDString = (string[])pack.GetPropertyValue("IDString");
+                            var Length = (byte)pack.GetPropertyValue("Length");
+
+                            for (var i = 0; i < Length; ++i)
+                            {
+                                if (IDString[i] == "")
+                                    return;
+
+                                WmiCmdListItem item = new WmiCmdListItem($"{IDString[i] + ": "}{ID[i]:X8}", ID[i], IDString[i].StartsWith("Set"));
+                                comboBoxAvailableCommands.Items.Add(item);
+                            }
+                        }
+                        else
+                        {
+                            comboBoxAvailableCommands.Items.Add("<FAILED>");
+                        }
+
+                        comboBoxAvailableCommands.SelectedIndex = 0;
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+
+                    index++;
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+
+        private void ComboBoxAvailableCommands_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            WmiCmdListItem command = comboBoxAvailableCommands.SelectedItem as WmiCmdListItem;
+
+            comboBoxAvailableValues.Items.Clear();
+            comboBoxAvailableValues.Enabled = false;
+            textBoxWmiArgument.Text = "";
+            textBoxWmiArgument.Enabled = false;
+
+            if (command.isSet) {
+                // Get possible values (index) of a memory option in BIOS
+                var dvaluesPack = WMI.InvokeMethod(classInstance, "Getdvalues", "pack", "ID", command.value);
+                if (dvaluesPack != null)
+                {
+                    uint[] DValuesBuffer = (uint[])dvaluesPack.GetPropertyValue("DValuesBuffer");
+                    Console.WriteLine(command.text);
+                    foreach (uint value in DValuesBuffer)
+                    {
+                        if (value != 0)
+                        {
+                            WmiCmdListItem item = new WmiCmdListItem(value.ToString(), value);
+                            Console.WriteLine(value);
+                            comboBoxAvailableValues.Items.Add(item);
+                        }
+                    }
+                    Console.WriteLine("------------------------");
+
+                    if (comboBoxAvailableValues.Items.Count > 0)
+                        comboBoxAvailableValues.Enabled = true;
+                    else
+                        comboBoxAvailableValues.Items.Add("No values available for this command");
+                }
+                textBoxWmiArgument.Enabled = true;
+            }
+            else
+            {
+                comboBoxAvailableValues.Items.Add("Get commands don't support values");
+            }
+
+            comboBoxAvailableValues.SelectedIndex = 0;
+        }
+
+        private void ComboBoxAvailableValues_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            WmiCmdListItem command = comboBoxAvailableCommands.SelectedItem as WmiCmdListItem;
+            if (command.isSet && comboBoxAvailableValues.Enabled)
+                textBoxWmiArgument.Text = comboBoxAvailableValues.Text;
+            else
+                textBoxWmiArgument.Text = "";
+        }
+
+        private void ButtonWmiCmdSend_Click(object sender, EventArgs e)
+        {
+            WmiCmdListItem command = comboBoxAvailableCommands.SelectedItem as WmiCmdListItem;
+            int value = 0;
+            if (command.isSet)
+                value = int.Parse(textBoxWmiArgument.Text);
+
+            if (value >= 0 && value < 0x10000)
+            {
+                var response = WMI.RunCommand(classInstance, command.value, (uint)value);
+                var text = command.text + Environment.NewLine + "------------------------" + Environment.NewLine;
+                foreach (byte b in response)
+                {
+                    text += "0x" + b.ToString("X2") + Environment.NewLine;
+                }
+                text += "------------------------" + Environment.NewLine;
+                textBoxResult.Text = text + Environment.NewLine + textBoxResult.Text;
+            }
         }
     }
 }
