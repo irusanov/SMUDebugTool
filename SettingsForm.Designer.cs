@@ -1,4 +1,4 @@
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace ZenStatesDebugTool
@@ -158,6 +158,9 @@ namespace ZenStatesDebugTool
             this.textBoxWmiArgument = new System.Windows.Forms.TextBox();
             this.buttonWmiCmdSend = new System.Windows.Forms.Button();
             this.tabPagePstates = new System.Windows.Forms.TabPage();
+            this.numericUpDownBclk = new System.Windows.Forms.NumericUpDown();
+            this.labelBCLK = new System.Windows.Forms.Label();
+            this.buttonBCLKApply = new System.Windows.Forms.Button();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.label10 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -232,6 +235,7 @@ namespace ZenStatesDebugTool
             this.tabPageWmi.SuspendLayout();
             this.tableLayoutPanel13.SuspendLayout();
             this.tabPagePstates.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBclk)).BeginInit();
             this.tableLayoutPanel5.SuspendLayout();
             this.tabPageInfo.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -1938,6 +1942,9 @@ namespace ZenStatesDebugTool
             // 
             // tabPagePstates
             // 
+            this.tabPagePstates.Controls.Add(this.numericUpDownBclk);
+            this.tabPagePstates.Controls.Add(this.labelBCLK);
+            this.tabPagePstates.Controls.Add(this.buttonBCLKApply);
             this.tabPagePstates.Controls.Add(this.tableLayoutPanel5);
             this.tabPagePstates.Location = new System.Drawing.Point(4, 22);
             this.tabPagePstates.Name = "tabPagePstates";
@@ -1946,6 +1953,53 @@ namespace ZenStatesDebugTool
             this.tabPagePstates.TabIndex = 3;
             this.tabPagePstates.Text = "PStates";
             this.tabPagePstates.UseVisualStyleBackColor = true;
+            // 
+            // numericUpDownBclk
+            // 
+            this.numericUpDownBclk.DecimalPlaces = 4;
+            this.numericUpDownBclk.Increment = new decimal(new int[] {
+            625,
+            0,
+            0,
+            262144});
+            this.numericUpDownBclk.Location = new System.Drawing.Point(106, 147);
+            this.numericUpDownBclk.Maximum = new decimal(new int[] {
+            150,
+            0,
+            0,
+            0});
+            this.numericUpDownBclk.Minimum = new decimal(new int[] {
+            95,
+            0,
+            0,
+            0});
+            this.numericUpDownBclk.Name = "numericUpDownBclk";
+            this.numericUpDownBclk.Size = new System.Drawing.Size(94, 20);
+            this.numericUpDownBclk.TabIndex = 5;
+            this.numericUpDownBclk.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
+            // labelBCLK
+            // 
+            this.labelBCLK.AutoSize = true;
+            this.labelBCLK.Location = new System.Drawing.Point(6, 150);
+            this.labelBCLK.Name = "labelBCLK";
+            this.labelBCLK.Size = new System.Drawing.Size(41, 13);
+            this.labelBCLK.TabIndex = 4;
+            this.labelBCLK.Text = "label50";
+            // 
+            // buttonBCLKApply
+            // 
+            this.buttonBCLKApply.Location = new System.Drawing.Point(252, 147);
+            this.buttonBCLKApply.Name = "buttonBCLKApply";
+            this.buttonBCLKApply.Size = new System.Drawing.Size(75, 23);
+            this.buttonBCLKApply.TabIndex = 3;
+            this.buttonBCLKApply.Text = "Apply";
+            this.buttonBCLKApply.UseVisualStyleBackColor = true;
+            this.buttonBCLKApply.Click += new System.EventHandler(this.ButtonBCLKApply_Click);
             // 
             // tableLayoutPanel5
             // 
@@ -2524,6 +2578,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel13.PerformLayout();
             this.tabPagePstates.ResumeLayout(false);
             this.tabPagePstates.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBclk)).EndInit();
             this.tableLayoutPanel5.ResumeLayout(false);
             this.tableLayoutPanel5.PerformLayout();
             this.tabPageInfo.ResumeLayout(false);
@@ -2706,6 +2761,9 @@ namespace ZenStatesDebugTool
         private Label label49;
         private TextBox textBoxWmiArgument;
         private Button buttonWmiCmdSend;
+        private Label labelBCLK;
+        private Button buttonBCLKApply;
+        private NumericUpDown numericUpDownBclk;
     }
 }
 

@@ -144,6 +144,10 @@ namespace ZenStatesDebugTool
             InitPBO();
             PopulateWmiFunctions();
 
+            double? currentBclk = cpu.GetBclk();
+            labelBCLK.Text = currentBclk + " MHz";
+            numericUpDownBclk.Text = $"{currentBclk}";
+
             var prochotEnabled = cpu.IsProchotEnabled();
             checkBoxPROCHOT.Checked = prochotEnabled;
             //checkBoxPROCHOT.Enabled = prochotEnabled;
@@ -1456,6 +1460,16 @@ namespace ZenStatesDebugTool
                 text += "------------------------" + Environment.NewLine;
                 textBoxResult.Text = text + Environment.NewLine + textBoxResult.Text;
             }
+        }
+
+        private void ButtonBCLKApply_Click(object sender, EventArgs e)
+        {
+            double targetBclk = double.Parse(numericUpDownBclk.Text);
+            cpu.SetBclk(targetBclk);
+
+            double? currentBclk = cpu.GetBclk();
+            labelBCLK.Text = currentBclk + " MHz";
+            numericUpDownBclk.Text = $"{currentBclk}";
         }
     }
 }
