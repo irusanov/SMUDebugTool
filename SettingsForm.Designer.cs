@@ -1351,12 +1351,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_8.Enabled = false;
             this.numericUpDownCO_8.Location = new System.Drawing.Point(173, 3);
             this.numericUpDownCO_8.Maximum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             0});
             this.numericUpDownCO_8.Minimum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             -2147483648});
@@ -1568,12 +1568,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_0.Enabled = false;
             this.numericUpDownCO_0.Location = new System.Drawing.Point(63, 3);
             this.numericUpDownCO_0.Maximum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             0});
             this.numericUpDownCO_0.Minimum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             -2147483648});
@@ -1586,12 +1586,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_1.Enabled = false;
             this.numericUpDownCO_1.Location = new System.Drawing.Point(63, 25);
             this.numericUpDownCO_1.Maximum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             0});
             this.numericUpDownCO_1.Minimum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             -2147483648});
@@ -1604,12 +1604,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_2.Enabled = false;
             this.numericUpDownCO_2.Location = new System.Drawing.Point(63, 47);
             this.numericUpDownCO_2.Maximum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             0});
             this.numericUpDownCO_2.Minimum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             -2147483648});
@@ -1622,12 +1622,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_3.Enabled = false;
             this.numericUpDownCO_3.Location = new System.Drawing.Point(63, 69);
             this.numericUpDownCO_3.Maximum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             0});
             this.numericUpDownCO_3.Minimum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             -2147483648});
@@ -1640,12 +1640,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_4.Enabled = false;
             this.numericUpDownCO_4.Location = new System.Drawing.Point(63, 91);
             this.numericUpDownCO_4.Maximum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             0});
             this.numericUpDownCO_4.Minimum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             -2147483648});
@@ -1658,12 +1658,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_5.Enabled = false;
             this.numericUpDownCO_5.Location = new System.Drawing.Point(63, 113);
             this.numericUpDownCO_5.Maximum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             0});
             this.numericUpDownCO_5.Minimum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             -2147483648});
@@ -1676,12 +1676,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_6.Enabled = false;
             this.numericUpDownCO_6.Location = new System.Drawing.Point(63, 135);
             this.numericUpDownCO_6.Maximum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             0});
             this.numericUpDownCO_6.Minimum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             -2147483648});
@@ -1694,12 +1694,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_7.Enabled = false;
             this.numericUpDownCO_7.Location = new System.Drawing.Point(63, 157);
             this.numericUpDownCO_7.Maximum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             0});
             this.numericUpDownCO_7.Minimum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             -2147483648});
@@ -1712,12 +1712,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_9.Enabled = false;
             this.numericUpDownCO_9.Location = new System.Drawing.Point(173, 25);
             this.numericUpDownCO_9.Maximum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             0});
             this.numericUpDownCO_9.Minimum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             -2147483648});
@@ -1730,12 +1730,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_10.Enabled = false;
             this.numericUpDownCO_10.Location = new System.Drawing.Point(173, 47);
             this.numericUpDownCO_10.Maximum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             0});
             this.numericUpDownCO_10.Minimum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             -2147483648});
@@ -1748,12 +1748,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_11.Enabled = false;
             this.numericUpDownCO_11.Location = new System.Drawing.Point(173, 69);
             this.numericUpDownCO_11.Maximum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             0});
             this.numericUpDownCO_11.Minimum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             -2147483648});
@@ -1766,12 +1766,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_12.Enabled = false;
             this.numericUpDownCO_12.Location = new System.Drawing.Point(173, 91);
             this.numericUpDownCO_12.Maximum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             0});
             this.numericUpDownCO_12.Minimum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             -2147483648});
@@ -1784,12 +1784,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_13.Enabled = false;
             this.numericUpDownCO_13.Location = new System.Drawing.Point(173, 113);
             this.numericUpDownCO_13.Maximum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             0});
             this.numericUpDownCO_13.Minimum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             -2147483648});
@@ -1802,12 +1802,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_14.Enabled = false;
             this.numericUpDownCO_14.Location = new System.Drawing.Point(173, 135);
             this.numericUpDownCO_14.Maximum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             0});
             this.numericUpDownCO_14.Minimum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             -2147483648});
@@ -1820,12 +1820,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_15.Enabled = false;
             this.numericUpDownCO_15.Location = new System.Drawing.Point(173, 157);
             this.numericUpDownCO_15.Maximum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             0});
             this.numericUpDownCO_15.Minimum = new decimal(new int[] {
-            30,
+            99,
             0,
             0,
             -2147483648});
