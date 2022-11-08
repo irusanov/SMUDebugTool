@@ -181,8 +181,10 @@ namespace ZenStatesDebugTool
 
         private void PopulateCCDList(ComboBox.ObjectCollection l)
         {
+            int ccxInCcd = cpu.info.family == Cpu.Family.FAMILY_19H ? 1 : 2;
+            int coresInCcx = 8 / ccxInCcd;
             for (int core = 0; core < cpu.info.topology.cores; ++core)
-                l.Add(new CoreListItem(core / 8, core / 4, core));
+                l.Add(new CoreListItem(core / 8, core / coresInCcx, core));
         }
 
         private void PopulateMailboxesList(ComboBox.ObjectCollection l)
@@ -1470,6 +1472,38 @@ namespace ZenStatesDebugTool
             double? currentBclk = cpu.GetBclk();
             labelBCLK.Text = currentBclk + " MHz";
             numericUpDownBclk.Text = $"{currentBclk}";
+        }
+
+        private void BulkMarginChangeHandler(int ccd, int step = 1)
+        {
+            for (var i = ccd * 8; i < ccd * 8 + 8; ++i)
+            {
+                NumericUpDown control = (NumericUpDown)Controls.Find($"numericUpDownCO_{i}", true)[0];
+                if (control != null && control.Enabled)
+                {
+                    control.Value += step;
+                }
+            }
+        }
+
+        private void Button_ccd0_inc_Click(object sender, EventArgs e)
+        {
+            BulkMarginChangeHandler(0, 1);
+        }
+
+        private void Button_ccd1_inc_Click(object sender, EventArgs e)
+        {
+            BulkMarginChangeHandler(1, 1);
+        }
+
+        private void Button_ccd0_dec_Click(object sender, EventArgs e)
+        {
+            BulkMarginChangeHandler(0, -1);
+        }
+
+        private void Button_ccd1_dec_Click(object sender, EventArgs e)
+        {
+            BulkMarginChangeHandler(1, -1);
         }
     }
 }
