@@ -756,8 +756,13 @@ namespace ZenStatesDebugTool
                     case Cpu.CodeName.Naples:
                     case Cpu.CodeName.Colfax:
                     case Cpu.CodeName.Vermeer:
+                    //case Cpu.CodeName.Raphael:
                         ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
                         ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
+                        break;
+                    case Cpu.CodeName.Raphael:
+                        ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
+                        // ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
                         break;
                     case Cpu.CodeName.Rome:
                         ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
@@ -1366,7 +1371,7 @@ namespace ZenStatesDebugTool
                             for (var i = 0; i < Length; ++i)
                             {
                                 if (IDString[i] == "")
-                                    return;
+                                    break;
 
                                 WmiCmdListItem item = new WmiCmdListItem($"{IDString[i] + ": "}{ID[i]:X8}", ID[i], IDString[i].StartsWith("Set"));
                                 comboBoxAvailableCommands.Items.Add(item);
