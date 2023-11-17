@@ -99,6 +99,10 @@ namespace ZenStatesDebugTool
             this.label20 = new System.Windows.Forms.Label();
             this.textBoxMsrEax = new System.Windows.Forms.TextBox();
             this.tabPageCPUID = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel14 = new System.Windows.Forms.TableLayoutPanel();
+            this.label50 = new System.Windows.Forms.Label();
+            this.textBoxCpuid = new System.Windows.Forms.TextBox();
+            this.buttonCpuidDecode = new System.Windows.Forms.Button();
             this.tableLayoutPanel10 = new System.Windows.Forms.TableLayoutPanel();
             this.label21 = new System.Windows.Forms.Label();
             this.textBoxCPUIDAddress = new System.Windows.Forms.TextBox();
@@ -217,6 +221,7 @@ namespace ZenStatesDebugTool
             this.tabPageMsr.SuspendLayout();
             this.tableLayoutPanel9.SuspendLayout();
             this.tabPageCPUID.SuspendLayout();
+            this.tableLayoutPanel14.SuspendLayout();
             this.tableLayoutPanel10.SuspendLayout();
             this.tabPagePbo.SuspendLayout();
             this.tableLayoutPanel12.SuspendLayout();
@@ -985,7 +990,7 @@ namespace ZenStatesDebugTool
             this.textBoxMsrAddress.Name = "textBoxMsrAddress";
             this.textBoxMsrAddress.Size = new System.Drawing.Size(92, 20);
             this.textBoxMsrAddress.TabIndex = 1;
-            this.textBoxMsrAddress.Text = "0x00000000";
+            this.textBoxMsrAddress.Text = "0xC0011000";
             // 
             // buttonMsrRead
             // 
@@ -1052,7 +1057,7 @@ namespace ZenStatesDebugTool
             this.textBoxMsrStart.Name = "textBoxMsrStart";
             this.textBoxMsrStart.Size = new System.Drawing.Size(92, 20);
             this.textBoxMsrStart.TabIndex = 8;
-            this.textBoxMsrStart.Text = "0x00000000";
+            this.textBoxMsrStart.Text = "0xC0011000";
             // 
             // textBoxMsrEnd
             // 
@@ -1063,7 +1068,7 @@ namespace ZenStatesDebugTool
             this.textBoxMsrEnd.Name = "textBoxMsrEnd";
             this.textBoxMsrEnd.Size = new System.Drawing.Size(92, 20);
             this.textBoxMsrEnd.TabIndex = 9;
-            this.textBoxMsrEnd.Text = "0x0000FFFF";
+            this.textBoxMsrEnd.Text = "0xC0011FFF";
             // 
             // buttonMsrScan
             // 
@@ -1101,6 +1106,7 @@ namespace ZenStatesDebugTool
             // 
             // tabPageCPUID
             // 
+            this.tabPageCPUID.Controls.Add(this.tableLayoutPanel14);
             this.tabPageCPUID.Controls.Add(this.tableLayoutPanel10);
             this.tabPageCPUID.Location = new System.Drawing.Point(4, 22);
             this.tabPageCPUID.Name = "tabPageCPUID";
@@ -1109,6 +1115,58 @@ namespace ZenStatesDebugTool
             this.tabPageCPUID.TabIndex = 6;
             this.tabPageCPUID.Text = "CPUID";
             this.tabPageCPUID.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel14
+            // 
+            this.tableLayoutPanel14.AutoSize = true;
+            this.tableLayoutPanel14.ColumnCount = 4;
+            this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel14.Controls.Add(this.label50, 0, 0);
+            this.tableLayoutPanel14.Controls.Add(this.textBoxCpuid, 1, 0);
+            this.tableLayoutPanel14.Controls.Add(this.buttonCpuidDecode, 3, 0);
+            this.tableLayoutPanel14.Location = new System.Drawing.Point(3, 161);
+            this.tableLayoutPanel14.Name = "tableLayoutPanel14";
+            this.tableLayoutPanel14.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
+            this.tableLayoutPanel14.RowCount = 1;
+            this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel14.Size = new System.Drawing.Size(332, 39);
+            this.tableLayoutPanel14.TabIndex = 3;
+            // 
+            // label50
+            // 
+            this.label50.AutoSize = true;
+            this.label50.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label50.Location = new System.Drawing.Point(3, 5);
+            this.label50.MinimumSize = new System.Drawing.Size(77, 27);
+            this.label50.Name = "label50";
+            this.label50.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
+            this.label50.Size = new System.Drawing.Size(94, 29);
+            this.label50.TabIndex = 4;
+            this.label50.Text = "CPUID";
+            this.label50.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // textBoxCpuid
+            // 
+            this.textBoxCpuid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxCpuid.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxCpuid.Location = new System.Drawing.Point(104, 9);
+            this.textBoxCpuid.Margin = new System.Windows.Forms.Padding(4);
+            this.textBoxCpuid.Name = "textBoxCpuid";
+            this.textBoxCpuid.Size = new System.Drawing.Size(92, 20);
+            this.textBoxCpuid.TabIndex = 2;
+            // 
+            // buttonCpuidDecode
+            // 
+            this.buttonCpuidDecode.Location = new System.Drawing.Point(249, 8);
+            this.buttonCpuidDecode.Name = "buttonCpuidDecode";
+            this.buttonCpuidDecode.Size = new System.Drawing.Size(75, 23);
+            this.buttonCpuidDecode.TabIndex = 0;
+            this.buttonCpuidDecode.Text = "Decode";
+            this.buttonCpuidDecode.UseVisualStyleBackColor = true;
+            this.buttonCpuidDecode.Click += new System.EventHandler(this.ButtonCpuidDecode_Click);
             // 
             // tableLayoutPanel10
             // 
@@ -1164,7 +1222,7 @@ namespace ZenStatesDebugTool
             this.textBoxCPUIDAddress.Name = "textBoxCPUIDAddress";
             this.textBoxCPUIDAddress.Size = new System.Drawing.Size(92, 20);
             this.textBoxCPUIDAddress.TabIndex = 1;
-            this.textBoxCPUIDAddress.Text = "0x00000000";
+            this.textBoxCPUIDAddress.Text = "0x00000001";
             // 
             // buttonCPUIDRead
             // 
@@ -1363,12 +1421,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_8.Enabled = false;
             this.numericUpDownCO_8.Location = new System.Drawing.Point(173, 31);
             this.numericUpDownCO_8.Maximum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             0});
             this.numericUpDownCO_8.Minimum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             -2147483648});
@@ -1579,12 +1637,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_0.Enabled = false;
             this.numericUpDownCO_0.Location = new System.Drawing.Point(63, 31);
             this.numericUpDownCO_0.Maximum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             0});
             this.numericUpDownCO_0.Minimum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             -2147483648});
@@ -1598,12 +1656,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_1.Enabled = false;
             this.numericUpDownCO_1.Location = new System.Drawing.Point(63, 59);
             this.numericUpDownCO_1.Maximum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             0});
             this.numericUpDownCO_1.Minimum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             -2147483648});
@@ -1617,12 +1675,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_2.Enabled = false;
             this.numericUpDownCO_2.Location = new System.Drawing.Point(63, 87);
             this.numericUpDownCO_2.Maximum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             0});
             this.numericUpDownCO_2.Minimum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             -2147483648});
@@ -1636,12 +1694,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_3.Enabled = false;
             this.numericUpDownCO_3.Location = new System.Drawing.Point(63, 115);
             this.numericUpDownCO_3.Maximum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             0});
             this.numericUpDownCO_3.Minimum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             -2147483648});
@@ -1655,12 +1713,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_4.Enabled = false;
             this.numericUpDownCO_4.Location = new System.Drawing.Point(63, 143);
             this.numericUpDownCO_4.Maximum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             0});
             this.numericUpDownCO_4.Minimum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             -2147483648});
@@ -1674,12 +1732,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_5.Enabled = false;
             this.numericUpDownCO_5.Location = new System.Drawing.Point(63, 171);
             this.numericUpDownCO_5.Maximum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             0});
             this.numericUpDownCO_5.Minimum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             -2147483648});
@@ -1693,12 +1751,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_6.Enabled = false;
             this.numericUpDownCO_6.Location = new System.Drawing.Point(63, 199);
             this.numericUpDownCO_6.Maximum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             0});
             this.numericUpDownCO_6.Minimum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             -2147483648});
@@ -1712,12 +1770,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_7.Enabled = false;
             this.numericUpDownCO_7.Location = new System.Drawing.Point(63, 227);
             this.numericUpDownCO_7.Maximum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             0});
             this.numericUpDownCO_7.Minimum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             -2147483648});
@@ -1731,12 +1789,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_9.Enabled = false;
             this.numericUpDownCO_9.Location = new System.Drawing.Point(173, 59);
             this.numericUpDownCO_9.Maximum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             0});
             this.numericUpDownCO_9.Minimum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             -2147483648});
@@ -1750,12 +1808,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_10.Enabled = false;
             this.numericUpDownCO_10.Location = new System.Drawing.Point(173, 87);
             this.numericUpDownCO_10.Maximum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             0});
             this.numericUpDownCO_10.Minimum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             -2147483648});
@@ -1769,12 +1827,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_11.Enabled = false;
             this.numericUpDownCO_11.Location = new System.Drawing.Point(173, 115);
             this.numericUpDownCO_11.Maximum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             0});
             this.numericUpDownCO_11.Minimum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             -2147483648});
@@ -1788,12 +1846,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_12.Enabled = false;
             this.numericUpDownCO_12.Location = new System.Drawing.Point(173, 143);
             this.numericUpDownCO_12.Maximum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             0});
             this.numericUpDownCO_12.Minimum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             -2147483648});
@@ -1807,12 +1865,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_13.Enabled = false;
             this.numericUpDownCO_13.Location = new System.Drawing.Point(173, 171);
             this.numericUpDownCO_13.Maximum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             0});
             this.numericUpDownCO_13.Minimum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             -2147483648});
@@ -1826,12 +1884,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_14.Enabled = false;
             this.numericUpDownCO_14.Location = new System.Drawing.Point(173, 199);
             this.numericUpDownCO_14.Maximum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             0});
             this.numericUpDownCO_14.Minimum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             -2147483648});
@@ -1845,12 +1903,12 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_15.Enabled = false;
             this.numericUpDownCO_15.Location = new System.Drawing.Point(173, 227);
             this.numericUpDownCO_15.Maximum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             0});
             this.numericUpDownCO_15.Minimum = new decimal(new int[] {
-            99,
+            999,
             0,
             0,
             -2147483648});
@@ -2624,6 +2682,8 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel9.PerformLayout();
             this.tabPageCPUID.ResumeLayout(false);
             this.tabPageCPUID.PerformLayout();
+            this.tableLayoutPanel14.ResumeLayout(false);
+            this.tableLayoutPanel14.PerformLayout();
             this.tableLayoutPanel10.ResumeLayout(false);
             this.tableLayoutPanel10.PerformLayout();
             this.tabPagePbo.ResumeLayout(false);
@@ -2840,6 +2900,10 @@ namespace ZenStatesDebugTool
         private Button button2;
         private Button button3;
         private Button button4;
+        private TableLayoutPanel tableLayoutPanel14;
+        private Label label50;
+        private TextBox textBoxCpuid;
+        private Button buttonCpuidDecode;
     }
 }
 

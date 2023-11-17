@@ -6,12 +6,14 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Management;
+using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using ZenStates.Core;
 using ZenStatesDebugTool.Properties;
 using ZenStatesDebugTool.Utils;
+using static ZenStates.Core.Cpu;
 
 namespace ZenStatesDebugTool
 {
@@ -1509,6 +1511,39 @@ namespace ZenStatesDebugTool
         private void Button_ccd1_dec_Click(object sender, EventArgs e)
         {
             BulkMarginChangeHandler(1, -1);
+        }
+
+        private void ButtonCpuidDecode_Click(object sender, EventArgs e)
+        {
+            TryConvertToUint(textBoxCpuid.Text, out uint eax);
+
+            Cpu.CPUInfo info = new Cpu.CPUInfo
+            {
+                cpuid = eax
+            };
+            info.family = (Family)(((info.cpuid & 0xf00) >> 8) + ((info.cpuid & 0xff00000) >> 20));
+            info.baseModel = (info.cpuid & 0xf0) >> 4;
+            info.extModel = (info.cpuid & 0xf0000) >> 12;
+            info.model = info.baseModel + info.extModel;
+
+            string responseString =
+                Environment.NewLine +
+                $"cpuid:  0x{info.cpuid:X8}" +
+                Environment.NewLine +
+                $"family:  {info.family}" +
+                Environment.NewLine +
+                $"base model:  0x{info.baseModel:X2}" +
+                Environment.NewLine +
+                $"ext. model:  0x{info.extModel:X2}" +
+                Environment.NewLine +
+                $"model:  0x{info.model:X2}" +
+                Environment.NewLine +
+                Environment.NewLine;
+
+            Invoke(new MethodInvoker(delegate
+            {
+                textBoxResult.Text += responseString;
+            }));
         }
     }
 }
