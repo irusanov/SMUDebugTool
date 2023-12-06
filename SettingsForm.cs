@@ -1375,7 +1375,7 @@ namespace ZenStatesDebugTool
                                 if (IDString[i] == "")
                                     break;
 
-                                WmiCmdListItem item = new WmiCmdListItem($"{IDString[i] + ": "}{ID[i]:X8}", ID[i], IDString[i].StartsWith("Set"));
+                                WmiCmdListItem item = new WmiCmdListItem($"{IDString[i] + ": "}{ID[i]:X8}", ID[i], !IDString[i].StartsWith("Get"));
                                 comboBoxAvailableCommands.Items.Add(item);
                             }
                         }
