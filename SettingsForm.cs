@@ -1,8 +1,10 @@
 using Microsoft.VisualBasic.Devices;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Management;
@@ -13,7 +15,10 @@ using System.Windows.Forms;
 using ZenStates.Core;
 using ZenStatesDebugTool.Properties;
 using ZenStatesDebugTool.Utils;
+using Application = System.Windows.Forms.Application;
 using static ZenStates.Core.Cpu;
+using Microsoft.Win32.TaskScheduler;
+using System.Security.Principal;
 
 namespace ZenStatesDebugTool
 {
@@ -30,6 +35,11 @@ namespace ZenStatesDebugTool
         private ManagementObject classInstance;
         private string instanceName;
         private ManagementBaseObject pack;
+        private const string filename = "co_profile.txt";
+        private const string profilesFolderName = "profiles";
+        private const string defaultsPath = profilesFolderName + @"\" + filename;
+        private readonly string[] args;
+        private readonly bool isApplyProfile;
 
         public SettingsForm()
         {
@@ -39,7 +49,14 @@ namespace ZenStatesDebugTool
 
             try
             {
+                args = Environment.GetCommandLineArgs();
+                foreach (string arg in args)
+                {
+                    isApplyProfile |= (arg.ToLower() == "--applyprofile");
+                }
+
                 cpu = new Cpu();
+
                 InitForm();
             }
             catch (Exception ex)
@@ -52,7 +69,7 @@ namespace ZenStatesDebugTool
 
         private void ExitApplication()
         {
-            if (cpu != null) cpu.Dispose();
+            cpu?.Dispose();
 
             if (Application.MessageLoop)
                 Application.Exit();
@@ -117,6 +134,12 @@ namespace ZenStatesDebugTool
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
+            if (!Directory.Exists(profilesFolderName))
+            {
+                MessageBox.Show("Profiles directory does not exist, created one for you.");
+                Directory.CreateDirectory(profilesFolderName);
+            }
+
             InitTestMailbox(cpu.smu.Rsmu);
             DisplaySystemInfo();
 
@@ -159,6 +182,13 @@ namespace ZenStatesDebugTool
 
             ToolTip toolTip = new ToolTip();
             toolTip.SetToolTip(checkBoxPROCHOT, "Disables temperature throttling. Can be useful on extreme cooling.");
+
+            if (isApplyProfile)
+            {
+                tabControl1.SelectedTab = tabPagePbo;
+                BtnLoadCOProfile_Click(null, null);
+                ButtonApplyCO_Click(null, null);
+            }
 
             SetStatusText($"{cpu.info.codeName}. Ready.");
         }
@@ -215,7 +245,7 @@ namespace ZenStatesDebugTool
 
         private void InitPBO()
         {
-            if (cpu.info.family == Cpu.Family.FAMILY_19H)
+            if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0)
             {
                 for (var i = 0; i < cpu.info.topology.physicalCores; i++)
                 {
@@ -232,6 +262,17 @@ namespace ZenStatesDebugTool
                     }
                 }
             }
+
+            /*using (RegistryKey key = Registry.CurrentUser.OpenSubKey
+                ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
+            {
+                if (key != null)
+                {
+                    checkBoxApplyCOStartup.Checked = key.GetValue("RyzenSDT") != null;
+                }
+            }*/
+
+            checkBoxApplyCOStartup.Checked = TaskExists("RyzenSDT");
         }
 
         private void ApplyFrequencyAllCoreSetting(int frequency)
@@ -1311,9 +1352,10 @@ namespace ZenStatesDebugTool
             InitPBO();
         }
 
-        private void buttonApplyCO_Click(object sender, EventArgs e)
+        private void ApplyCO()
         {
-            if (cpu.info.family == Cpu.Family.FAMILY_19H)
+            //if (cpu.info.family == Cpu.Family.FAMILY_19H)
+            if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0)
             {
                 for (var i = 0; i < cpu.info.topology.physicalCores; i++)
                 {
@@ -1327,7 +1369,15 @@ namespace ZenStatesDebugTool
                     }
                 }
             }
+            else
+            {
+                HandleError("Not supported");
+            }
+        }
 
+        private void ButtonApplyCO_Click(object sender, EventArgs e)
+        {
+            ApplyCO();
             InitPBO();
         }
 
@@ -1515,7 +1565,7 @@ namespace ZenStatesDebugTool
 
         private void ButtonCpuidDecode_Click(object sender, EventArgs e)
         {
-            TryConvertToUint(textBoxCpuid.Text, out uint eax);
+            TryConvertToUint(textBoxCpuid.Text.Trim(), out uint eax);
 
             Cpu.CPUInfo info = new Cpu.CPUInfo
             {
@@ -1530,7 +1580,7 @@ namespace ZenStatesDebugTool
                 Environment.NewLine +
                 $"cpuid:  0x{info.cpuid:X8}" +
                 Environment.NewLine +
-                $"family:  {info.family}" +
+                $"family:  {info.family} ({(uint)info.family:X2}h)" +
                 Environment.NewLine +
                 $"base model:  0x{info.baseModel:X2}" +
                 Environment.NewLine +
@@ -1544,6 +1594,183 @@ namespace ZenStatesDebugTool
             {
                 textBoxResult.Text += responseString;
             }));
+        }
+
+        private void BtnSaveCOProfile_Click(object sender, EventArgs e)
+        {
+            List<Tuple<int, int>> margins = new List<Tuple<int, int>>();
+
+            if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0)
+            {
+                for (var i = 0; i < 16; i++)
+                {
+                    NumericUpDown control = (NumericUpDown)Controls.Find($"numericUpDownCO_{i}", true)[0];
+                    if (control != null && control.Enabled)
+                    {
+                        margins.Add(new Tuple<int, int>(i, Convert.ToInt32(control.Value)));
+                    }
+                }
+            }
+
+            if (margins.Count > 0)
+            {
+                try
+                {
+                    using (StreamWriter file = new StreamWriter(defaultsPath))
+                    {
+                        foreach (var entry in margins)
+                            file.WriteLine("[{0},{1}]", entry.Item1, entry.Item2);
+
+                        textBoxResult.Text = $"Profile saved in {defaultsPath}" + Environment.NewLine + textBoxResult.Text;
+                    }
+                }
+                catch (Exception)
+                {
+                    HandleError("Could not save profile to file!");
+                }
+            }
+        }
+
+        private List<Tuple<int, int>> LoadCOProfile()
+        {
+            List<Tuple<int, int>> margins = new List<Tuple<int, int>>();
+            try
+            {
+                if (!Directory.Exists(profilesFolderName))
+                {
+                    MessageBox.Show("Profiles directory does not exist, created one for you.");
+                    Directory.CreateDirectory(profilesFolderName);
+                }
+
+                // load from file if it exists
+                if (File.Exists(defaultsPath))
+                {
+                    var lines = File.ReadAllLines(defaultsPath);
+                    foreach (var line in lines)
+                    {
+                        if (line.StartsWith("["))
+                        {
+                            var values = line.Replace("[", "").Replace("]", "").Replace(" ", "").Split(',');
+                            Int32.TryParse(values[0], NumberStyles.Integer, CultureInfo.CurrentCulture, out int index);
+                            Int32.TryParse(values[1], NumberStyles.Integer, CultureInfo.CurrentCulture, out int margin);
+                            margins.Add(new Tuple<int, int>(index, margin));
+                        }
+                    }
+                }
+                else
+                {
+                    HandleError("No CO profile saved.");
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleError("Could not load saved profile!");
+            }
+            
+            return margins;
+        }
+
+        private void BtnLoadCOProfile_Click(object sender, EventArgs e)
+        {
+            List<Tuple<int, int>> margins = LoadCOProfile();
+
+            if (margins.Count > 0 && cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0)
+            {
+                for (var i = 0; i < margins.Count; i++)
+                {
+                    NumericUpDown control = (NumericUpDown)Controls.Find($"numericUpDownCO_{margins[i].Item1}", true)[0];
+                    if (control != null && control.Enabled)
+                    {
+                        control.Value = margins[i].Item2;
+                    }
+                }
+
+                textBoxResult.Text = $"Saved CO profile loaded from {defaultsPath}" + Environment.NewLine + textBoxResult.Text;
+            }
+        }
+
+        static bool TaskExists(string taskName)
+        {
+            // Open the task service
+            using (TaskService taskService = new TaskService())
+            {
+                // Attempt to retrieve the task
+                Task task = taskService.GetTask(taskName);
+                return task != null;
+            }
+        }
+
+        static void AddTaskToScheduler(string taskName, string executablePath, int delaySeconds = 0)
+        {
+            // Create a new task service
+            using (TaskService taskService = new TaskService())
+            {
+                // Create a new task definition
+                TaskDefinition taskDefinition = taskService.NewTask();
+
+                // Set the task properties
+                taskDefinition.RegistrationInfo.Description = "Run Ryzen SMU Debug Tool on user logon to apply CO profile. Automatically created by RyzenSDT. Remove manually or from the checkbox in PBO tab.";
+                taskDefinition.Principal.UserId = WindowsIdentity.GetCurrent().Name;
+                taskDefinition.Principal.RunLevel = TaskRunLevel.Highest;
+                taskDefinition.Principal.LogonType = TaskLogonType.InteractiveToken;
+
+                // Create a trigger that starts the task at logon with a specified delay
+                LogonTrigger logonTrigger = new LogonTrigger();
+                logonTrigger.Delay = TimeSpan.FromSeconds(delaySeconds); // Set the delay
+                taskDefinition.Triggers.Add(logonTrigger);
+
+                // Create an action that runs the specified executable
+                ExecAction execAction = new ExecAction(executablePath, "--applyprofile");
+                taskDefinition.Actions.Add(execAction);
+
+                // Register the task in the root folder of the Task Scheduler
+                taskService.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
+            }
+        }
+
+        static void RemoveTaskFromScheduler(string taskName)
+        {
+            // Open the task service
+            using (TaskService taskService = new TaskService())
+            {
+                // Delete the task from the Task Scheduler
+                taskService.RootFolder.DeleteTask(taskName, false);
+            }
+        }
+
+        private void SetStartup(bool isChecked = false)
+        {
+            /*using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
+            {
+                if (isChecked && key.GetValue("RyzenSDT") == null)
+                {
+                    key.SetValue("RyzenSDT", Application.ExecutablePath + " --applyprofile");
+                }
+                else if (!isChecked && key.GetValue("RyzenSDT") != null)
+                {
+                    key.DeleteValue("RyzenSDT", false);
+                }
+            }*/
+
+            if (isChecked && !TaskExists("RyzenSDT"))
+            {
+                AddTaskToScheduler("RyzenSDT", Application.ExecutablePath, 0);
+            }
+            else
+            {
+                RemoveTaskFromScheduler("RyzenSDT");
+            }
+        }
+
+        private void CheckBoxApplyCOStartup_CheckedChanged(object sender, EventArgs e)
+        {
+            SetStartup((sender as CheckBox).Checked);
+            textBoxResult.Text = $"Startup settings saved." + Environment.NewLine + textBoxResult.Text;
+        }
+
+        private void tableLayoutPanel14_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

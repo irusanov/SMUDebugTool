@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace ZenStatesDebugTool
@@ -156,6 +156,9 @@ namespace ZenStatesDebugTool
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.btnSaveCOProfile = new System.Windows.Forms.Button();
+            this.btnLoadCOProfile = new System.Windows.Forms.Button();
+            this.checkBoxApplyCOStartup = new System.Windows.Forms.CheckBox();
             this.tabPageWmi = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel13 = new System.Windows.Forms.TableLayoutPanel();
             this.label49 = new System.Windows.Forms.Label();
@@ -275,7 +278,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel1.Controls.Add(this.comboBoxMailboxSelect, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.textBoxCMD, 1, 4);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(4, 4);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(0, 6, 0, 6);
             this.tableLayoutPanel1.RowCount = 6;
@@ -322,7 +325,7 @@ namespace ZenStatesDebugTool
             this.textBoxCMDAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCMDAddress.HideSelection = false;
             this.textBoxCMDAddress.Location = new System.Drawing.Point(138, 45);
-            this.textBoxCMDAddress.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxCMDAddress.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxCMDAddress.Name = "textBoxCMDAddress";
             this.textBoxCMDAddress.Size = new System.Drawing.Size(123, 23);
             this.textBoxCMDAddress.TabIndex = 2;
@@ -333,7 +336,7 @@ namespace ZenStatesDebugTool
             this.textBoxRSPAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRSPAddress.HideSelection = false;
             this.textBoxRSPAddress.Location = new System.Drawing.Point(138, 78);
-            this.textBoxRSPAddress.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxRSPAddress.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxRSPAddress.Name = "textBoxRSPAddress";
             this.textBoxRSPAddress.Size = new System.Drawing.Size(123, 23);
             this.textBoxRSPAddress.TabIndex = 3;
@@ -358,7 +361,7 @@ namespace ZenStatesDebugTool
             this.textBoxARG0.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxARG0.HideSelection = false;
             this.textBoxARG0.Location = new System.Drawing.Point(138, 177);
-            this.textBoxARG0.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxARG0.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxARG0.Name = "textBoxARG0";
             this.textBoxARG0.Size = new System.Drawing.Size(123, 23);
             this.textBoxARG0.TabIndex = 6;
@@ -397,7 +400,7 @@ namespace ZenStatesDebugTool
             this.textBoxARGAddress.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxARGAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxARGAddress.Location = new System.Drawing.Point(138, 111);
-            this.textBoxARGAddress.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxARGAddress.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxARGAddress.Name = "textBoxARGAddress";
             this.textBoxARGAddress.Size = new System.Drawing.Size(123, 23);
             this.textBoxARGAddress.TabIndex = 11;
@@ -423,7 +426,7 @@ namespace ZenStatesDebugTool
             "MP1",
             "HSMP"});
             this.comboBoxMailboxSelect.Location = new System.Drawing.Point(138, 11);
-            this.comboBoxMailboxSelect.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.comboBoxMailboxSelect.Margin = new System.Windows.Forms.Padding(5);
             this.comboBoxMailboxSelect.Name = "comboBoxMailboxSelect";
             this.comboBoxMailboxSelect.Size = new System.Drawing.Size(121, 24);
             this.comboBoxMailboxSelect.TabIndex = 13;
@@ -434,7 +437,7 @@ namespace ZenStatesDebugTool
             this.textBoxCMD.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCMD.Hexadecimal = true;
             this.textBoxCMD.Location = new System.Drawing.Point(138, 144);
-            this.textBoxCMD.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxCMD.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxCMD.Maximum = new decimal(new int[] {
             255,
             0,
@@ -454,7 +457,7 @@ namespace ZenStatesDebugTool
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.labelStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 417);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 461);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 19, 0);
             this.statusStrip1.Size = new System.Drawing.Size(869, 26);
@@ -481,7 +484,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel2.Controls.Add(this.buttonDefaults, 0, 4);
             this.tableLayoutPanel2.Controls.Add(this.buttonApply, 0, 3);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(329, 4);
-            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.Padding = new System.Windows.Forms.Padding(5, 6, 7, 6);
             this.tableLayoutPanel2.RowCount = 5;
@@ -496,7 +499,7 @@ namespace ZenStatesDebugTool
             // buttonSmuLog
             // 
             this.buttonSmuLog.Location = new System.Drawing.Point(9, 46);
-            this.buttonSmuLog.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonSmuLog.Margin = new System.Windows.Forms.Padding(4);
             this.buttonSmuLog.Name = "buttonSmuLog";
             this.buttonSmuLog.Size = new System.Drawing.Size(100, 28);
             this.buttonSmuLog.TabIndex = 5;
@@ -508,7 +511,7 @@ namespace ZenStatesDebugTool
             // 
             this.buttonProbe.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonProbe.Location = new System.Drawing.Point(9, 82);
-            this.buttonProbe.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonProbe.Margin = new System.Windows.Forms.Padding(4);
             this.buttonProbe.Name = "buttonProbe";
             this.buttonProbe.Size = new System.Drawing.Size(100, 28);
             this.buttonProbe.TabIndex = 2;
@@ -519,7 +522,7 @@ namespace ZenStatesDebugTool
             // buttonPMTable
             // 
             this.buttonPMTable.Location = new System.Drawing.Point(9, 10);
-            this.buttonPMTable.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonPMTable.Margin = new System.Windows.Forms.Padding(4);
             this.buttonPMTable.Name = "buttonPMTable";
             this.buttonPMTable.Size = new System.Drawing.Size(100, 28);
             this.buttonPMTable.TabIndex = 3;
@@ -531,7 +534,7 @@ namespace ZenStatesDebugTool
             // 
             this.buttonDefaults.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonDefaults.Location = new System.Drawing.Point(9, 154);
-            this.buttonDefaults.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonDefaults.Margin = new System.Windows.Forms.Padding(4);
             this.buttonDefaults.Name = "buttonDefaults";
             this.buttonDefaults.Size = new System.Drawing.Size(100, 28);
             this.buttonDefaults.TabIndex = 1;
@@ -543,7 +546,7 @@ namespace ZenStatesDebugTool
             // 
             this.buttonApply.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonApply.Location = new System.Drawing.Point(9, 118);
-            this.buttonApply.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonApply.Margin = new System.Windows.Forms.Padding(4);
             this.buttonApply.Name = "buttonApply";
             this.buttonApply.Size = new System.Drawing.Size(100, 28);
             this.buttonApply.TabIndex = 0;
@@ -564,10 +567,11 @@ namespace ZenStatesDebugTool
             this.tabControl1.Controls.Add(this.tabPageInfo);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(7, 6);
-            this.tabControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(4);
+            this.tabControl1.Multiline = true;
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(461, 405);
+            this.tabControl1.Size = new System.Drawing.Size(461, 449);
             this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.tabControl1.TabIndex = 2;
             this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.TabControl1_Selected);
@@ -575,11 +579,11 @@ namespace ZenStatesDebugTool
             // tabPageCPU
             // 
             this.tabPageCPU.Controls.Add(this.tableLayoutPanel8);
-            this.tabPageCPU.Location = new System.Drawing.Point(4, 25);
-            this.tabPageCPU.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabPageCPU.Location = new System.Drawing.Point(4, 46);
+            this.tabPageCPU.Margin = new System.Windows.Forms.Padding(4);
             this.tabPageCPU.Name = "tabPageCPU";
-            this.tabPageCPU.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.tabPageCPU.Size = new System.Drawing.Size(453, 376);
+            this.tabPageCPU.Padding = new System.Windows.Forms.Padding(4);
+            this.tabPageCPU.Size = new System.Drawing.Size(453, 399);
             this.tabPageCPU.TabIndex = 4;
             this.tabPageCPU.Text = "CPU";
             this.tabPageCPU.UseVisualStyleBackColor = true;
@@ -603,7 +607,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel8.Controls.Add(this.checkBoxPROCHOT, 0, 6);
             this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel8.Location = new System.Drawing.Point(4, 4);
-            this.tableLayoutPanel8.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel8.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel8.Name = "tableLayoutPanel8";
             this.tableLayoutPanel8.Padding = new System.Windows.Forms.Padding(0, 6, 7, 6);
             this.tableLayoutPanel8.RowCount = 7;
@@ -621,7 +625,7 @@ namespace ZenStatesDebugTool
             // 
             this.buttonApplyPROCHOT.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonApplyPROCHOT.Location = new System.Drawing.Point(333, 160);
-            this.buttonApplyPROCHOT.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonApplyPROCHOT.Margin = new System.Windows.Forms.Padding(4);
             this.buttonApplyPROCHOT.Name = "buttonApplyPROCHOT";
             this.buttonApplyPROCHOT.Size = new System.Drawing.Size(101, 28);
             this.buttonApplyPROCHOT.TabIndex = 12;
@@ -633,7 +637,7 @@ namespace ZenStatesDebugTool
             // 
             this.buttonApplySC.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonApplySC.Location = new System.Drawing.Point(333, 110);
-            this.buttonApplySC.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonApplySC.Margin = new System.Windows.Forms.Padding(4);
             this.buttonApplySC.Name = "buttonApplySC";
             this.buttonApplySC.Size = new System.Drawing.Size(101, 30);
             this.buttonApplySC.TabIndex = 5;
@@ -645,7 +649,7 @@ namespace ZenStatesDebugTool
             // 
             this.buttonApplyAC.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonApplyAC.Location = new System.Drawing.Point(333, 35);
-            this.buttonApplyAC.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonApplyAC.Margin = new System.Windows.Forms.Padding(4);
             this.buttonApplyAC.Name = "buttonApplyAC";
             this.buttonApplyAC.Size = new System.Drawing.Size(101, 30);
             this.buttonApplyAC.TabIndex = 2;
@@ -685,7 +689,7 @@ namespace ZenStatesDebugTool
             this.comboBoxACF.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxACF.FormattingEnabled = true;
             this.comboBoxACF.Location = new System.Drawing.Point(4, 35);
-            this.comboBoxACF.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.comboBoxACF.Margin = new System.Windows.Forms.Padding(4);
             this.comboBoxACF.Name = "comboBoxACF";
             this.comboBoxACF.Size = new System.Drawing.Size(125, 24);
             this.comboBoxACF.TabIndex = 9;
@@ -696,7 +700,7 @@ namespace ZenStatesDebugTool
             this.comboBoxSCF.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxSCF.FormattingEnabled = true;
             this.comboBoxSCF.Location = new System.Drawing.Point(4, 110);
-            this.comboBoxSCF.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.comboBoxSCF.Margin = new System.Windows.Forms.Padding(4);
             this.comboBoxSCF.Name = "comboBoxSCF";
             this.comboBoxSCF.Size = new System.Drawing.Size(125, 24);
             this.comboBoxSCF.TabIndex = 10;
@@ -707,7 +711,7 @@ namespace ZenStatesDebugTool
             this.comboBoxCore.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxCore.FormattingEnabled = true;
             this.comboBoxCore.Location = new System.Drawing.Point(137, 110);
-            this.comboBoxCore.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.comboBoxCore.Margin = new System.Windows.Forms.Padding(4);
             this.comboBoxCore.Name = "comboBoxCore";
             this.comboBoxCore.Size = new System.Drawing.Size(125, 24);
             this.comboBoxCore.TabIndex = 8;
@@ -718,7 +722,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel8.SetColumnSpan(this.checkBoxPROCHOT, 3);
             this.checkBoxPROCHOT.Dock = System.Windows.Forms.DockStyle.Fill;
             this.checkBoxPROCHOT.Location = new System.Drawing.Point(4, 160);
-            this.checkBoxPROCHOT.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.checkBoxPROCHOT.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxPROCHOT.Name = "checkBoxPROCHOT";
             this.checkBoxPROCHOT.Size = new System.Drawing.Size(321, 28);
             this.checkBoxPROCHOT.TabIndex = 11;
@@ -729,10 +733,10 @@ namespace ZenStatesDebugTool
             // 
             this.tabPageSmu.Controls.Add(this.tableLayoutPanel7);
             this.tabPageSmu.Controls.Add(this.tableLayoutPanel6);
-            this.tabPageSmu.Location = new System.Drawing.Point(4, 25);
+            this.tabPageSmu.Location = new System.Drawing.Point(4, 46);
             this.tabPageSmu.Margin = new System.Windows.Forms.Padding(0);
             this.tabPageSmu.Name = "tabPageSmu";
-            this.tabPageSmu.Size = new System.Drawing.Size(453, 375);
+            this.tabPageSmu.Size = new System.Drawing.Size(453, 399);
             this.tabPageSmu.TabIndex = 0;
             this.tabPageSmu.Text = "SMU";
             this.tabPageSmu.UseVisualStyleBackColor = true;
@@ -745,7 +749,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel7.Location = new System.Drawing.Point(0, 219);
-            this.tableLayoutPanel7.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel7.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel7.Name = "tableLayoutPanel7";
             this.tableLayoutPanel7.RowCount = 1;
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -763,7 +767,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel6.Controls.Add(this.tableLayoutPanel1, 0, 0);
             this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel6.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel6.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel6.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.RowCount = 1;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -773,11 +777,11 @@ namespace ZenStatesDebugTool
             // tabPagePci
             // 
             this.tabPagePci.Controls.Add(this.tableLayoutPanel4);
-            this.tabPagePci.Location = new System.Drawing.Point(4, 25);
-            this.tabPagePci.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabPagePci.Location = new System.Drawing.Point(4, 46);
+            this.tabPagePci.Margin = new System.Windows.Forms.Padding(4);
             this.tabPagePci.Name = "tabPagePci";
-            this.tabPagePci.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.tabPagePci.Size = new System.Drawing.Size(453, 375);
+            this.tabPagePci.Padding = new System.Windows.Forms.Padding(4);
+            this.tabPagePci.Size = new System.Drawing.Size(453, 399);
             this.tabPagePci.TabIndex = 1;
             this.tabPagePci.Text = "PCI";
             this.tabPagePci.UseVisualStyleBackColor = true;
@@ -803,7 +807,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel4.Controls.Add(this.buttonPciScan, 3, 3);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel4.Location = new System.Drawing.Point(4, 4);
-            this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.Padding = new System.Windows.Forms.Padding(0, 6, 7, 6);
             this.tableLayoutPanel4.RowCount = 5;
@@ -819,7 +823,7 @@ namespace ZenStatesDebugTool
             // 
             this.buttonPciWrite.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonPciWrite.Location = new System.Drawing.Point(334, 49);
-            this.buttonPciWrite.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonPciWrite.Margin = new System.Windows.Forms.Padding(4);
             this.buttonPciWrite.Name = "buttonPciWrite";
             this.buttonPciWrite.Size = new System.Drawing.Size(100, 31);
             this.buttonPciWrite.TabIndex = 5;
@@ -846,7 +850,7 @@ namespace ZenStatesDebugTool
             this.textBoxPciAddress.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxPciAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxPciAddress.Location = new System.Drawing.Point(138, 11);
-            this.textBoxPciAddress.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxPciAddress.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxPciAddress.Name = "textBoxPciAddress";
             this.textBoxPciAddress.Size = new System.Drawing.Size(123, 23);
             this.textBoxPciAddress.TabIndex = 1;
@@ -857,7 +861,7 @@ namespace ZenStatesDebugTool
             // 
             this.buttonPciRead.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonPciRead.Location = new System.Drawing.Point(334, 10);
-            this.buttonPciRead.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonPciRead.Margin = new System.Windows.Forms.Padding(4);
             this.buttonPciRead.Name = "buttonPciRead";
             this.buttonPciRead.Size = new System.Drawing.Size(100, 31);
             this.buttonPciRead.TabIndex = 2;
@@ -884,7 +888,7 @@ namespace ZenStatesDebugTool
             this.textBoxPciValue.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxPciValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxPciValue.Location = new System.Drawing.Point(138, 50);
-            this.textBoxPciValue.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxPciValue.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxPciValue.Name = "textBoxPciValue";
             this.textBoxPciValue.Size = new System.Drawing.Size(123, 23);
             this.textBoxPciValue.TabIndex = 4;
@@ -919,7 +923,7 @@ namespace ZenStatesDebugTool
             this.textBoxPciStartReg.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxPciStartReg.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxPciStartReg.Location = new System.Drawing.Point(138, 114);
-            this.textBoxPciStartReg.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxPciStartReg.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxPciStartReg.Name = "textBoxPciStartReg";
             this.textBoxPciStartReg.Size = new System.Drawing.Size(123, 23);
             this.textBoxPciStartReg.TabIndex = 8;
@@ -930,7 +934,7 @@ namespace ZenStatesDebugTool
             this.textBoxPciEndReg.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxPciEndReg.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxPciEndReg.Location = new System.Drawing.Point(138, 153);
-            this.textBoxPciEndReg.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxPciEndReg.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxPciEndReg.Name = "textBoxPciEndReg";
             this.textBoxPciEndReg.Size = new System.Drawing.Size(123, 23);
             this.textBoxPciEndReg.TabIndex = 9;
@@ -940,7 +944,7 @@ namespace ZenStatesDebugTool
             // 
             this.buttonPciScan.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonPciScan.Location = new System.Drawing.Point(334, 113);
-            this.buttonPciScan.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonPciScan.Margin = new System.Windows.Forms.Padding(4);
             this.buttonPciScan.Name = "buttonPciScan";
             this.buttonPciScan.Size = new System.Drawing.Size(100, 31);
             this.buttonPciScan.TabIndex = 10;
@@ -951,11 +955,11 @@ namespace ZenStatesDebugTool
             // tabPageMsr
             // 
             this.tabPageMsr.Controls.Add(this.tableLayoutPanel9);
-            this.tabPageMsr.Location = new System.Drawing.Point(4, 25);
-            this.tabPageMsr.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabPageMsr.Location = new System.Drawing.Point(4, 46);
+            this.tabPageMsr.Margin = new System.Windows.Forms.Padding(4);
             this.tabPageMsr.Name = "tabPageMsr";
-            this.tabPageMsr.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.tabPageMsr.Size = new System.Drawing.Size(453, 375);
+            this.tabPageMsr.Padding = new System.Windows.Forms.Padding(4);
+            this.tabPageMsr.Size = new System.Drawing.Size(453, 399);
             this.tabPageMsr.TabIndex = 5;
             this.tabPageMsr.Text = "MSR";
             this.tabPageMsr.UseVisualStyleBackColor = true;
@@ -983,7 +987,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel9.Controls.Add(this.textBoxMsrEax, 1, 2);
             this.tableLayoutPanel9.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel9.Location = new System.Drawing.Point(4, 4);
-            this.tableLayoutPanel9.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel9.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel9.Name = "tableLayoutPanel9";
             this.tableLayoutPanel9.Padding = new System.Windows.Forms.Padding(0, 6, 7, 6);
             this.tableLayoutPanel9.RowCount = 6;
@@ -1000,7 +1004,7 @@ namespace ZenStatesDebugTool
             // 
             this.buttonMsrWrite.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonMsrWrite.Location = new System.Drawing.Point(333, 82);
-            this.buttonMsrWrite.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonMsrWrite.Margin = new System.Windows.Forms.Padding(4);
             this.buttonMsrWrite.Name = "buttonMsrWrite";
             this.buttonMsrWrite.Size = new System.Drawing.Size(101, 31);
             this.buttonMsrWrite.TabIndex = 5;
@@ -1027,7 +1031,7 @@ namespace ZenStatesDebugTool
             this.textBoxMsrAddress.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxMsrAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxMsrAddress.Location = new System.Drawing.Point(138, 11);
-            this.textBoxMsrAddress.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxMsrAddress.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxMsrAddress.Name = "textBoxMsrAddress";
             this.textBoxMsrAddress.Size = new System.Drawing.Size(123, 23);
             this.textBoxMsrAddress.TabIndex = 1;
@@ -1037,7 +1041,7 @@ namespace ZenStatesDebugTool
             // 
             this.buttonMsrRead.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonMsrRead.Location = new System.Drawing.Point(333, 10);
-            this.buttonMsrRead.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonMsrRead.Margin = new System.Windows.Forms.Padding(4);
             this.buttonMsrRead.Name = "buttonMsrRead";
             this.buttonMsrRead.Size = new System.Drawing.Size(101, 31);
             this.buttonMsrRead.TabIndex = 2;
@@ -1064,7 +1068,7 @@ namespace ZenStatesDebugTool
             this.textBoxMsrEdx.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxMsrEdx.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxMsrEdx.Location = new System.Drawing.Point(5, 83);
-            this.textBoxMsrEdx.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxMsrEdx.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxMsrEdx.Name = "textBoxMsrEdx";
             this.textBoxMsrEdx.Size = new System.Drawing.Size(123, 23);
             this.textBoxMsrEdx.TabIndex = 4;
@@ -1098,7 +1102,7 @@ namespace ZenStatesDebugTool
             this.textBoxMsrStart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxMsrStart.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxMsrStart.Location = new System.Drawing.Point(138, 147);
-            this.textBoxMsrStart.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxMsrStart.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxMsrStart.Name = "textBoxMsrStart";
             this.textBoxMsrStart.Size = new System.Drawing.Size(123, 23);
             this.textBoxMsrStart.TabIndex = 8;
@@ -1109,7 +1113,7 @@ namespace ZenStatesDebugTool
             this.textBoxMsrEnd.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxMsrEnd.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxMsrEnd.Location = new System.Drawing.Point(138, 186);
-            this.textBoxMsrEnd.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxMsrEnd.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxMsrEnd.Name = "textBoxMsrEnd";
             this.textBoxMsrEnd.Size = new System.Drawing.Size(123, 23);
             this.textBoxMsrEnd.TabIndex = 9;
@@ -1119,7 +1123,7 @@ namespace ZenStatesDebugTool
             // 
             this.buttonMsrScan.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonMsrScan.Location = new System.Drawing.Point(333, 146);
-            this.buttonMsrScan.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonMsrScan.Margin = new System.Windows.Forms.Padding(4);
             this.buttonMsrScan.Name = "buttonMsrScan";
             this.buttonMsrScan.Size = new System.Drawing.Size(101, 31);
             this.buttonMsrScan.TabIndex = 10;
@@ -1146,7 +1150,7 @@ namespace ZenStatesDebugTool
             this.textBoxMsrEax.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxMsrEax.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxMsrEax.Location = new System.Drawing.Point(138, 83);
-            this.textBoxMsrEax.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxMsrEax.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxMsrEax.Name = "textBoxMsrEax";
             this.textBoxMsrEax.Size = new System.Drawing.Size(123, 23);
             this.textBoxMsrEax.TabIndex = 12;
@@ -1155,33 +1159,33 @@ namespace ZenStatesDebugTool
             // 
             this.tabPageCPUID.Controls.Add(this.tableLayoutPanel14);
             this.tabPageCPUID.Controls.Add(this.tableLayoutPanel10);
-            this.tabPageCPUID.Location = new System.Drawing.Point(4, 25);
-            this.tabPageCPUID.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabPageCPUID.Location = new System.Drawing.Point(4, 46);
+            this.tabPageCPUID.Margin = new System.Windows.Forms.Padding(4);
             this.tabPageCPUID.Name = "tabPageCPUID";
-            this.tabPageCPUID.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.tabPageCPUID.Size = new System.Drawing.Size(453, 375);
+            this.tabPageCPUID.Padding = new System.Windows.Forms.Padding(4);
+            this.tabPageCPUID.Size = new System.Drawing.Size(453, 399);
             this.tabPageCPUID.TabIndex = 6;
             this.tabPageCPUID.Text = "CPUID";
             this.tabPageCPUID.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel14
             // 
-            this.tableLayoutPanel14.AutoSize = true;
             this.tableLayoutPanel14.ColumnCount = 4;
-            this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 133F));
+            this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 133F));
             this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel14.Controls.Add(this.label50, 0, 0);
             this.tableLayoutPanel14.Controls.Add(this.textBoxCpuid, 1, 0);
             this.tableLayoutPanel14.Controls.Add(this.buttonCpuidDecode, 3, 0);
-            this.tableLayoutPanel14.Location = new System.Drawing.Point(3, 161);
+            this.tableLayoutPanel14.Location = new System.Drawing.Point(4, 225);
             this.tableLayoutPanel14.Name = "tableLayoutPanel14";
             this.tableLayoutPanel14.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
             this.tableLayoutPanel14.RowCount = 1;
             this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel14.Size = new System.Drawing.Size(332, 39);
+            this.tableLayoutPanel14.Size = new System.Drawing.Size(445, 46);
             this.tableLayoutPanel14.TabIndex = 3;
+            this.tableLayoutPanel14.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel14_Paint);
             // 
             // label50
             // 
@@ -1191,26 +1195,27 @@ namespace ZenStatesDebugTool
             this.label50.MinimumSize = new System.Drawing.Size(77, 27);
             this.label50.Name = "label50";
             this.label50.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.label50.Size = new System.Drawing.Size(94, 29);
+            this.label50.Size = new System.Drawing.Size(127, 40);
             this.label50.TabIndex = 4;
             this.label50.Text = "CPUID";
-            this.label50.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
             // 
             // textBoxCpuid
             // 
             this.textBoxCpuid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCpuid.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxCpuid.Location = new System.Drawing.Point(104, 9);
+            this.textBoxCpuid.Location = new System.Drawing.Point(137, 9);
             this.textBoxCpuid.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxCpuid.Name = "textBoxCpuid";
-            this.textBoxCpuid.Size = new System.Drawing.Size(92, 20);
+            this.textBoxCpuid.Size = new System.Drawing.Size(125, 23);
             this.textBoxCpuid.TabIndex = 2;
             // 
             // buttonCpuidDecode
             // 
-            this.buttonCpuidDecode.Location = new System.Drawing.Point(249, 8);
+            this.buttonCpuidDecode.Dock = System.Windows.Forms.DockStyle.Top;
+            this.buttonCpuidDecode.Location = new System.Drawing.Point(334, 8);
             this.buttonCpuidDecode.Name = "buttonCpuidDecode";
-            this.buttonCpuidDecode.Size = new System.Drawing.Size(75, 23);
+            this.buttonCpuidDecode.Padding = new System.Windows.Forms.Padding(4);
+            this.buttonCpuidDecode.Size = new System.Drawing.Size(103, 34);
             this.buttonCpuidDecode.TabIndex = 0;
             this.buttonCpuidDecode.Text = "Decode";
             this.buttonCpuidDecode.UseVisualStyleBackColor = true;
@@ -1238,7 +1243,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel10.Controls.Add(this.buttonCPUIDScan, 3, 1);
             this.tableLayoutPanel10.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel10.Location = new System.Drawing.Point(4, 4);
-            this.tableLayoutPanel10.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel10.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel10.Name = "tableLayoutPanel10";
             this.tableLayoutPanel10.Padding = new System.Windows.Forms.Padding(0, 6, 7, 6);
             this.tableLayoutPanel10.RowCount = 5;
@@ -1268,7 +1273,7 @@ namespace ZenStatesDebugTool
             this.textBoxCPUIDAddress.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCPUIDAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCPUIDAddress.Location = new System.Drawing.Point(138, 11);
-            this.textBoxCPUIDAddress.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxCPUIDAddress.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxCPUIDAddress.Name = "textBoxCPUIDAddress";
             this.textBoxCPUIDAddress.Size = new System.Drawing.Size(123, 23);
             this.textBoxCPUIDAddress.TabIndex = 1;
@@ -1278,7 +1283,7 @@ namespace ZenStatesDebugTool
             // 
             this.buttonCPUIDRead.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonCPUIDRead.Location = new System.Drawing.Point(331, 10);
-            this.buttonCPUIDRead.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonCPUIDRead.Margin = new System.Windows.Forms.Padding(4);
             this.buttonCPUIDRead.Name = "buttonCPUIDRead";
             this.buttonCPUIDRead.Size = new System.Drawing.Size(103, 31);
             this.buttonCPUIDRead.TabIndex = 2;
@@ -1305,7 +1310,7 @@ namespace ZenStatesDebugTool
             this.textBoxCPUIDeax.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCPUIDeax.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCPUIDeax.Location = new System.Drawing.Point(138, 50);
-            this.textBoxCPUIDeax.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxCPUIDeax.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxCPUIDeax.Name = "textBoxCPUIDeax";
             this.textBoxCPUIDeax.ReadOnly = true;
             this.textBoxCPUIDeax.Size = new System.Drawing.Size(123, 23);
@@ -1344,7 +1349,7 @@ namespace ZenStatesDebugTool
             this.textBoxCPUIDedx.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCPUIDedx.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCPUIDedx.Location = new System.Drawing.Point(138, 152);
-            this.textBoxCPUIDedx.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxCPUIDedx.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxCPUIDedx.Name = "textBoxCPUIDedx";
             this.textBoxCPUIDedx.ReadOnly = true;
             this.textBoxCPUIDedx.Size = new System.Drawing.Size(123, 23);
@@ -1369,7 +1374,7 @@ namespace ZenStatesDebugTool
             this.textBoxCPUIDebx.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCPUIDebx.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCPUIDebx.Location = new System.Drawing.Point(138, 86);
-            this.textBoxCPUIDebx.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxCPUIDebx.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxCPUIDebx.Name = "textBoxCPUIDebx";
             this.textBoxCPUIDebx.ReadOnly = true;
             this.textBoxCPUIDebx.Size = new System.Drawing.Size(123, 23);
@@ -1380,7 +1385,7 @@ namespace ZenStatesDebugTool
             this.textBoxCPUIDecx.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCPUIDecx.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCPUIDecx.Location = new System.Drawing.Point(138, 119);
-            this.textBoxCPUIDecx.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.textBoxCPUIDecx.Margin = new System.Windows.Forms.Padding(5);
             this.textBoxCPUIDecx.Name = "textBoxCPUIDecx";
             this.textBoxCPUIDecx.ReadOnly = true;
             this.textBoxCPUIDecx.Size = new System.Drawing.Size(123, 23);
@@ -1389,7 +1394,7 @@ namespace ZenStatesDebugTool
             // buttonCPUIDScan
             // 
             this.buttonCPUIDScan.Location = new System.Drawing.Point(331, 49);
-            this.buttonCPUIDScan.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonCPUIDScan.Margin = new System.Windows.Forms.Padding(4);
             this.buttonCPUIDScan.Name = "buttonCPUIDScan";
             this.buttonCPUIDScan.Size = new System.Drawing.Size(103, 28);
             this.buttonCPUIDScan.TabIndex = 10;
@@ -1400,10 +1405,10 @@ namespace ZenStatesDebugTool
             // tabPagePbo
             // 
             this.tabPagePbo.Controls.Add(this.tableLayoutPanel12);
-            this.tabPagePbo.Location = new System.Drawing.Point(4, 25);
-            this.tabPagePbo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabPagePbo.Location = new System.Drawing.Point(4, 46);
+            this.tabPagePbo.Margin = new System.Windows.Forms.Padding(4);
             this.tabPagePbo.Name = "tabPagePbo";
-            this.tabPagePbo.Size = new System.Drawing.Size(453, 375);
+            this.tabPagePbo.Size = new System.Drawing.Size(453, 399);
             this.tabPagePbo.TabIndex = 7;
             this.tabPagePbo.Text = "PBO";
             this.tabPagePbo.UseVisualStyleBackColor = true;
@@ -1455,8 +1460,11 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel12.Controls.Add(this.button2, 1, 9);
             this.tableLayoutPanel12.Controls.Add(this.button3, 3, 0);
             this.tableLayoutPanel12.Controls.Add(this.button4, 3, 9);
+            this.tableLayoutPanel12.Controls.Add(this.btnSaveCOProfile, 5, 3);
+            this.tableLayoutPanel12.Controls.Add(this.btnLoadCOProfile, 5, 4);
+            this.tableLayoutPanel12.Controls.Add(this.checkBoxApplyCOStartup, 0, 10);
             this.tableLayoutPanel12.Location = new System.Drawing.Point(4, 4);
-            this.tableLayoutPanel12.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel12.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel12.Name = "tableLayoutPanel12";
             this.tableLayoutPanel12.RowCount = 11;
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
@@ -1469,8 +1477,8 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel12.Size = new System.Drawing.Size(441, 364);
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
+            this.tableLayoutPanel12.Size = new System.Drawing.Size(441, 388);
             this.tableLayoutPanel12.TabIndex = 0;
             // 
             // numericUpDownCO_8
@@ -1478,7 +1486,7 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_8.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_8.Enabled = false;
             this.numericUpDownCO_8.Location = new System.Drawing.Point(231, 38);
-            this.numericUpDownCO_8.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numericUpDownCO_8.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownCO_8.Maximum = new decimal(new int[] {
             999,
             0,
@@ -1495,15 +1503,15 @@ namespace ZenStatesDebugTool
             // 
             // buttonApplyCO
             // 
-            this.buttonApplyCO.Dock = System.Windows.Forms.DockStyle.Top;
+            this.buttonApplyCO.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonApplyCO.Location = new System.Drawing.Point(325, 38);
-            this.buttonApplyCO.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonApplyCO.Margin = new System.Windows.Forms.Padding(4);
             this.buttonApplyCO.Name = "buttonApplyCO";
             this.buttonApplyCO.Size = new System.Drawing.Size(112, 26);
             this.buttonApplyCO.TabIndex = 5;
             this.buttonApplyCO.Text = "Apply";
             this.buttonApplyCO.UseVisualStyleBackColor = true;
-            this.buttonApplyCO.Click += new System.EventHandler(this.buttonApplyCO_Click);
+            this.buttonApplyCO.Click += new System.EventHandler(this.ButtonApplyCO_Click);
             // 
             // label31
             // 
@@ -1699,8 +1707,9 @@ namespace ZenStatesDebugTool
             // 
             // buttonGetCO
             // 
+            this.buttonGetCO.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonGetCO.Location = new System.Drawing.Point(325, 72);
-            this.buttonGetCO.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonGetCO.Margin = new System.Windows.Forms.Padding(4);
             this.buttonGetCO.Name = "buttonGetCO";
             this.buttonGetCO.Size = new System.Drawing.Size(112, 26);
             this.buttonGetCO.TabIndex = 32;
@@ -1713,7 +1722,7 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_0.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_0.Enabled = false;
             this.numericUpDownCO_0.Location = new System.Drawing.Point(84, 38);
-            this.numericUpDownCO_0.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numericUpDownCO_0.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownCO_0.Maximum = new decimal(new int[] {
             999,
             0,
@@ -1733,7 +1742,7 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_1.Enabled = false;
             this.numericUpDownCO_1.Location = new System.Drawing.Point(84, 72);
-            this.numericUpDownCO_1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numericUpDownCO_1.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownCO_1.Maximum = new decimal(new int[] {
             999,
             0,
@@ -1753,7 +1762,7 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_2.Enabled = false;
             this.numericUpDownCO_2.Location = new System.Drawing.Point(84, 106);
-            this.numericUpDownCO_2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numericUpDownCO_2.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownCO_2.Maximum = new decimal(new int[] {
             999,
             0,
@@ -1773,7 +1782,7 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_3.Enabled = false;
             this.numericUpDownCO_3.Location = new System.Drawing.Point(84, 140);
-            this.numericUpDownCO_3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numericUpDownCO_3.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownCO_3.Maximum = new decimal(new int[] {
             999,
             0,
@@ -1793,7 +1802,7 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_4.Enabled = false;
             this.numericUpDownCO_4.Location = new System.Drawing.Point(84, 174);
-            this.numericUpDownCO_4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numericUpDownCO_4.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownCO_4.Maximum = new decimal(new int[] {
             999,
             0,
@@ -1813,7 +1822,7 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_5.Enabled = false;
             this.numericUpDownCO_5.Location = new System.Drawing.Point(84, 208);
-            this.numericUpDownCO_5.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numericUpDownCO_5.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownCO_5.Maximum = new decimal(new int[] {
             999,
             0,
@@ -1833,7 +1842,7 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_6.Enabled = false;
             this.numericUpDownCO_6.Location = new System.Drawing.Point(84, 242);
-            this.numericUpDownCO_6.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numericUpDownCO_6.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownCO_6.Maximum = new decimal(new int[] {
             999,
             0,
@@ -1853,7 +1862,7 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_7.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_7.Enabled = false;
             this.numericUpDownCO_7.Location = new System.Drawing.Point(84, 276);
-            this.numericUpDownCO_7.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numericUpDownCO_7.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownCO_7.Maximum = new decimal(new int[] {
             999,
             0,
@@ -1873,7 +1882,7 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_9.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_9.Enabled = false;
             this.numericUpDownCO_9.Location = new System.Drawing.Point(231, 72);
-            this.numericUpDownCO_9.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numericUpDownCO_9.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownCO_9.Maximum = new decimal(new int[] {
             999,
             0,
@@ -1893,7 +1902,7 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_10.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_10.Enabled = false;
             this.numericUpDownCO_10.Location = new System.Drawing.Point(231, 106);
-            this.numericUpDownCO_10.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numericUpDownCO_10.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownCO_10.Maximum = new decimal(new int[] {
             999,
             0,
@@ -1913,7 +1922,7 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_11.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_11.Enabled = false;
             this.numericUpDownCO_11.Location = new System.Drawing.Point(231, 140);
-            this.numericUpDownCO_11.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numericUpDownCO_11.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownCO_11.Maximum = new decimal(new int[] {
             999,
             0,
@@ -1933,7 +1942,7 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_12.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_12.Enabled = false;
             this.numericUpDownCO_12.Location = new System.Drawing.Point(231, 174);
-            this.numericUpDownCO_12.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numericUpDownCO_12.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownCO_12.Maximum = new decimal(new int[] {
             999,
             0,
@@ -1953,7 +1962,7 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_13.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_13.Enabled = false;
             this.numericUpDownCO_13.Location = new System.Drawing.Point(231, 208);
-            this.numericUpDownCO_13.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numericUpDownCO_13.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownCO_13.Maximum = new decimal(new int[] {
             999,
             0,
@@ -1973,7 +1982,7 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_14.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_14.Enabled = false;
             this.numericUpDownCO_14.Location = new System.Drawing.Point(231, 242);
-            this.numericUpDownCO_14.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numericUpDownCO_14.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownCO_14.Maximum = new decimal(new int[] {
             999,
             0,
@@ -1993,7 +2002,7 @@ namespace ZenStatesDebugTool
             this.numericUpDownCO_15.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_15.Enabled = false;
             this.numericUpDownCO_15.Location = new System.Drawing.Point(231, 276);
-            this.numericUpDownCO_15.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numericUpDownCO_15.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownCO_15.Maximum = new decimal(new int[] {
             999,
             0,
@@ -2013,7 +2022,7 @@ namespace ZenStatesDebugTool
             this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button1.Location = new System.Drawing.Point(84, 4);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(59, 26);
             this.button1.TabIndex = 49;
@@ -2026,7 +2035,7 @@ namespace ZenStatesDebugTool
             this.button2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button2.Location = new System.Drawing.Point(84, 310);
-            this.button2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button2.Margin = new System.Windows.Forms.Padding(4);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(59, 26);
             this.button2.TabIndex = 50;
@@ -2039,7 +2048,7 @@ namespace ZenStatesDebugTool
             this.button3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button3.Location = new System.Drawing.Point(231, 4);
-            this.button3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button3.Margin = new System.Windows.Forms.Padding(4);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(59, 26);
             this.button3.TabIndex = 51;
@@ -2052,7 +2061,7 @@ namespace ZenStatesDebugTool
             this.button4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button4.Location = new System.Drawing.Point(231, 310);
-            this.button4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button4.Margin = new System.Windows.Forms.Padding(4);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(59, 26);
             this.button4.TabIndex = 52;
@@ -2060,13 +2069,51 @@ namespace ZenStatesDebugTool
             this.button4.UseVisualStyleBackColor = false;
             this.button4.Click += new System.EventHandler(this.Button_ccd1_dec_Click);
             // 
+            // btnSaveCOProfile
+            // 
+            this.btnSaveCOProfile.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnSaveCOProfile.Location = new System.Drawing.Point(325, 106);
+            this.btnSaveCOProfile.Margin = new System.Windows.Forms.Padding(4);
+            this.btnSaveCOProfile.Name = "btnSaveCOProfile";
+            this.btnSaveCOProfile.Size = new System.Drawing.Size(112, 26);
+            this.btnSaveCOProfile.TabIndex = 53;
+            this.btnSaveCOProfile.Text = "Save";
+            this.btnSaveCOProfile.UseVisualStyleBackColor = true;
+            this.btnSaveCOProfile.Click += new System.EventHandler(this.BtnSaveCOProfile_Click);
+            // 
+            // btnLoadCOProfile
+            // 
+            this.btnLoadCOProfile.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnLoadCOProfile.Location = new System.Drawing.Point(325, 140);
+            this.btnLoadCOProfile.Margin = new System.Windows.Forms.Padding(4);
+            this.btnLoadCOProfile.Name = "btnLoadCOProfile";
+            this.btnLoadCOProfile.Size = new System.Drawing.Size(112, 26);
+            this.btnLoadCOProfile.TabIndex = 54;
+            this.btnLoadCOProfile.Text = "Load";
+            this.btnLoadCOProfile.UseVisualStyleBackColor = true;
+            this.btnLoadCOProfile.Click += new System.EventHandler(this.BtnLoadCOProfile_Click);
+            // 
+            // checkBoxApplyCOStartup
+            // 
+            this.checkBoxApplyCOStartup.AutoSize = true;
+            this.tableLayoutPanel12.SetColumnSpan(this.checkBoxApplyCOStartup, 4);
+            this.checkBoxApplyCOStartup.Dock = System.Windows.Forms.DockStyle.Left;
+            this.checkBoxApplyCOStartup.Location = new System.Drawing.Point(4, 344);
+            this.checkBoxApplyCOStartup.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBoxApplyCOStartup.Name = "checkBoxApplyCOStartup";
+            this.checkBoxApplyCOStartup.Size = new System.Drawing.Size(206, 40);
+            this.checkBoxApplyCOStartup.TabIndex = 55;
+            this.checkBoxApplyCOStartup.Text = "Apply saved profile on startup";
+            this.checkBoxApplyCOStartup.UseVisualStyleBackColor = true;
+            this.checkBoxApplyCOStartup.Click += new System.EventHandler(this.CheckBoxApplyCOStartup_CheckedChanged);
+            // 
             // tabPageWmi
             // 
             this.tabPageWmi.Controls.Add(this.tableLayoutPanel13);
-            this.tabPageWmi.Location = new System.Drawing.Point(4, 25);
-            this.tabPageWmi.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabPageWmi.Location = new System.Drawing.Point(4, 46);
+            this.tabPageWmi.Margin = new System.Windows.Forms.Padding(4);
             this.tabPageWmi.Name = "tabPageWmi";
-            this.tabPageWmi.Size = new System.Drawing.Size(453, 375);
+            this.tabPageWmi.Size = new System.Drawing.Size(453, 399);
             this.tabPageWmi.TabIndex = 8;
             this.tabPageWmi.Text = "AMD ACPI";
             this.tabPageWmi.UseVisualStyleBackColor = true;
@@ -2085,7 +2132,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel13.Controls.Add(this.buttonWmiCmdSend, 1, 3);
             this.tableLayoutPanel13.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel13.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel13.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel13.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel13.Name = "tableLayoutPanel13";
             this.tableLayoutPanel13.RowCount = 5;
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -2093,7 +2140,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanel13.Size = new System.Drawing.Size(453, 375);
+            this.tableLayoutPanel13.Size = new System.Drawing.Size(453, 399);
             this.tableLayoutPanel13.TabIndex = 0;
             // 
             // label49
@@ -2126,7 +2173,7 @@ namespace ZenStatesDebugTool
             this.comboBoxAvailableCommands.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxAvailableCommands.FormattingEnabled = true;
             this.comboBoxAvailableCommands.Location = new System.Drawing.Point(137, 4);
-            this.comboBoxAvailableCommands.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.comboBoxAvailableCommands.Margin = new System.Windows.Forms.Padding(4);
             this.comboBoxAvailableCommands.Name = "comboBoxAvailableCommands";
             this.comboBoxAvailableCommands.Size = new System.Drawing.Size(312, 24);
             this.comboBoxAvailableCommands.TabIndex = 1;
@@ -2138,7 +2185,7 @@ namespace ZenStatesDebugTool
             this.comboBoxAvailableValues.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxAvailableValues.FormattingEnabled = true;
             this.comboBoxAvailableValues.Location = new System.Drawing.Point(137, 36);
-            this.comboBoxAvailableValues.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.comboBoxAvailableValues.Margin = new System.Windows.Forms.Padding(4);
             this.comboBoxAvailableValues.Name = "comboBoxAvailableValues";
             this.comboBoxAvailableValues.Size = new System.Drawing.Size(312, 24);
             this.comboBoxAvailableValues.TabIndex = 2;
@@ -2160,7 +2207,7 @@ namespace ZenStatesDebugTool
             // 
             this.textBoxWmiArgument.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxWmiArgument.Location = new System.Drawing.Point(137, 68);
-            this.textBoxWmiArgument.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBoxWmiArgument.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxWmiArgument.Name = "textBoxWmiArgument";
             this.textBoxWmiArgument.Size = new System.Drawing.Size(312, 22);
             this.textBoxWmiArgument.TabIndex = 5;
@@ -2168,7 +2215,7 @@ namespace ZenStatesDebugTool
             // buttonWmiCmdSend
             // 
             this.buttonWmiCmdSend.Location = new System.Drawing.Point(137, 98);
-            this.buttonWmiCmdSend.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonWmiCmdSend.Margin = new System.Windows.Forms.Padding(4);
             this.buttonWmiCmdSend.Name = "buttonWmiCmdSend";
             this.buttonWmiCmdSend.Size = new System.Drawing.Size(100, 28);
             this.buttonWmiCmdSend.TabIndex = 6;
@@ -2182,11 +2229,11 @@ namespace ZenStatesDebugTool
             this.tabPagePstates.Controls.Add(this.labelBCLK);
             this.tabPagePstates.Controls.Add(this.buttonBCLKApply);
             this.tabPagePstates.Controls.Add(this.tableLayoutPanel5);
-            this.tabPagePstates.Location = new System.Drawing.Point(4, 25);
-            this.tabPagePstates.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabPagePstates.Location = new System.Drawing.Point(4, 46);
+            this.tabPagePstates.Margin = new System.Windows.Forms.Padding(4);
             this.tabPagePstates.Name = "tabPagePstates";
-            this.tabPagePstates.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.tabPagePstates.Size = new System.Drawing.Size(453, 375);
+            this.tabPagePstates.Padding = new System.Windows.Forms.Padding(4);
+            this.tabPagePstates.Size = new System.Drawing.Size(453, 399);
             this.tabPagePstates.TabIndex = 3;
             this.tabPagePstates.Text = "PStates";
             this.tabPagePstates.UseVisualStyleBackColor = true;
@@ -2200,7 +2247,7 @@ namespace ZenStatesDebugTool
             0,
             262144});
             this.numericUpDownBclk.Location = new System.Drawing.Point(141, 181);
-            this.numericUpDownBclk.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numericUpDownBclk.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownBclk.Maximum = new decimal(new int[] {
             150,
             0,
@@ -2233,7 +2280,7 @@ namespace ZenStatesDebugTool
             // buttonBCLKApply
             // 
             this.buttonBCLKApply.Location = new System.Drawing.Point(336, 181);
-            this.buttonBCLKApply.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonBCLKApply.Margin = new System.Windows.Forms.Padding(4);
             this.buttonBCLKApply.Name = "buttonBCLKApply";
             this.buttonBCLKApply.Size = new System.Drawing.Size(100, 28);
             this.buttonBCLKApply.TabIndex = 3;
@@ -2261,7 +2308,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel5.Controls.Add(this.btnPstateRead, 3, 0);
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel5.Location = new System.Drawing.Point(4, 4);
-            this.tableLayoutPanel5.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel5.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.Padding = new System.Windows.Forms.Padding(0, 6, 7, 6);
             this.tableLayoutPanel5.RowCount = 4;
@@ -2315,7 +2362,7 @@ namespace ZenStatesDebugTool
             this.pstateDid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pstateDid.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pstateDid.Location = new System.Drawing.Point(137, 49);
-            this.pstateDid.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pstateDid.Margin = new System.Windows.Forms.Padding(4);
             this.pstateDid.Name = "pstateDid";
             this.pstateDid.ReadOnly = true;
             this.pstateDid.Size = new System.Drawing.Size(125, 23);
@@ -2326,7 +2373,7 @@ namespace ZenStatesDebugTool
             this.pstateFid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pstateFid.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pstateFid.Location = new System.Drawing.Point(137, 85);
-            this.pstateFid.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pstateFid.Margin = new System.Windows.Forms.Padding(4);
             this.pstateFid.Name = "pstateFid";
             this.pstateFid.ReadOnly = true;
             this.pstateFid.Size = new System.Drawing.Size(125, 23);
@@ -2344,7 +2391,7 @@ namespace ZenStatesDebugTool
             "1",
             "2"});
             this.pstateIdBox.Location = new System.Drawing.Point(137, 10);
-            this.pstateIdBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pstateIdBox.Margin = new System.Windows.Forms.Padding(4);
             this.pstateIdBox.Name = "pstateIdBox";
             this.pstateIdBox.Size = new System.Drawing.Size(125, 25);
             this.pstateIdBox.TabIndex = 8;
@@ -2364,7 +2411,7 @@ namespace ZenStatesDebugTool
             this.pstateFrequency.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pstateFrequency.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pstateFrequency.Location = new System.Drawing.Point(137, 121);
-            this.pstateFrequency.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pstateFrequency.Margin = new System.Windows.Forms.Padding(4);
             this.pstateFrequency.Name = "pstateFrequency";
             this.pstateFrequency.ReadOnly = true;
             this.pstateFrequency.Size = new System.Drawing.Size(125, 23);
@@ -2375,7 +2422,7 @@ namespace ZenStatesDebugTool
             this.btnPstateWrite.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnPstateWrite.Enabled = false;
             this.btnPstateWrite.Location = new System.Drawing.Point(331, 49);
-            this.btnPstateWrite.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnPstateWrite.Margin = new System.Windows.Forms.Padding(4);
             this.btnPstateWrite.Name = "btnPstateWrite";
             this.btnPstateWrite.Size = new System.Drawing.Size(103, 28);
             this.btnPstateWrite.TabIndex = 11;
@@ -2387,7 +2434,7 @@ namespace ZenStatesDebugTool
             // 
             this.btnPstateRead.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnPstateRead.Location = new System.Drawing.Point(331, 10);
-            this.btnPstateRead.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnPstateRead.Margin = new System.Windows.Forms.Padding(4);
             this.btnPstateRead.Name = "btnPstateRead";
             this.btnPstateRead.Size = new System.Drawing.Size(103, 31);
             this.btnPstateRead.TabIndex = 12;
@@ -2398,11 +2445,11 @@ namespace ZenStatesDebugTool
             // tabPageInfo
             // 
             this.tabPageInfo.Controls.Add(this.tableLayoutPanel3);
-            this.tabPageInfo.Location = new System.Drawing.Point(4, 25);
-            this.tabPageInfo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabPageInfo.Location = new System.Drawing.Point(4, 46);
+            this.tabPageInfo.Margin = new System.Windows.Forms.Padding(4);
             this.tabPageInfo.Name = "tabPageInfo";
-            this.tabPageInfo.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.tabPageInfo.Size = new System.Drawing.Size(453, 375);
+            this.tabPageInfo.Padding = new System.Windows.Forms.Padding(4);
+            this.tabPageInfo.Size = new System.Drawing.Size(453, 399);
             this.tabPageInfo.TabIndex = 2;
             this.tabPageInfo.Text = "Info";
             this.tabPageInfo.UseVisualStyleBackColor = true;
@@ -2436,7 +2483,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel3.Controls.Add(this.configInfoLabel, 1, 4);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(4, 4);
-            this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.Padding = new System.Windows.Forms.Padding(0, 6, 7, 6);
             this.tableLayoutPanel3.RowCount = 12;
@@ -2452,7 +2499,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(445, 367);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(445, 391);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // buttonExport
@@ -2460,8 +2507,8 @@ namespace ZenStatesDebugTool
             this.buttonExport.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.buttonExport.AutoSize = true;
             this.tableLayoutPanel3.SetColumnSpan(this.buttonExport, 2);
-            this.buttonExport.Location = new System.Drawing.Point(4, 325);
-            this.buttonExport.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonExport.Location = new System.Drawing.Point(4, 349);
+            this.buttonExport.Margin = new System.Windows.Forms.Padding(4);
             this.buttonExport.Name = "buttonExport";
             this.buttonExport.Size = new System.Drawing.Size(136, 32);
             this.buttonExport.TabIndex = 1;
@@ -2741,7 +2788,7 @@ namespace ZenStatesDebugTool
             this.textBoxResult.Name = "textBoxResult";
             this.textBoxResult.ReadOnly = true;
             this.textBoxResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxResult.Size = new System.Drawing.Size(384, 380);
+            this.textBoxResult.Size = new System.Drawing.Size(384, 424);
             this.textBoxResult.TabIndex = 4;
             // 
             // splitContainer1
@@ -2749,7 +2796,7 @@ namespace ZenStatesDebugTool
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.IsSplitterFixed = true;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -2763,7 +2810,7 @@ namespace ZenStatesDebugTool
             this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel11);
             this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(0, 6, 7, 6);
             this.splitContainer1.Panel2MinSize = 0;
-            this.splitContainer1.Size = new System.Drawing.Size(869, 417);
+            this.splitContainer1.Size = new System.Drawing.Size(869, 461);
             this.splitContainer1.SplitterDistance = 473;
             this.splitContainer1.SplitterWidth = 1;
             this.splitContainer1.TabIndex = 5;
@@ -2775,25 +2822,25 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel11.Controls.Add(this.textBoxResult, 0, 0);
             this.tableLayoutPanel11.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel11.Location = new System.Drawing.Point(0, 6);
-            this.tableLayoutPanel11.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel11.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel11.Name = "tableLayoutPanel11";
             this.tableLayoutPanel11.Padding = new System.Windows.Forms.Padding(4, 0, 0, 0);
             this.tableLayoutPanel11.RowCount = 2;
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanel11.Size = new System.Drawing.Size(388, 405);
+            this.tableLayoutPanel11.Size = new System.Drawing.Size(388, 449);
             this.tableLayoutPanel11.TabIndex = 5;
             // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(869, 443);
+            this.ClientSize = new System.Drawing.Size(869, 487);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.Name = "SettingsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -3046,6 +3093,9 @@ namespace ZenStatesDebugTool
         private Label label50;
         private TextBox textBoxCpuid;
         private Button buttonCpuidDecode;
+        private Button btnSaveCOProfile;
+        private Button btnLoadCOProfile;
+        private CheckBox checkBoxApplyCOStartup;
     }
 }
 
