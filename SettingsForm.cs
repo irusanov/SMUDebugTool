@@ -14,7 +14,6 @@ using System.Threading;
 using System.Windows.Forms;
 using ZenStates.Core;
 using ZenStatesDebugTool.Properties;
-using ZenStatesDebugTool.Utils;
 using Application = System.Windows.Forms.Application;
 using static ZenStates.Core.Cpu;
 using Microsoft.Win32.TaskScheduler;
@@ -106,14 +105,14 @@ namespace ZenStatesDebugTool
             {
                 cpuInfoLabel.Text = cpu.systemInfo.CpuName;
                 modelInfoLabel.Text = $"{cpu.systemInfo.Model:X2}";
-                packageTypeInfoLabel.Text = cpu.systemInfo.PackageType;
+                packageTypeInfoLabel.Text = cpu.info.packageType.ToString();
                 mbVendorInfoLabel.Text = cpu.systemInfo.MbVendor;
                 mbModelInfoLabel.Text = cpu.systemInfo.MbName;
                 biosInfoLabel.Text = cpu.systemInfo.BiosVersion;
                 smuInfoLabel.Text = cpu.systemInfo.GetSmuVersionString();
                 firmwareInfoLabel.Text = $"{cpu.systemInfo.PatchLevel:X8}";
                 cpuIdLabel.Text = $"{cpu.systemInfo.GetCpuIdString()} ({cpu.info.codeName})";
-                configInfoLabel.Text = $"{cpu.systemInfo.CCDCount} CCD / {cpu.systemInfo.CCXCount} CCX / {cpu.systemInfo.PhysicalCoreCount} physical cores";
+                configInfoLabel.Text = $"{cpu.info.topology.ccds} CCD / {cpu.info.topology.ccxs} CCX / {cpu.systemInfo.PhysicalCoreCount} physical cores";
             }
             catch { }
         }
@@ -1412,7 +1411,7 @@ namespace ZenStatesDebugTool
                 {
                     try
                     {
-                        pack = WMI.InvokeMethod(classInstance, functionObject, "pack", null, 0);
+                        pack = WMI.InvokeMethodAndGetValue(classInstance, functionObject, "pack", null, 0);
 
                         if (pack != null)
                         {
@@ -1461,7 +1460,7 @@ namespace ZenStatesDebugTool
 
             if (command.isSet) {
                 // Get possible values (index) of a memory option in BIOS
-                var dvaluesPack = WMI.InvokeMethod(classInstance, "Getdvalues", "pack", "ID", command.value);
+                var dvaluesPack = WMI.InvokeMethodAndGetValue(classInstance, "Getdvalues", "pack", "ID", command.value);
                 if (dvaluesPack != null)
                 {
                     uint[] DValuesBuffer = (uint[])dvaluesPack.GetPropertyValue("DValuesBuffer");
