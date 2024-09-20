@@ -59,6 +59,8 @@ namespace ZenStatesDebugTool
         public PowerTableMonitor(Cpu cpu)
         {
             CPU = cpu;
+            cpu.RefreshPowerTable();
+
             PowerCfgTimer.Interval = 2000;
             PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick);
 
@@ -66,14 +68,13 @@ namespace ZenStatesDebugTool
 
             dataGridView1.DataSource = list;
 
-            cpu.RefreshPowerTable();
-
             FillInData(cpu.powerTable.Table);
         }
 
         private void PowerTableMonitor_FormClosing(object sender, FormClosingEventArgs e)
         {
             PowerCfgTimer.Stop();
+            //CPU.powerTable.Dispose();
         }
 
         private void PowerTableMonitor_Shown(object sender, EventArgs e)

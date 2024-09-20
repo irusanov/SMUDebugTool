@@ -157,12 +157,15 @@ namespace ZenStatesDebugTool
             PopulateMailboxesList(comboBoxMailboxSelect.Items);
 
             comboBoxCore.SelectedIndex = 0;
-
-            int index = (int)((GetCurrentMulti() - 5.50) / 0.25);
-            if (index > -1)
+            double multi = GetCurrentMulti();
+            if (multi >= 5.50)
             {
-                comboBoxACF.SelectedIndex = index;
-                comboBoxSCF.SelectedIndex = index;
+                int index = (int)((multi - 5.50) / 0.25);
+                if (index > -1 && index < comboBoxACF.Items.Count && index < comboBoxSCF.Items.Count)
+                {
+                    comboBoxACF.SelectedIndex = index;
+                    comboBoxSCF.SelectedIndex = index;
+                }
             }
 
             InitPBO();
@@ -231,32 +234,29 @@ namespace ZenStatesDebugTool
             comboBoxMailboxSelect.Items.Add(new MailboxListItem(label, addressSet));
         }
 
-        private uint GetCoreMask(int coreIndex)
-        {
-            uint ccxInCcd = cpu.info.family == Cpu.Family.FAMILY_19H ? 1U : 2U;
-            uint coresInCcx = 8 / ccxInCcd;
-
-            uint ccd = Convert.ToUInt32(coreIndex / 8);
-            uint ccx = Convert.ToUInt32(coreIndex / coresInCcx - ccxInCcd * ccd);
-            uint core = Convert.ToUInt32(coreIndex % coresInCcx);
-            return cpu.MakeCoreMask(core, ccd, ccx);
-        }
-
         private void InitPBO()
         {
             if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0)
             {
-                for (var i = 0; i < cpu.info.topology.physicalCores; i++)
+                uint cores = cpu.info.topology.physicalCores;
+                for (var i = 0; i < cores; i++)
                 {
-                    if ((~cpu.info.topology.coreDisableMap >> i & 1) == 1)
+                    int mapIndex = i < 8 ? 0 : 1;
+                    if ((~cpu.info.topology.coreDisableMap[mapIndex] >> i % 8 & 1) == 1)
                     {
-                        NumericUpDown control = (NumericUpDown)Controls.Find($"numericUpDownCO_{i}", true)[0];
-                        if (control != null)
+                        try
                         {
-                            control.Enabled = true;
-                            int? margin = cpu.GetPsmMarginSingleCore(GetCoreMask(i));
-                            if (margin != null)
-                                control.Value = Convert.ToDecimal(margin);
+                            NumericUpDown control = (NumericUpDown)Controls.Find($"numericUpDownCO_{i}", true)[0];
+                            if (control != null)
+                            {
+                                control.Enabled = true;
+                                uint coreMask = cpu.MakeCoreMask((uint)i);
+                                uint? margin = cpu.GetPsmMarginSingleCore((uint)(((mapIndex << 8) | i % 8 & 0xF) << 20));
+                                if (margin != null)
+                                    control.Value = Convert.ToDecimal((int)margin);
+                            }
+                        } catch (Exception e) {
+                            Console.WriteLine(e);
                         }
                     }
                 }
@@ -1358,12 +1358,13 @@ namespace ZenStatesDebugTool
             {
                 for (var i = 0; i < cpu.info.topology.physicalCores; i++)
                 {
-                    if ((~cpu.info.topology.coreDisableMap >> i & 1) == 1)
+                    int mapIndex = i < 8 ? 0 : 1;
+                    if ((~cpu.info.topology.coreDisableMap[mapIndex] >> i % 8 & 1) == 1)
                     {
                         NumericUpDown control = (NumericUpDown)Controls.Find($"numericUpDownCO_{i}", true)[0];
                         if (control != null)
                         {
-                            cpu.SetPsmMarginSingleCore(GetCoreMask(i), Convert.ToInt32(control.Value));
+                            cpu.SetPsmMarginSingleCore((uint)(((mapIndex << 8) | i % 8 & 0xF) << 20), Convert.ToInt32(control.Value));
                         }
                     }
                 }
