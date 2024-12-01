@@ -18,6 +18,9 @@ using Application = System.Windows.Forms.Application;
 using static ZenStates.Core.Cpu;
 using Microsoft.Win32.TaskScheduler;
 using System.Security.Principal;
+using Newtonsoft.Json.Linq;
+using System.Diagnostics;
+using System.Security.Cryptography;
 
 namespace ZenStatesDebugTool
 {
@@ -168,6 +171,7 @@ namespace ZenStatesDebugTool
                 }
             }
 
+            InitCoreControl();
             InitPBO();
             PopulateWmiFunctions();
 
@@ -232,6 +236,53 @@ namespace ZenStatesDebugTool
         private void AddMailboxToList(string label, SmuAddressSet addressSet)
         {
             comboBoxMailboxSelect.Items.Add(new MailboxListItem(label, addressSet));
+        }
+
+        private void InitCoreControl()
+        {
+            uint cores = cpu.info.topology.physicalCores;
+            //var performanceOfCores = cpu.info.topology.performanceOfCore;
+            uint coresPerGroup = 8;
+            uint logicalIndexGroup1 = 0;
+            uint logicalIndexGroup2 = 0;
+
+            for (uint i = 0; i < cores; i++)
+            {
+                uint mapIndex = i / coresPerGroup;
+                uint coreInGroup = i % coresPerGroup;
+                bool isDisabled = ((~cpu.info.topology.coreDisableMap[mapIndex] >> (int)coreInGroup) & 1) == 0;
+
+                if (!isDisabled)
+                {
+                    try
+                    {
+                        CheckBox control = (CheckBox)Controls.Find($"checkBox{i}", true)[0];
+                        if (control != null)
+                        {
+                            control.Enabled = true;
+                            control.Checked = true;
+
+                            if (mapIndex == 0) // Group 1
+                            {
+                                control.Tag = $"{logicalIndexGroup1}";
+                                //var performanceOfCore = performanceOfCores[logicalIndexGroup1];
+                                logicalIndexGroup1++;
+                            }
+                            else // Group 2
+                            {
+                                control.Tag = $"{logicalIndexGroup2}";
+                                logicalIndexGroup2++;
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Error initializing core {i}: {e}");
+                    }
+                }
+            }
+
+            checkBoxSMT.Checked = cpu.systemInfo.SMT;
         }
 
         private void InitPBO()
@@ -404,7 +455,7 @@ namespace ZenStatesDebugTool
                 Environment.NewLine +
                 $"INT: {Convert.ToString(data, 10).ToUpper()}" +
                 Environment.NewLine +
-                $"BIN: {Convert.ToString(data, 2).ToUpper().PadLeft(32, '0')}" +
+                $"BIN: {Convert.ToString(data, 2).PadLeft(32, '0')}" +
                 Environment.NewLine +
                 Environment.NewLine;
             Console.WriteLine($"Response: {responseString}");
@@ -1104,12 +1155,12 @@ namespace ZenStatesDebugTool
                     SetStatusText("Scanning PCI addresses, please wait...");
                 }));
 
-                string result = "REG         Value" + Environment.NewLine;
+                string result = "REG         Value(HEX) Value(BIN)" + Environment.NewLine;
 
                 while (startReg <= endReg)
                 {
                     var data = cpu.ReadDword(startReg);
-                    result += $"0x{startReg:X8}: 0x{data:X8}" + Environment.NewLine;
+                    result += $"0x{startReg:X8}: 0x{data:X8} {Convert.ToString(data, 2).PadLeft(32, '0')}" + Environment.NewLine;
                     startReg += 4;
                 }
                     
@@ -1504,13 +1555,23 @@ namespace ZenStatesDebugTool
         private void ButtonWmiCmdSend_Click(object sender, EventArgs e)
         {
             WmiCmdListItem command = comboBoxAvailableCommands.SelectedItem as WmiCmdListItem;
-            int value = 0;
+            uint value = 0;
             if (command.isSet)
-                value = int.Parse(textBoxWmiArgument.Text);
+            {
+                string text = textBoxWmiArgument.Text;
+                //if (text.StartsWith("0x"))
+                {
+                    //TryConvertToUint(text, out value);
+                }
+                //else
+                {
+                    value = uint.Parse(text);
+                }
+            }
 
             if (value >= 0 && value < 0x10000)
             {
-                var response = WMI.RunCommand(classInstance, command.value, (uint)value);
+                var response = WMI.RunCommand(classInstance, command.value, value);
                 var text = command.text + Environment.NewLine + "------------------------" + Environment.NewLine;
                 foreach (byte b in response)
                 {
@@ -1575,18 +1636,21 @@ namespace ZenStatesDebugTool
             info.baseModel = (info.cpuid & 0xf0) >> 4;
             info.extModel = (info.cpuid & 0xf0000) >> 12;
             info.model = info.baseModel + info.extModel;
+            info.stepping = eax & 0xf;
 
             string responseString =
                 Environment.NewLine +
-                $"cpuid:  0x{info.cpuid:X8}" +
+                $"cpuid: 0x{info.cpuid:X8}" +
                 Environment.NewLine +
-                $"family:  {info.family} ({(uint)info.family:X2}h)" +
+                $"family: {info.family} ({(uint)info.family:X2}h)" +
                 Environment.NewLine +
-                $"base model:  0x{info.baseModel:X2}" +
+                $"base model: 0x{info.baseModel:X2}" +
                 Environment.NewLine +
-                $"ext. model:  0x{info.extModel:X2}" +
+                $"ext. model: 0x{info.extModel:X2}" +
                 Environment.NewLine +
-                $"model:  0x{info.model:X2}" +
+                $"model: 0x{info.model:X2}" +
+                Environment.NewLine +
+                $"stepping: {info.stepping}" +
                 Environment.NewLine +
                 Environment.NewLine;
 
@@ -1771,6 +1835,139 @@ namespace ZenStatesDebugTool
         private void tableLayoutPanel14_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void ButtonApplyCoreMap_Click(object sender, EventArgs e)
+        {
+            uint ccd0 = 0x8000;
+            uint ccd1 = 0x8100;
+
+            for (int i = 0; i < 8; i++)
+            {
+                CheckBox control = (CheckBox)Controls.Find($"checkBox{i}", true)[0];
+                if (control != null && control.Enabled)
+                {
+                    if (!control.Checked)
+                    {
+                        int logicalIndex = Convert.ToInt32(control.Tag as string);
+                        ccd0 = Utils.SetBits(ccd0, logicalIndex, 1, 1);
+                    }
+                }
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                CheckBox control = (CheckBox)Controls.Find($"checkBox{i + 8}", true)[0];
+                if (control != null && control.Enabled)
+                {
+                    if (!control.Checked)
+                    {
+                        int logicalIndex = Convert.ToInt32(control.Tag as string);
+                        ccd1 = Utils.SetBits(ccd1, logicalIndex, 1, 1);
+                    }
+                }
+            }
+
+            var cmdItem = comboBoxAvailableCommands.Items
+                     .OfType<WmiCmdListItem>()
+                     .FirstOrDefault(item => item.text.Contains("Software Downcore Config"));
+
+            if (cmdItem != null) {
+                WMI.RunCommand(classInstance, cmdItem.value, ccd0);
+                WMI.RunCommand(classInstance, cmdItem.value, ccd1);
+            }
+
+            cmdItem = comboBoxAvailableCommands.Items
+                     .OfType<WmiCmdListItem>()
+                     .FirstOrDefault(item => item.text.Contains("Set SMTEn"));
+
+            if (cmdItem != null)
+            {
+                WMI.RunCommand(classInstance, cmdItem.value, checkBoxSMT.Checked ? 1u : 0);
+            }
+
+            ConfirmWindowsRestart();
+        }
+
+        private void Button5_Click(object sender, EventArgs e)
+        {
+            var cmdItem = comboBoxAvailableCommands.Items
+                     .OfType<WmiCmdListItem>()
+                     .FirstOrDefault(item => item.text.Contains("Software Downcore Config"));
+
+            if (cmdItem != null)
+            {
+                WMI.RunCommand(classInstance, cmdItem.value, 0x8000);
+                WMI.RunCommand(classInstance, cmdItem.value, 0x81FF);
+            }
+
+            cmdItem = comboBoxAvailableCommands.Items
+                     .OfType<WmiCmdListItem>()
+                     .FirstOrDefault(item => item.text.Contains("Set SMTEn"));
+
+            if (cmdItem != null)
+            {
+                WMI.RunCommand(classInstance, cmdItem.value, 0);
+            }
+
+            ConfirmWindowsRestart();
+        }
+
+        private void Button6_Click(object sender, EventArgs e)
+        {
+            var cmdItem = comboBoxAvailableCommands.Items
+                     .OfType<WmiCmdListItem>()
+                     .FirstOrDefault(item => item.text.Contains("Software Downcore Config"));
+
+            if (cmdItem != null)
+            {
+                WMI.RunCommand(classInstance, cmdItem.value, 0x8000);
+                WMI.RunCommand(classInstance, cmdItem.value, 0x8100);
+            }
+
+            cmdItem = comboBoxAvailableCommands.Items
+                     .OfType<WmiCmdListItem>()
+                     .FirstOrDefault(item => item.text.Contains("Set SMTEn"));
+
+            if (cmdItem != null)
+            {
+                WMI.RunCommand(classInstance, cmdItem.value, 1);
+            }
+
+            ConfirmWindowsRestart();
+        }
+
+        private void ConfirmWindowsRestart()
+        {
+            var result = MessageBox.Show(
+                "A restart is required to apply the changes. Would you like to restart now?",
+                "Confirm Restart",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                try
+                {
+                    // Restart Windows
+                    Process.Start(new ProcessStartInfo("shutdown", "/r /t 0")
+                    {
+                        CreateNoWindow = true,
+                        UseShellExecute = false
+                    });
+                }
+                catch (Exception ex)
+                {
+                    HandleError($"Failed to restart: {ex.Message}");
+                }
+            }
+        }
+
+        private void RadioButtonManualCoreControl_CheckedChanged(object sender, EventArgs e)
+        {
+            bool manual = radioButtonManualCoreControl.Checked == true;
+            panelManualCoreControl.Enabled = manual;
+            panelX3D.Enabled = !manual;
         }
     }
 }

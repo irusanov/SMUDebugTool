@@ -57,6 +57,49 @@ namespace ZenStatesDebugTool
             this.buttonApply = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPageCPU = new System.Windows.Forms.TabPage();
+            this.groupBoxCoreControl = new System.Windows.Forms.GroupBox();
+            this.panelX3D = new System.Windows.Forms.Panel();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
+            this.radioButtonManualCoreControl = new System.Windows.Forms.RadioButton();
+            this.panelManualCoreControl = new System.Windows.Forms.Panel();
+            this.label67 = new System.Windows.Forms.Label();
+            this.tableLayoutPanel15 = new System.Windows.Forms.TableLayoutPanel();
+            this.labelCore15 = new System.Windows.Forms.Label();
+            this.labelCore14 = new System.Windows.Forms.Label();
+            this.labelCore13 = new System.Windows.Forms.Label();
+            this.labelCore12 = new System.Windows.Forms.Label();
+            this.labelCore11 = new System.Windows.Forms.Label();
+            this.labelCore10 = new System.Windows.Forms.Label();
+            this.labelCore9 = new System.Windows.Forms.Label();
+            this.labelCore8 = new System.Windows.Forms.Label();
+            this.checkBox15 = new System.Windows.Forms.CheckBox();
+            this.checkBox14 = new System.Windows.Forms.CheckBox();
+            this.checkBox13 = new System.Windows.Forms.CheckBox();
+            this.checkBox12 = new System.Windows.Forms.CheckBox();
+            this.checkBox11 = new System.Windows.Forms.CheckBox();
+            this.checkBox10 = new System.Windows.Forms.CheckBox();
+            this.checkBox9 = new System.Windows.Forms.CheckBox();
+            this.checkBox8 = new System.Windows.Forms.CheckBox();
+            this.labelCore7 = new System.Windows.Forms.Label();
+            this.labelCore6 = new System.Windows.Forms.Label();
+            this.labelCore5 = new System.Windows.Forms.Label();
+            this.labelCore4 = new System.Windows.Forms.Label();
+            this.labelCore3 = new System.Windows.Forms.Label();
+            this.labelCore2 = new System.Windows.Forms.Label();
+            this.labelCore1 = new System.Windows.Forms.Label();
+            this.checkBox7 = new System.Windows.Forms.CheckBox();
+            this.checkBox6 = new System.Windows.Forms.CheckBox();
+            this.checkBox5 = new System.Windows.Forms.CheckBox();
+            this.checkBox4 = new System.Windows.Forms.CheckBox();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.checkBox0 = new System.Windows.Forms.CheckBox();
+            this.labelCore0 = new System.Windows.Forms.Label();
+            this.buttonApplyCoreMap = new System.Windows.Forms.Button();
+            this.checkBoxSMT = new System.Windows.Forms.CheckBox();
+            this.radioButtonX3D = new System.Windows.Forms.RadioButton();
             this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonApplyPROCHOT = new System.Windows.Forms.Button();
             this.buttonApplySC = new System.Windows.Forms.Button();
@@ -210,12 +253,17 @@ namespace ZenStatesDebugTool
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel11 = new System.Windows.Forms.TableLayoutPanel();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textBoxCMD)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageCPU.SuspendLayout();
+            this.groupBoxCoreControl.SuspendLayout();
+            this.panelX3D.SuspendLayout();
+            this.panelManualCoreControl.SuspendLayout();
+            this.tableLayoutPanel15.SuspendLayout();
             this.tableLayoutPanel8.SuspendLayout();
             this.tabPageSmu.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
@@ -450,7 +498,7 @@ namespace ZenStatesDebugTool
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.labelStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 374);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 410);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(652, 22);
             this.statusStrip1.SizingGrip = false;
@@ -556,21 +604,541 @@ namespace ZenStatesDebugTool
             this.tabControl1.Multiline = true;
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(345, 364);
+            this.tabControl1.Size = new System.Drawing.Size(345, 400);
             this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.tabControl1.TabIndex = 2;
             this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.TabControl1_Selected);
             // 
             // tabPageCPU
             // 
+            this.tabPageCPU.Controls.Add(this.groupBoxCoreControl);
             this.tabPageCPU.Controls.Add(this.tableLayoutPanel8);
             this.tabPageCPU.Location = new System.Drawing.Point(4, 40);
             this.tabPageCPU.Name = "tabPageCPU";
             this.tabPageCPU.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageCPU.Size = new System.Drawing.Size(337, 320);
+            this.tabPageCPU.Size = new System.Drawing.Size(337, 356);
             this.tabPageCPU.TabIndex = 4;
             this.tabPageCPU.Text = "CPU";
             this.tabPageCPU.UseVisualStyleBackColor = true;
+            // 
+            // groupBoxCoreControl
+            // 
+            this.groupBoxCoreControl.Controls.Add(this.panelX3D);
+            this.groupBoxCoreControl.Controls.Add(this.radioButtonManualCoreControl);
+            this.groupBoxCoreControl.Controls.Add(this.panelManualCoreControl);
+            this.groupBoxCoreControl.Controls.Add(this.radioButtonX3D);
+            this.groupBoxCoreControl.Location = new System.Drawing.Point(3, 163);
+            this.groupBoxCoreControl.Name = "groupBoxCoreControl";
+            this.groupBoxCoreControl.Size = new System.Drawing.Size(331, 191);
+            this.groupBoxCoreControl.TabIndex = 2;
+            this.groupBoxCoreControl.TabStop = false;
+            this.groupBoxCoreControl.Text = "Core Control";
+            // 
+            // panelX3D
+            // 
+            this.panelX3D.Controls.Add(this.button5);
+            this.panelX3D.Controls.Add(this.button6);
+            this.panelX3D.Location = new System.Drawing.Point(239, 12);
+            this.panelX3D.Name = "panelX3D";
+            this.panelX3D.Size = new System.Drawing.Size(89, 32);
+            this.panelX3D.TabIndex = 9;
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(8, 5);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(34, 23);
+            this.button5.TabIndex = 5;
+            this.button5.Text = "On";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.Button5_Click);
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(48, 5);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(35, 23);
+            this.button6.TabIndex = 6;
+            this.button6.Text = "Off";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.Button6_Click);
+            // 
+            // radioButtonManualCoreControl
+            // 
+            this.radioButtonManualCoreControl.AutoSize = true;
+            this.radioButtonManualCoreControl.Location = new System.Drawing.Point(12, 41);
+            this.radioButtonManualCoreControl.Name = "radioButtonManualCoreControl";
+            this.radioButtonManualCoreControl.Size = new System.Drawing.Size(60, 17);
+            this.radioButtonManualCoreControl.TabIndex = 4;
+            this.radioButtonManualCoreControl.Text = "Manual";
+            this.toolTip1.SetToolTip(this.radioButtonManualCoreControl, "Manual mode allows to pick specific cores to disable and/or SMT.");
+            this.radioButtonManualCoreControl.UseVisualStyleBackColor = true;
+            this.radioButtonManualCoreControl.CheckedChanged += new System.EventHandler(this.RadioButtonManualCoreControl_CheckedChanged);
+            // 
+            // panelManualCoreControl
+            // 
+            this.panelManualCoreControl.Controls.Add(this.label67);
+            this.panelManualCoreControl.Controls.Add(this.tableLayoutPanel15);
+            this.panelManualCoreControl.Controls.Add(this.buttonApplyCoreMap);
+            this.panelManualCoreControl.Controls.Add(this.checkBoxSMT);
+            this.panelManualCoreControl.Enabled = false;
+            this.panelManualCoreControl.Location = new System.Drawing.Point(6, 64);
+            this.panelManualCoreControl.Name = "panelManualCoreControl";
+            this.panelManualCoreControl.Size = new System.Drawing.Size(322, 122);
+            this.panelManualCoreControl.TabIndex = 8;
+            // 
+            // label67
+            // 
+            this.label67.AutoSize = true;
+            this.label67.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.label67.Location = new System.Drawing.Point(0, 102);
+            this.label67.Name = "label67";
+            this.label67.Size = new System.Drawing.Size(265, 13);
+            this.label67.TabIndex = 2;
+            this.label67.Text = "Deselect the cores you want to disable and click Apply";
+            // 
+            // tableLayoutPanel15
+            // 
+            this.tableLayoutPanel15.AutoSize = true;
+            this.tableLayoutPanel15.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tableLayoutPanel15.ColumnCount = 8;
+            this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel15.Controls.Add(this.labelCore15, 7, 4);
+            this.tableLayoutPanel15.Controls.Add(this.labelCore14, 6, 4);
+            this.tableLayoutPanel15.Controls.Add(this.labelCore13, 5, 4);
+            this.tableLayoutPanel15.Controls.Add(this.labelCore12, 4, 4);
+            this.tableLayoutPanel15.Controls.Add(this.labelCore11, 3, 4);
+            this.tableLayoutPanel15.Controls.Add(this.labelCore10, 2, 4);
+            this.tableLayoutPanel15.Controls.Add(this.labelCore9, 1, 4);
+            this.tableLayoutPanel15.Controls.Add(this.labelCore8, 0, 4);
+            this.tableLayoutPanel15.Controls.Add(this.checkBox15, 7, 3);
+            this.tableLayoutPanel15.Controls.Add(this.checkBox14, 6, 3);
+            this.tableLayoutPanel15.Controls.Add(this.checkBox13, 5, 3);
+            this.tableLayoutPanel15.Controls.Add(this.checkBox12, 4, 3);
+            this.tableLayoutPanel15.Controls.Add(this.checkBox11, 3, 3);
+            this.tableLayoutPanel15.Controls.Add(this.checkBox10, 2, 3);
+            this.tableLayoutPanel15.Controls.Add(this.checkBox9, 1, 3);
+            this.tableLayoutPanel15.Controls.Add(this.checkBox8, 0, 3);
+            this.tableLayoutPanel15.Controls.Add(this.labelCore7, 7, 1);
+            this.tableLayoutPanel15.Controls.Add(this.labelCore6, 6, 1);
+            this.tableLayoutPanel15.Controls.Add(this.labelCore5, 5, 1);
+            this.tableLayoutPanel15.Controls.Add(this.labelCore4, 4, 1);
+            this.tableLayoutPanel15.Controls.Add(this.labelCore3, 3, 1);
+            this.tableLayoutPanel15.Controls.Add(this.labelCore2, 2, 1);
+            this.tableLayoutPanel15.Controls.Add(this.labelCore1, 1, 1);
+            this.tableLayoutPanel15.Controls.Add(this.checkBox7, 7, 0);
+            this.tableLayoutPanel15.Controls.Add(this.checkBox6, 6, 0);
+            this.tableLayoutPanel15.Controls.Add(this.checkBox5, 5, 0);
+            this.tableLayoutPanel15.Controls.Add(this.checkBox4, 4, 0);
+            this.tableLayoutPanel15.Controls.Add(this.checkBox3, 3, 0);
+            this.tableLayoutPanel15.Controls.Add(this.checkBox2, 2, 0);
+            this.tableLayoutPanel15.Controls.Add(this.checkBox1, 1, 0);
+            this.tableLayoutPanel15.Controls.Add(this.checkBox0, 0, 0);
+            this.tableLayoutPanel15.Controls.Add(this.labelCore0, 0, 1);
+            this.tableLayoutPanel15.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel15.Name = "tableLayoutPanel15";
+            this.tableLayoutPanel15.RowCount = 5;
+            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel15.Size = new System.Drawing.Size(224, 90);
+            this.tableLayoutPanel15.TabIndex = 0;
+            // 
+            // labelCore15
+            // 
+            this.labelCore15.AutoSize = true;
+            this.labelCore15.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCore15.Location = new System.Drawing.Point(199, 70);
+            this.labelCore15.Name = "labelCore15";
+            this.labelCore15.Size = new System.Drawing.Size(22, 20);
+            this.labelCore15.TabIndex = 31;
+            this.labelCore15.Text = "15";
+            this.labelCore15.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelCore14
+            // 
+            this.labelCore14.AutoSize = true;
+            this.labelCore14.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCore14.Location = new System.Drawing.Point(171, 70);
+            this.labelCore14.Name = "labelCore14";
+            this.labelCore14.Size = new System.Drawing.Size(22, 20);
+            this.labelCore14.TabIndex = 30;
+            this.labelCore14.Text = "14";
+            this.labelCore14.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelCore13
+            // 
+            this.labelCore13.AutoSize = true;
+            this.labelCore13.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCore13.Location = new System.Drawing.Point(143, 70);
+            this.labelCore13.Name = "labelCore13";
+            this.labelCore13.Size = new System.Drawing.Size(22, 20);
+            this.labelCore13.TabIndex = 29;
+            this.labelCore13.Text = "13";
+            this.labelCore13.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelCore12
+            // 
+            this.labelCore12.AutoSize = true;
+            this.labelCore12.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCore12.Location = new System.Drawing.Point(115, 70);
+            this.labelCore12.Name = "labelCore12";
+            this.labelCore12.Size = new System.Drawing.Size(22, 20);
+            this.labelCore12.TabIndex = 28;
+            this.labelCore12.Text = "12";
+            this.labelCore12.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelCore11
+            // 
+            this.labelCore11.AutoSize = true;
+            this.labelCore11.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCore11.Location = new System.Drawing.Point(87, 70);
+            this.labelCore11.Name = "labelCore11";
+            this.labelCore11.Size = new System.Drawing.Size(22, 20);
+            this.labelCore11.TabIndex = 27;
+            this.labelCore11.Text = "11";
+            this.labelCore11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelCore10
+            // 
+            this.labelCore10.AutoSize = true;
+            this.labelCore10.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCore10.Location = new System.Drawing.Point(59, 70);
+            this.labelCore10.Name = "labelCore10";
+            this.labelCore10.Size = new System.Drawing.Size(22, 20);
+            this.labelCore10.TabIndex = 26;
+            this.labelCore10.Text = "10";
+            this.labelCore10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelCore9
+            // 
+            this.labelCore9.AutoSize = true;
+            this.labelCore9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCore9.Location = new System.Drawing.Point(31, 70);
+            this.labelCore9.Name = "labelCore9";
+            this.labelCore9.Size = new System.Drawing.Size(22, 20);
+            this.labelCore9.TabIndex = 25;
+            this.labelCore9.Text = "9";
+            this.labelCore9.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelCore8
+            // 
+            this.labelCore8.AutoSize = true;
+            this.labelCore8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCore8.Location = new System.Drawing.Point(3, 70);
+            this.labelCore8.Name = "labelCore8";
+            this.labelCore8.Size = new System.Drawing.Size(22, 20);
+            this.labelCore8.TabIndex = 24;
+            this.labelCore8.Text = "8";
+            this.labelCore8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // checkBox15
+            // 
+            this.checkBox15.AutoSize = true;
+            this.checkBox15.Enabled = false;
+            this.checkBox15.Location = new System.Drawing.Point(203, 53);
+            this.checkBox15.Margin = new System.Windows.Forms.Padding(7, 3, 0, 3);
+            this.checkBox15.Name = "checkBox15";
+            this.checkBox15.Size = new System.Drawing.Size(15, 14);
+            this.checkBox15.TabIndex = 23;
+            this.checkBox15.UseVisualStyleBackColor = true;
+            // 
+            // checkBox14
+            // 
+            this.checkBox14.AutoSize = true;
+            this.checkBox14.Enabled = false;
+            this.checkBox14.Location = new System.Drawing.Point(175, 53);
+            this.checkBox14.Margin = new System.Windows.Forms.Padding(7, 3, 0, 3);
+            this.checkBox14.Name = "checkBox14";
+            this.checkBox14.Size = new System.Drawing.Size(15, 14);
+            this.checkBox14.TabIndex = 22;
+            this.checkBox14.UseVisualStyleBackColor = true;
+            // 
+            // checkBox13
+            // 
+            this.checkBox13.AutoSize = true;
+            this.checkBox13.Enabled = false;
+            this.checkBox13.Location = new System.Drawing.Point(147, 53);
+            this.checkBox13.Margin = new System.Windows.Forms.Padding(7, 3, 0, 3);
+            this.checkBox13.Name = "checkBox13";
+            this.checkBox13.Size = new System.Drawing.Size(15, 14);
+            this.checkBox13.TabIndex = 21;
+            this.checkBox13.UseVisualStyleBackColor = true;
+            // 
+            // checkBox12
+            // 
+            this.checkBox12.AutoSize = true;
+            this.checkBox12.Enabled = false;
+            this.checkBox12.Location = new System.Drawing.Point(119, 53);
+            this.checkBox12.Margin = new System.Windows.Forms.Padding(7, 3, 0, 3);
+            this.checkBox12.Name = "checkBox12";
+            this.checkBox12.Size = new System.Drawing.Size(15, 14);
+            this.checkBox12.TabIndex = 20;
+            this.checkBox12.UseVisualStyleBackColor = true;
+            // 
+            // checkBox11
+            // 
+            this.checkBox11.AutoSize = true;
+            this.checkBox11.Enabled = false;
+            this.checkBox11.Location = new System.Drawing.Point(91, 53);
+            this.checkBox11.Margin = new System.Windows.Forms.Padding(7, 3, 0, 3);
+            this.checkBox11.Name = "checkBox11";
+            this.checkBox11.Size = new System.Drawing.Size(15, 14);
+            this.checkBox11.TabIndex = 19;
+            this.checkBox11.UseVisualStyleBackColor = true;
+            // 
+            // checkBox10
+            // 
+            this.checkBox10.AutoSize = true;
+            this.checkBox10.Enabled = false;
+            this.checkBox10.Location = new System.Drawing.Point(63, 53);
+            this.checkBox10.Margin = new System.Windows.Forms.Padding(7, 3, 0, 3);
+            this.checkBox10.Name = "checkBox10";
+            this.checkBox10.Size = new System.Drawing.Size(15, 14);
+            this.checkBox10.TabIndex = 18;
+            this.checkBox10.UseVisualStyleBackColor = true;
+            // 
+            // checkBox9
+            // 
+            this.checkBox9.AutoSize = true;
+            this.checkBox9.Enabled = false;
+            this.checkBox9.Location = new System.Drawing.Point(35, 53);
+            this.checkBox9.Margin = new System.Windows.Forms.Padding(7, 3, 0, 3);
+            this.checkBox9.Name = "checkBox9";
+            this.checkBox9.Size = new System.Drawing.Size(15, 14);
+            this.checkBox9.TabIndex = 17;
+            this.checkBox9.UseVisualStyleBackColor = true;
+            // 
+            // checkBox8
+            // 
+            this.checkBox8.AutoSize = true;
+            this.checkBox8.Enabled = false;
+            this.checkBox8.Location = new System.Drawing.Point(7, 53);
+            this.checkBox8.Margin = new System.Windows.Forms.Padding(7, 3, 0, 3);
+            this.checkBox8.Name = "checkBox8";
+            this.checkBox8.Size = new System.Drawing.Size(15, 14);
+            this.checkBox8.TabIndex = 16;
+            this.checkBox8.UseVisualStyleBackColor = true;
+            // 
+            // labelCore7
+            // 
+            this.labelCore7.AutoSize = true;
+            this.labelCore7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCore7.Location = new System.Drawing.Point(199, 20);
+            this.labelCore7.Name = "labelCore7";
+            this.labelCore7.Size = new System.Drawing.Size(22, 20);
+            this.labelCore7.TabIndex = 15;
+            this.labelCore7.Text = "7";
+            this.labelCore7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelCore6
+            // 
+            this.labelCore6.AutoSize = true;
+            this.labelCore6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCore6.Location = new System.Drawing.Point(171, 20);
+            this.labelCore6.Name = "labelCore6";
+            this.labelCore6.Size = new System.Drawing.Size(22, 20);
+            this.labelCore6.TabIndex = 14;
+            this.labelCore6.Text = "6";
+            this.labelCore6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelCore5
+            // 
+            this.labelCore5.AutoSize = true;
+            this.labelCore5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCore5.Location = new System.Drawing.Point(143, 20);
+            this.labelCore5.Name = "labelCore5";
+            this.labelCore5.Size = new System.Drawing.Size(22, 20);
+            this.labelCore5.TabIndex = 13;
+            this.labelCore5.Text = "5";
+            this.labelCore5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelCore4
+            // 
+            this.labelCore4.AutoSize = true;
+            this.labelCore4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCore4.Location = new System.Drawing.Point(115, 20);
+            this.labelCore4.Name = "labelCore4";
+            this.labelCore4.Size = new System.Drawing.Size(22, 20);
+            this.labelCore4.TabIndex = 12;
+            this.labelCore4.Text = "4";
+            this.labelCore4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelCore3
+            // 
+            this.labelCore3.AutoSize = true;
+            this.labelCore3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCore3.Location = new System.Drawing.Point(87, 20);
+            this.labelCore3.Name = "labelCore3";
+            this.labelCore3.Size = new System.Drawing.Size(22, 20);
+            this.labelCore3.TabIndex = 11;
+            this.labelCore3.Text = "3";
+            this.labelCore3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelCore2
+            // 
+            this.labelCore2.AutoSize = true;
+            this.labelCore2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCore2.Location = new System.Drawing.Point(59, 20);
+            this.labelCore2.Name = "labelCore2";
+            this.labelCore2.Size = new System.Drawing.Size(22, 20);
+            this.labelCore2.TabIndex = 10;
+            this.labelCore2.Text = "2";
+            this.labelCore2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelCore1
+            // 
+            this.labelCore1.AutoSize = true;
+            this.labelCore1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCore1.Location = new System.Drawing.Point(31, 20);
+            this.labelCore1.Name = "labelCore1";
+            this.labelCore1.Size = new System.Drawing.Size(22, 20);
+            this.labelCore1.TabIndex = 9;
+            this.labelCore1.Text = "1";
+            this.labelCore1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // checkBox7
+            // 
+            this.checkBox7.AutoSize = true;
+            this.checkBox7.Enabled = false;
+            this.checkBox7.Location = new System.Drawing.Point(203, 3);
+            this.checkBox7.Margin = new System.Windows.Forms.Padding(7, 3, 0, 3);
+            this.checkBox7.Name = "checkBox7";
+            this.checkBox7.Size = new System.Drawing.Size(15, 14);
+            this.checkBox7.TabIndex = 7;
+            this.checkBox7.UseVisualStyleBackColor = true;
+            // 
+            // checkBox6
+            // 
+            this.checkBox6.AutoSize = true;
+            this.checkBox6.Enabled = false;
+            this.checkBox6.Location = new System.Drawing.Point(175, 3);
+            this.checkBox6.Margin = new System.Windows.Forms.Padding(7, 3, 0, 3);
+            this.checkBox6.Name = "checkBox6";
+            this.checkBox6.Size = new System.Drawing.Size(15, 14);
+            this.checkBox6.TabIndex = 6;
+            this.checkBox6.UseVisualStyleBackColor = true;
+            // 
+            // checkBox5
+            // 
+            this.checkBox5.AutoSize = true;
+            this.checkBox5.Enabled = false;
+            this.checkBox5.Location = new System.Drawing.Point(147, 3);
+            this.checkBox5.Margin = new System.Windows.Forms.Padding(7, 3, 0, 3);
+            this.checkBox5.Name = "checkBox5";
+            this.checkBox5.Size = new System.Drawing.Size(15, 14);
+            this.checkBox5.TabIndex = 5;
+            this.checkBox5.UseVisualStyleBackColor = true;
+            // 
+            // checkBox4
+            // 
+            this.checkBox4.AutoSize = true;
+            this.checkBox4.Enabled = false;
+            this.checkBox4.Location = new System.Drawing.Point(119, 3);
+            this.checkBox4.Margin = new System.Windows.Forms.Padding(7, 3, 0, 3);
+            this.checkBox4.Name = "checkBox4";
+            this.checkBox4.Size = new System.Drawing.Size(15, 14);
+            this.checkBox4.TabIndex = 4;
+            this.checkBox4.UseVisualStyleBackColor = true;
+            // 
+            // checkBox3
+            // 
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Enabled = false;
+            this.checkBox3.Location = new System.Drawing.Point(91, 3);
+            this.checkBox3.Margin = new System.Windows.Forms.Padding(7, 3, 0, 3);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(15, 14);
+            this.checkBox3.TabIndex = 3;
+            this.checkBox3.UseVisualStyleBackColor = true;
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Enabled = false;
+            this.checkBox2.Location = new System.Drawing.Point(63, 3);
+            this.checkBox2.Margin = new System.Windows.Forms.Padding(7, 3, 0, 3);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(15, 14);
+            this.checkBox2.TabIndex = 2;
+            this.checkBox2.UseVisualStyleBackColor = true;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Enabled = false;
+            this.checkBox1.Location = new System.Drawing.Point(35, 3);
+            this.checkBox1.Margin = new System.Windows.Forms.Padding(7, 3, 0, 3);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(15, 14);
+            this.checkBox1.TabIndex = 1;
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // checkBox0
+            // 
+            this.checkBox0.AutoSize = true;
+            this.checkBox0.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.checkBox0.Enabled = false;
+            this.checkBox0.Location = new System.Drawing.Point(7, 3);
+            this.checkBox0.Margin = new System.Windows.Forms.Padding(7, 3, 0, 3);
+            this.checkBox0.Name = "checkBox0";
+            this.checkBox0.Size = new System.Drawing.Size(15, 14);
+            this.checkBox0.TabIndex = 0;
+            this.checkBox0.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.checkBox0.UseVisualStyleBackColor = true;
+            // 
+            // labelCore0
+            // 
+            this.labelCore0.AutoSize = true;
+            this.labelCore0.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCore0.Location = new System.Drawing.Point(3, 20);
+            this.labelCore0.Name = "labelCore0";
+            this.labelCore0.Size = new System.Drawing.Size(22, 20);
+            this.labelCore0.TabIndex = 8;
+            this.labelCore0.Text = "0";
+            this.labelCore0.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // buttonApplyCoreMap
+            // 
+            this.buttonApplyCoreMap.Location = new System.Drawing.Point(241, 67);
+            this.buttonApplyCoreMap.Name = "buttonApplyCoreMap";
+            this.buttonApplyCoreMap.Size = new System.Drawing.Size(75, 23);
+            this.buttonApplyCoreMap.TabIndex = 1;
+            this.buttonApplyCoreMap.Text = "Apply";
+            this.buttonApplyCoreMap.UseVisualStyleBackColor = true;
+            this.buttonApplyCoreMap.Click += new System.EventHandler(this.ButtonApplyCoreMap_Click);
+            // 
+            // checkBoxSMT
+            // 
+            this.checkBoxSMT.AutoSize = true;
+            this.checkBoxSMT.Location = new System.Drawing.Point(241, 2);
+            this.checkBoxSMT.Name = "checkBoxSMT";
+            this.checkBoxSMT.Size = new System.Drawing.Size(49, 17);
+            this.checkBoxSMT.TabIndex = 3;
+            this.checkBoxSMT.Text = "SMT";
+            this.checkBoxSMT.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonX3D
+            // 
+            this.radioButtonX3D.AutoSize = true;
+            this.radioButtonX3D.Checked = true;
+            this.radioButtonX3D.Location = new System.Drawing.Point(12, 18);
+            this.radioButtonX3D.Name = "radioButtonX3D";
+            this.radioButtonX3D.Size = new System.Drawing.Size(107, 17);
+            this.radioButtonX3D.TabIndex = 7;
+            this.radioButtonX3D.TabStop = true;
+            this.radioButtonX3D.Text = "X3D Turbo Mode";
+            this.toolTip1.SetToolTip(this.radioButtonX3D, "X3D Mode disables SMT and second CCD module if available");
+            this.radioButtonX3D.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel8
             // 
@@ -710,7 +1278,7 @@ namespace ZenStatesDebugTool
             this.tabPageSmu.Location = new System.Drawing.Point(4, 40);
             this.tabPageSmu.Margin = new System.Windows.Forms.Padding(0);
             this.tabPageSmu.Name = "tabPageSmu";
-            this.tabPageSmu.Size = new System.Drawing.Size(337, 320);
+            this.tabPageSmu.Size = new System.Drawing.Size(337, 356);
             this.tabPageSmu.TabIndex = 0;
             this.tabPageSmu.Text = "SMU";
             this.tabPageSmu.UseVisualStyleBackColor = true;
@@ -752,7 +1320,7 @@ namespace ZenStatesDebugTool
             this.tabPagePci.Location = new System.Drawing.Point(4, 40);
             this.tabPagePci.Name = "tabPagePci";
             this.tabPagePci.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPagePci.Size = new System.Drawing.Size(337, 320);
+            this.tabPagePci.Size = new System.Drawing.Size(337, 356);
             this.tabPagePci.TabIndex = 1;
             this.tabPagePci.Text = "PCI";
             this.tabPagePci.UseVisualStyleBackColor = true;
@@ -921,7 +1489,7 @@ namespace ZenStatesDebugTool
             this.tabPageMsr.Location = new System.Drawing.Point(4, 40);
             this.tabPageMsr.Name = "tabPageMsr";
             this.tabPageMsr.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageMsr.Size = new System.Drawing.Size(337, 320);
+            this.tabPageMsr.Size = new System.Drawing.Size(337, 356);
             this.tabPageMsr.TabIndex = 5;
             this.tabPageMsr.Text = "MSR";
             this.tabPageMsr.UseVisualStyleBackColor = true;
@@ -1115,7 +1683,7 @@ namespace ZenStatesDebugTool
             this.tabPageCPUID.Location = new System.Drawing.Point(4, 40);
             this.tabPageCPUID.Name = "tabPageCPUID";
             this.tabPageCPUID.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageCPUID.Size = new System.Drawing.Size(337, 320);
+            this.tabPageCPUID.Size = new System.Drawing.Size(337, 356);
             this.tabPageCPUID.TabIndex = 6;
             this.tabPageCPUID.Text = "CPUID";
             this.tabPageCPUID.UseVisualStyleBackColor = true;
@@ -1353,7 +1921,7 @@ namespace ZenStatesDebugTool
             this.tabPagePbo.Controls.Add(this.tableLayoutPanel12);
             this.tabPagePbo.Location = new System.Drawing.Point(4, 40);
             this.tabPagePbo.Name = "tabPagePbo";
-            this.tabPagePbo.Size = new System.Drawing.Size(337, 320);
+            this.tabPagePbo.Size = new System.Drawing.Size(337, 356);
             this.tabPagePbo.TabIndex = 7;
             this.tabPagePbo.Text = "PBO";
             this.tabPagePbo.UseVisualStyleBackColor = true;
@@ -2015,7 +2583,7 @@ namespace ZenStatesDebugTool
             this.tabPageWmi.Controls.Add(this.tableLayoutPanel13);
             this.tabPageWmi.Location = new System.Drawing.Point(4, 40);
             this.tabPageWmi.Name = "tabPageWmi";
-            this.tabPageWmi.Size = new System.Drawing.Size(337, 320);
+            this.tabPageWmi.Size = new System.Drawing.Size(337, 356);
             this.tabPageWmi.TabIndex = 8;
             this.tabPageWmi.Text = "AMD ACPI";
             this.tabPageWmi.UseVisualStyleBackColor = true;
@@ -2023,7 +2591,7 @@ namespace ZenStatesDebugTool
             // tableLayoutPanel13
             // 
             this.tableLayoutPanel13.ColumnCount = 2;
-            this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 90F));
             this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel13.Controls.Add(this.label49, 0, 2);
             this.tableLayoutPanel13.Controls.Add(this.label47, 0, 0);
@@ -2041,7 +2609,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel13.Size = new System.Drawing.Size(337, 320);
+            this.tableLayoutPanel13.Size = new System.Drawing.Size(337, 356);
             this.tableLayoutPanel13.TabIndex = 0;
             // 
             // label49
@@ -2050,7 +2618,7 @@ namespace ZenStatesDebugTool
             this.label49.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label49.Location = new System.Drawing.Point(3, 54);
             this.label49.Name = "label49";
-            this.label49.Size = new System.Drawing.Size(94, 26);
+            this.label49.Size = new System.Drawing.Size(84, 26);
             this.label49.TabIndex = 4;
             this.label49.Text = "Argument";
             this.label49.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -2061,7 +2629,7 @@ namespace ZenStatesDebugTool
             this.label47.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label47.Location = new System.Drawing.Point(3, 0);
             this.label47.Name = "label47";
-            this.label47.Size = new System.Drawing.Size(94, 27);
+            this.label47.Size = new System.Drawing.Size(84, 27);
             this.label47.TabIndex = 0;
             this.label47.Text = "Command";
             this.label47.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -2071,9 +2639,9 @@ namespace ZenStatesDebugTool
             this.comboBoxAvailableCommands.Dock = System.Windows.Forms.DockStyle.Fill;
             this.comboBoxAvailableCommands.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxAvailableCommands.FormattingEnabled = true;
-            this.comboBoxAvailableCommands.Location = new System.Drawing.Point(103, 3);
+            this.comboBoxAvailableCommands.Location = new System.Drawing.Point(93, 3);
             this.comboBoxAvailableCommands.Name = "comboBoxAvailableCommands";
-            this.comboBoxAvailableCommands.Size = new System.Drawing.Size(235, 21);
+            this.comboBoxAvailableCommands.Size = new System.Drawing.Size(241, 21);
             this.comboBoxAvailableCommands.TabIndex = 1;
             this.comboBoxAvailableCommands.SelectedIndexChanged += new System.EventHandler(this.ComboBoxAvailableCommands_SelectedIndexChanged);
             // 
@@ -2082,9 +2650,9 @@ namespace ZenStatesDebugTool
             this.comboBoxAvailableValues.Dock = System.Windows.Forms.DockStyle.Fill;
             this.comboBoxAvailableValues.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxAvailableValues.FormattingEnabled = true;
-            this.comboBoxAvailableValues.Location = new System.Drawing.Point(103, 30);
+            this.comboBoxAvailableValues.Location = new System.Drawing.Point(93, 30);
             this.comboBoxAvailableValues.Name = "comboBoxAvailableValues";
-            this.comboBoxAvailableValues.Size = new System.Drawing.Size(235, 21);
+            this.comboBoxAvailableValues.Size = new System.Drawing.Size(241, 21);
             this.comboBoxAvailableValues.TabIndex = 2;
             this.comboBoxAvailableValues.SelectedIndexChanged += new System.EventHandler(this.ComboBoxAvailableValues_SelectedIndexChanged);
             // 
@@ -2094,7 +2662,7 @@ namespace ZenStatesDebugTool
             this.label48.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label48.Location = new System.Drawing.Point(3, 27);
             this.label48.Name = "label48";
-            this.label48.Size = new System.Drawing.Size(94, 27);
+            this.label48.Size = new System.Drawing.Size(84, 27);
             this.label48.TabIndex = 3;
             this.label48.Text = "Values";
             this.label48.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -2102,14 +2670,14 @@ namespace ZenStatesDebugTool
             // textBoxWmiArgument
             // 
             this.textBoxWmiArgument.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBoxWmiArgument.Location = new System.Drawing.Point(103, 57);
+            this.textBoxWmiArgument.Location = new System.Drawing.Point(93, 57);
             this.textBoxWmiArgument.Name = "textBoxWmiArgument";
-            this.textBoxWmiArgument.Size = new System.Drawing.Size(235, 20);
+            this.textBoxWmiArgument.Size = new System.Drawing.Size(241, 20);
             this.textBoxWmiArgument.TabIndex = 5;
             // 
             // buttonWmiCmdSend
             // 
-            this.buttonWmiCmdSend.Location = new System.Drawing.Point(103, 83);
+            this.buttonWmiCmdSend.Location = new System.Drawing.Point(93, 83);
             this.buttonWmiCmdSend.Name = "buttonWmiCmdSend";
             this.buttonWmiCmdSend.Size = new System.Drawing.Size(75, 23);
             this.buttonWmiCmdSend.TabIndex = 6;
@@ -2126,7 +2694,7 @@ namespace ZenStatesDebugTool
             this.tabPagePstates.Location = new System.Drawing.Point(4, 40);
             this.tabPagePstates.Name = "tabPagePstates";
             this.tabPagePstates.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPagePstates.Size = new System.Drawing.Size(337, 320);
+            this.tabPagePstates.Size = new System.Drawing.Size(337, 356);
             this.tabPagePstates.TabIndex = 3;
             this.tabPagePstates.Text = "PStates";
             this.tabPagePstates.UseVisualStyleBackColor = true;
@@ -2331,7 +2899,7 @@ namespace ZenStatesDebugTool
             this.tabPageInfo.Location = new System.Drawing.Point(4, 40);
             this.tabPageInfo.Name = "tabPageInfo";
             this.tabPageInfo.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageInfo.Size = new System.Drawing.Size(337, 320);
+            this.tabPageInfo.Size = new System.Drawing.Size(337, 356);
             this.tabPageInfo.TabIndex = 2;
             this.tabPageInfo.Text = "Info";
             this.tabPageInfo.UseVisualStyleBackColor = true;
@@ -2380,7 +2948,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(331, 314);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(331, 350);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // buttonExport
@@ -2388,7 +2956,7 @@ namespace ZenStatesDebugTool
             this.buttonExport.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.buttonExport.AutoSize = true;
             this.tableLayoutPanel3.SetColumnSpan(this.buttonExport, 2);
-            this.buttonExport.Location = new System.Drawing.Point(3, 280);
+            this.buttonExport.Location = new System.Drawing.Point(3, 316);
             this.buttonExport.Name = "buttonExport";
             this.buttonExport.Size = new System.Drawing.Size(102, 26);
             this.buttonExport.TabIndex = 1;
@@ -2648,7 +3216,7 @@ namespace ZenStatesDebugTool
             this.textBoxResult.Name = "textBoxResult";
             this.textBoxResult.ReadOnly = true;
             this.textBoxResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxResult.Size = new System.Drawing.Size(289, 344);
+            this.textBoxResult.Size = new System.Drawing.Size(289, 380);
             this.textBoxResult.TabIndex = 4;
             // 
             // splitContainer1
@@ -2669,7 +3237,7 @@ namespace ZenStatesDebugTool
             this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel11);
             this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
             this.splitContainer1.Panel2MinSize = 0;
-            this.splitContainer1.Size = new System.Drawing.Size(652, 374);
+            this.splitContainer1.Size = new System.Drawing.Size(652, 410);
             this.splitContainer1.SplitterDistance = 354;
             this.splitContainer1.SplitterWidth = 1;
             this.splitContainer1.TabIndex = 5;
@@ -2686,14 +3254,14 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel11.RowCount = 2;
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel11.Size = new System.Drawing.Size(292, 364);
+            this.tableLayoutPanel11.Size = new System.Drawing.Size(292, 400);
             this.tableLayoutPanel11.TabIndex = 5;
             // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(652, 396);
+            this.ClientSize = new System.Drawing.Size(652, 432);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -2712,6 +3280,13 @@ namespace ZenStatesDebugTool
             this.tabControl1.ResumeLayout(false);
             this.tabPageCPU.ResumeLayout(false);
             this.tabPageCPU.PerformLayout();
+            this.groupBoxCoreControl.ResumeLayout(false);
+            this.groupBoxCoreControl.PerformLayout();
+            this.panelX3D.ResumeLayout(false);
+            this.panelManualCoreControl.ResumeLayout(false);
+            this.panelManualCoreControl.PerformLayout();
+            this.tableLayoutPanel15.ResumeLayout(false);
+            this.tableLayoutPanel15.PerformLayout();
             this.tableLayoutPanel8.ResumeLayout(false);
             this.tableLayoutPanel8.PerformLayout();
             this.tabPageSmu.ResumeLayout(false);
@@ -2953,6 +3528,50 @@ namespace ZenStatesDebugTool
         private Button btnSaveCOProfile;
         private Button btnLoadCOProfile;
         private CheckBox checkBoxApplyCOStartup;
+        private GroupBox groupBoxCoreControl;
+        private TableLayoutPanel tableLayoutPanel15;
+        private CheckBox checkBox7;
+        private CheckBox checkBox6;
+        private CheckBox checkBox5;
+        private CheckBox checkBox4;
+        private CheckBox checkBox3;
+        private CheckBox checkBox2;
+        private CheckBox checkBox1;
+        private CheckBox checkBox0;
+        private Label labelCore0;
+        private Label labelCore15;
+        private Label labelCore14;
+        private Label labelCore13;
+        private Label labelCore12;
+        private Label labelCore11;
+        private Label labelCore10;
+        private Label labelCore9;
+        private Label labelCore8;
+        private CheckBox checkBox15;
+        private CheckBox checkBox14;
+        private CheckBox checkBox13;
+        private CheckBox checkBox12;
+        private CheckBox checkBox11;
+        private CheckBox checkBox10;
+        private CheckBox checkBox9;
+        private CheckBox checkBox8;
+        private Label labelCore7;
+        private Label labelCore6;
+        private Label labelCore5;
+        private Label labelCore4;
+        private Label labelCore3;
+        private Label labelCore2;
+        private Label labelCore1;
+        private Button buttonApplyCoreMap;
+        private Label label67;
+        private CheckBox checkBoxSMT;
+        private Button button6;
+        private Button button5;
+        private RadioButton radioButtonX3D;
+        private RadioButton radioButtonManualCoreControl;
+        private Panel panelManualCoreControl;
+        private Panel panelX3D;
+        private ToolTip toolTip1;
     }
 }
 
