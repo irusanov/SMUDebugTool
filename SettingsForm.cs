@@ -323,6 +323,7 @@ namespace ZenStatesDebugTool
             }*/
 
             checkBoxApplyCOStartup.Checked = TaskExists("RyzenSDT");
+            numericUpDownFmax.Value = cpu.GetFMax();
         }
 
         private void ApplyFrequencyAllCoreSetting(int frequency)
@@ -1968,6 +1969,13 @@ namespace ZenStatesDebugTool
             bool manual = radioButtonManualCoreControl.Checked == true;
             panelManualCoreControl.Enabled = manual;
             panelX3D.Enabled = !manual;
+        }
+
+        private void ButtonApplyFMax_Click(object sender, EventArgs e)
+        {
+            if (cpu.SetFMax((uint)numericUpDownFmax.Value)) {
+                numericUpDownFmax.Value = cpu.GetFMax();
+            }
         }
     }
 }

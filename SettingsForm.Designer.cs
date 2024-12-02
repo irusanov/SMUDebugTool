@@ -202,6 +202,9 @@ namespace ZenStatesDebugTool
             this.btnSaveCOProfile = new System.Windows.Forms.Button();
             this.btnLoadCOProfile = new System.Windows.Forms.Button();
             this.checkBoxApplyCOStartup = new System.Windows.Forms.CheckBox();
+            this.label51 = new System.Windows.Forms.Label();
+            this.buttonApplyFMax = new System.Windows.Forms.Button();
+            this.numericUpDownFmax = new System.Windows.Forms.NumericUpDown();
             this.tabPageWmi = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel13 = new System.Windows.Forms.TableLayoutPanel();
             this.label49 = new System.Windows.Forms.Label();
@@ -292,6 +295,7 @@ namespace ZenStatesDebugTool
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_13)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_14)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_15)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFmax)).BeginInit();
             this.tabPageWmi.SuspendLayout();
             this.tableLayoutPanel13.SuspendLayout();
             this.tabPagePstates.SuspendLayout();
@@ -649,7 +653,7 @@ namespace ZenStatesDebugTool
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(34, 23);
             this.button5.TabIndex = 5;
-            this.button5.Text = "On";
+            this.button5.Text = "ON";
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.Button5_Click);
             // 
@@ -659,7 +663,7 @@ namespace ZenStatesDebugTool
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(35, 23);
             this.button6.TabIndex = 6;
-            this.button6.Text = "Off";
+            this.button6.Text = "OFF";
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.Button6_Click);
             // 
@@ -1976,9 +1980,12 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel12.Controls.Add(this.btnSaveCOProfile, 5, 3);
             this.tableLayoutPanel12.Controls.Add(this.btnLoadCOProfile, 5, 4);
             this.tableLayoutPanel12.Controls.Add(this.checkBoxApplyCOStartup, 0, 10);
+            this.tableLayoutPanel12.Controls.Add(this.label51, 0, 12);
+            this.tableLayoutPanel12.Controls.Add(this.buttonApplyFMax, 5, 12);
+            this.tableLayoutPanel12.Controls.Add(this.numericUpDownFmax, 1, 12);
             this.tableLayoutPanel12.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel12.Name = "tableLayoutPanel12";
-            this.tableLayoutPanel12.RowCount = 11;
+            this.tableLayoutPanel12.RowCount = 14;
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
@@ -1990,14 +1997,18 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
-            this.tableLayoutPanel12.Size = new System.Drawing.Size(331, 315);
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel12.Size = new System.Drawing.Size(331, 350);
             this.tableLayoutPanel12.TabIndex = 0;
             // 
             // numericUpDownCO_8
             // 
             this.numericUpDownCO_8.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_8.Enabled = false;
-            this.numericUpDownCO_8.Location = new System.Drawing.Point(173, 31);
+            this.numericUpDownCO_8.Location = new System.Drawing.Point(173, 32);
+            this.numericUpDownCO_8.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.numericUpDownCO_8.Maximum = new decimal(new int[] {
             999,
             0,
@@ -2214,7 +2225,8 @@ namespace ZenStatesDebugTool
             // 
             this.numericUpDownCO_0.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_0.Enabled = false;
-            this.numericUpDownCO_0.Location = new System.Drawing.Point(63, 31);
+            this.numericUpDownCO_0.Location = new System.Drawing.Point(63, 32);
+            this.numericUpDownCO_0.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.numericUpDownCO_0.Maximum = new decimal(new int[] {
             999,
             0,
@@ -2233,7 +2245,8 @@ namespace ZenStatesDebugTool
             // 
             this.numericUpDownCO_1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_1.Enabled = false;
-            this.numericUpDownCO_1.Location = new System.Drawing.Point(63, 59);
+            this.numericUpDownCO_1.Location = new System.Drawing.Point(63, 60);
+            this.numericUpDownCO_1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.numericUpDownCO_1.Maximum = new decimal(new int[] {
             999,
             0,
@@ -2252,7 +2265,8 @@ namespace ZenStatesDebugTool
             // 
             this.numericUpDownCO_2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_2.Enabled = false;
-            this.numericUpDownCO_2.Location = new System.Drawing.Point(63, 87);
+            this.numericUpDownCO_2.Location = new System.Drawing.Point(63, 88);
+            this.numericUpDownCO_2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.numericUpDownCO_2.Maximum = new decimal(new int[] {
             999,
             0,
@@ -2271,7 +2285,8 @@ namespace ZenStatesDebugTool
             // 
             this.numericUpDownCO_3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_3.Enabled = false;
-            this.numericUpDownCO_3.Location = new System.Drawing.Point(63, 115);
+            this.numericUpDownCO_3.Location = new System.Drawing.Point(63, 116);
+            this.numericUpDownCO_3.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.numericUpDownCO_3.Maximum = new decimal(new int[] {
             999,
             0,
@@ -2290,7 +2305,8 @@ namespace ZenStatesDebugTool
             // 
             this.numericUpDownCO_4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_4.Enabled = false;
-            this.numericUpDownCO_4.Location = new System.Drawing.Point(63, 143);
+            this.numericUpDownCO_4.Location = new System.Drawing.Point(63, 144);
+            this.numericUpDownCO_4.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.numericUpDownCO_4.Maximum = new decimal(new int[] {
             999,
             0,
@@ -2309,7 +2325,8 @@ namespace ZenStatesDebugTool
             // 
             this.numericUpDownCO_5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_5.Enabled = false;
-            this.numericUpDownCO_5.Location = new System.Drawing.Point(63, 171);
+            this.numericUpDownCO_5.Location = new System.Drawing.Point(63, 172);
+            this.numericUpDownCO_5.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.numericUpDownCO_5.Maximum = new decimal(new int[] {
             999,
             0,
@@ -2328,7 +2345,8 @@ namespace ZenStatesDebugTool
             // 
             this.numericUpDownCO_6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_6.Enabled = false;
-            this.numericUpDownCO_6.Location = new System.Drawing.Point(63, 199);
+            this.numericUpDownCO_6.Location = new System.Drawing.Point(63, 200);
+            this.numericUpDownCO_6.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.numericUpDownCO_6.Maximum = new decimal(new int[] {
             999,
             0,
@@ -2347,7 +2365,8 @@ namespace ZenStatesDebugTool
             // 
             this.numericUpDownCO_7.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_7.Enabled = false;
-            this.numericUpDownCO_7.Location = new System.Drawing.Point(63, 227);
+            this.numericUpDownCO_7.Location = new System.Drawing.Point(63, 228);
+            this.numericUpDownCO_7.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.numericUpDownCO_7.Maximum = new decimal(new int[] {
             999,
             0,
@@ -2366,7 +2385,8 @@ namespace ZenStatesDebugTool
             // 
             this.numericUpDownCO_9.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_9.Enabled = false;
-            this.numericUpDownCO_9.Location = new System.Drawing.Point(173, 59);
+            this.numericUpDownCO_9.Location = new System.Drawing.Point(173, 60);
+            this.numericUpDownCO_9.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.numericUpDownCO_9.Maximum = new decimal(new int[] {
             999,
             0,
@@ -2385,7 +2405,8 @@ namespace ZenStatesDebugTool
             // 
             this.numericUpDownCO_10.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_10.Enabled = false;
-            this.numericUpDownCO_10.Location = new System.Drawing.Point(173, 87);
+            this.numericUpDownCO_10.Location = new System.Drawing.Point(173, 88);
+            this.numericUpDownCO_10.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.numericUpDownCO_10.Maximum = new decimal(new int[] {
             999,
             0,
@@ -2404,7 +2425,8 @@ namespace ZenStatesDebugTool
             // 
             this.numericUpDownCO_11.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_11.Enabled = false;
-            this.numericUpDownCO_11.Location = new System.Drawing.Point(173, 115);
+            this.numericUpDownCO_11.Location = new System.Drawing.Point(173, 116);
+            this.numericUpDownCO_11.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.numericUpDownCO_11.Maximum = new decimal(new int[] {
             999,
             0,
@@ -2423,7 +2445,8 @@ namespace ZenStatesDebugTool
             // 
             this.numericUpDownCO_12.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_12.Enabled = false;
-            this.numericUpDownCO_12.Location = new System.Drawing.Point(173, 143);
+            this.numericUpDownCO_12.Location = new System.Drawing.Point(173, 144);
+            this.numericUpDownCO_12.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.numericUpDownCO_12.Maximum = new decimal(new int[] {
             999,
             0,
@@ -2442,7 +2465,8 @@ namespace ZenStatesDebugTool
             // 
             this.numericUpDownCO_13.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_13.Enabled = false;
-            this.numericUpDownCO_13.Location = new System.Drawing.Point(173, 171);
+            this.numericUpDownCO_13.Location = new System.Drawing.Point(173, 172);
+            this.numericUpDownCO_13.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.numericUpDownCO_13.Maximum = new decimal(new int[] {
             999,
             0,
@@ -2461,7 +2485,8 @@ namespace ZenStatesDebugTool
             // 
             this.numericUpDownCO_14.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_14.Enabled = false;
-            this.numericUpDownCO_14.Location = new System.Drawing.Point(173, 199);
+            this.numericUpDownCO_14.Location = new System.Drawing.Point(173, 200);
+            this.numericUpDownCO_14.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.numericUpDownCO_14.Maximum = new decimal(new int[] {
             999,
             0,
@@ -2480,7 +2505,8 @@ namespace ZenStatesDebugTool
             // 
             this.numericUpDownCO_15.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownCO_15.Enabled = false;
-            this.numericUpDownCO_15.Location = new System.Drawing.Point(173, 227);
+            this.numericUpDownCO_15.Location = new System.Drawing.Point(173, 228);
+            this.numericUpDownCO_15.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.numericUpDownCO_15.Maximum = new decimal(new int[] {
             999,
             0,
@@ -2572,11 +2598,53 @@ namespace ZenStatesDebugTool
             this.checkBoxApplyCOStartup.Dock = System.Windows.Forms.DockStyle.Left;
             this.checkBoxApplyCOStartup.Location = new System.Drawing.Point(3, 283);
             this.checkBoxApplyCOStartup.Name = "checkBoxApplyCOStartup";
-            this.checkBoxApplyCOStartup.Size = new System.Drawing.Size(165, 29);
+            this.checkBoxApplyCOStartup.Size = new System.Drawing.Size(165, 22);
             this.checkBoxApplyCOStartup.TabIndex = 55;
             this.checkBoxApplyCOStartup.Text = "Apply saved profile on startup";
             this.checkBoxApplyCOStartup.UseVisualStyleBackColor = true;
             this.checkBoxApplyCOStartup.Click += new System.EventHandler(this.CheckBoxApplyCOStartup_CheckedChanged);
+            // 
+            // label51
+            // 
+            this.label51.AutoSize = true;
+            this.label51.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label51.Location = new System.Drawing.Point(3, 318);
+            this.label51.Name = "label51";
+            this.label51.Size = new System.Drawing.Size(33, 28);
+            this.label51.TabIndex = 56;
+            this.label51.Text = "FMax";
+            this.label51.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // buttonApplyFMax
+            // 
+            this.buttonApplyFMax.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonApplyFMax.Location = new System.Drawing.Point(243, 321);
+            this.buttonApplyFMax.Name = "buttonApplyFMax";
+            this.buttonApplyFMax.Size = new System.Drawing.Size(85, 22);
+            this.buttonApplyFMax.TabIndex = 58;
+            this.buttonApplyFMax.Text = "Apply";
+            this.buttonApplyFMax.UseVisualStyleBackColor = true;
+            this.buttonApplyFMax.Click += new System.EventHandler(this.ButtonApplyFMax_Click);
+            // 
+            // numericUpDownFmax
+            // 
+            this.tableLayoutPanel12.SetColumnSpan(this.numericUpDownFmax, 2);
+            this.numericUpDownFmax.Dock = System.Windows.Forms.DockStyle.Left;
+            this.numericUpDownFmax.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
+            this.numericUpDownFmax.Location = new System.Drawing.Point(63, 322);
+            this.numericUpDownFmax.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
+            this.numericUpDownFmax.Maximum = new decimal(new int[] {
+            9000,
+            0,
+            0,
+            0});
+            this.numericUpDownFmax.Name = "numericUpDownFmax";
+            this.numericUpDownFmax.Size = new System.Drawing.Size(66, 20);
+            this.numericUpDownFmax.TabIndex = 59;
             // 
             // tabPageWmi
             // 
@@ -3326,6 +3394,7 @@ namespace ZenStatesDebugTool
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_13)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_14)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO_15)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFmax)).EndInit();
             this.tabPageWmi.ResumeLayout(false);
             this.tableLayoutPanel13.ResumeLayout(false);
             this.tableLayoutPanel13.PerformLayout();
@@ -3572,6 +3641,9 @@ namespace ZenStatesDebugTool
         private Panel panelManualCoreControl;
         private Panel panelX3D;
         private ToolTip toolTip1;
+        private Label label51;
+        private Button buttonApplyFMax;
+        private NumericUpDown numericUpDownFmax;
     }
 }
 
