@@ -34,12 +34,13 @@ namespace ZenStatesDebugTool
         private readonly Mailbox testMailbox = new Mailbox();
         private readonly string wmiAMDACPI = "AMD_ACPI";
         private readonly string wmiScope = "root\\wmi";
+        private readonly string profilesPath;
+        private readonly string defaultsPath;
         private ManagementObject classInstance;
         private string instanceName;
         private ManagementBaseObject pack;
-        private const string filename = "co_profile.txt";
         private const string profilesFolderName = "profiles";
-        private const string defaultsPath = profilesFolderName + @"\" + filename;
+        private const string filename = "co_profile.txt";
         private readonly string[] args;
         private readonly bool isApplyProfile;
 
@@ -51,6 +52,10 @@ namespace ZenStatesDebugTool
 
             try
             {
+                var appBasePath = AppDomain.CurrentDomain.BaseDirectory;
+                profilesPath = Path.Combine(appBasePath, profilesFolderName);
+                defaultsPath =  Path.Combine(profilesPath, filename);
+                
                 args = Environment.GetCommandLineArgs();
                 foreach (string arg in args)
                 {
@@ -136,10 +141,10 @@ namespace ZenStatesDebugTool
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            if (!Directory.Exists(profilesFolderName))
+            if (!Directory.Exists(profilesPath))
             {
                 MessageBox.Show("Profiles directory does not exist, created one for you.");
-                Directory.CreateDirectory(profilesFolderName);
+                Directory.CreateDirectory(profilesPath);
             }
 
             InitTestMailbox(cpu.smu.Rsmu);
@@ -1701,10 +1706,10 @@ namespace ZenStatesDebugTool
             List<Tuple<int, int>> margins = new List<Tuple<int, int>>();
             try
             {
-                if (!Directory.Exists(profilesFolderName))
+                if (!Directory.Exists(profilesPath))
                 {
                     MessageBox.Show("Profiles directory does not exist, created one for you.");
-                    Directory.CreateDirectory(profilesFolderName);
+                    Directory.CreateDirectory(profilesPath);
                 }
 
                 // load from file if it exists
