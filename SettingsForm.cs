@@ -52,8 +52,7 @@ namespace ZenStatesDebugTool
 
             try
             {
-                var appBasePath = AppDomain.CurrentDomain.BaseDirectory;
-                profilesPath = Path.Combine(appBasePath, profilesFolderName);
+                profilesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, profilesFolderName);
                 defaultsPath =  Path.Combine(profilesPath, filename);
                 
                 args = Environment.GetCommandLineArgs();
