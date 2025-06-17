@@ -126,6 +126,7 @@ namespace ZenStatesDebugTool
             this.textBoxPciStartReg = new System.Windows.Forms.TextBox();
             this.textBoxPciEndReg = new System.Windows.Forms.TextBox();
             this.buttonPciScan = new System.Windows.Forms.Button();
+            this.ButtonPCIRangeMonitor = new System.Windows.Forms.Button();
             this.tabPageMsr = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonMsrWrite = new System.Windows.Forms.Button();
@@ -1348,6 +1349,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel4.Controls.Add(this.textBoxPciStartReg, 1, 3);
             this.tableLayoutPanel4.Controls.Add(this.textBoxPciEndReg, 1, 4);
             this.tableLayoutPanel4.Controls.Add(this.buttonPciScan, 3, 3);
+            this.tableLayoutPanel4.Controls.Add(this.ButtonPCIRangeMonitor, 3, 4);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
@@ -1358,7 +1360,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(331, 151);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(331, 152);
             this.tableLayoutPanel4.TabIndex = 0;
             // 
             // buttonPciWrite
@@ -1449,7 +1451,7 @@ namespace ZenStatesDebugTool
             this.label13.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label13.Location = new System.Drawing.Point(3, 118);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(94, 28);
+            this.label13.Size = new System.Drawing.Size(94, 29);
             this.label13.TabIndex = 7;
             this.label13.Text = "End Register";
             this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1486,6 +1488,16 @@ namespace ZenStatesDebugTool
             this.buttonPciScan.Text = "Scan";
             this.buttonPciScan.UseVisualStyleBackColor = true;
             this.buttonPciScan.Click += new System.EventHandler(this.ButtonPciScan_Click);
+            // 
+            // ButtonPCIRangeMonitor
+            // 
+            this.ButtonPCIRangeMonitor.Location = new System.Drawing.Point(248, 121);
+            this.ButtonPCIRangeMonitor.Name = "ButtonPCIRangeMonitor";
+            this.ButtonPCIRangeMonitor.Size = new System.Drawing.Size(75, 23);
+            this.ButtonPCIRangeMonitor.TabIndex = 11;
+            this.ButtonPCIRangeMonitor.Text = "Monitor";
+            this.ButtonPCIRangeMonitor.UseVisualStyleBackColor = true;
+            this.ButtonPCIRangeMonitor.Click += new System.EventHandler(this.ButtonPCIRangeMonitor_Click);
             // 
             // tabPageMsr
             // 
@@ -3644,6 +3656,7 @@ namespace ZenStatesDebugTool
         private Label label51;
         private Button buttonApplyFMax;
         private NumericUpDown numericUpDownFmax;
+        private Button ButtonPCIRangeMonitor;
     }
 }
 

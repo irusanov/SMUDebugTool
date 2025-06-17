@@ -1981,5 +1981,13 @@ namespace ZenStatesDebugTool
                 numericUpDownFmax.Value = cpu.GetFMax();
             }
         }
+
+        private void ButtonPCIRangeMonitor_Click(object sender, EventArgs e)
+        {
+            TryConvertToUint(textBoxPciStartReg.Text, out uint startAddress);
+            TryConvertToUint(textBoxPciEndReg.Text, out uint endAddress);
+
+            new Thread(() => new PCIRangeMonitor(cpu, startAddress, endAddress).ShowDialog()).Start();
+        }
     }
 }

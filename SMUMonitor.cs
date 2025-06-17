@@ -60,7 +60,7 @@ namespace ZenStatesDebugTool
                 if (rsp != 0)
                     arg = CPU.ReadDword(SMU_ADDR_ARG);
 
-                new Thread(() => {
+                //new Thread(() => {
                     list.Add(new SmuMonitorItem
                     {
                         Cmd = $"0x{msg:X2}",
@@ -69,7 +69,7 @@ namespace ZenStatesDebugTool
                     });
 
                     dataGridView2.FirstDisplayedScrollingRowIndex = list.Count - 1;
-                }).Start();
+                //}).Start();
             }
         }
 
