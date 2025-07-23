@@ -30,7 +30,7 @@ namespace ZenStatesDebugTool
         private BackgroundWorker backgroundWorker1;
         private readonly NUMAUtil _numaUtil;
         private readonly Cpu cpu;
-        List<SmuAddressSet> matches;
+        List<SmuAddressSet> matches = new List<SmuAddressSet>();
         private readonly Mailbox testMailbox = new Mailbox();
         private readonly string wmiAMDACPI = "AMD_ACPI";
         private readonly string wmiScope = "root\\wmi";
@@ -195,12 +195,30 @@ namespace ZenStatesDebugTool
 
             if (isApplyProfile)
             {
+                ApplyCOProfile();
+                InitPBO();
                 tabControl1.SelectedTab = tabPagePbo;
-                BtnLoadCOProfile_Click(null, null);
-                ButtonApplyCO_Click(null, null);
             }
 
             SetStatusText($"{cpu.info.codeName}. Ready.");
+        }
+
+        private void ApplyCOProfile ()
+        {
+            List<Tuple<int, int>> margins = LoadCOProfile();
+            if (margins.Count > 0 && cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0)
+            {
+                foreach (var margin in margins)
+                {
+                    int index = margin.Item1;
+                    int value = margin.Item2;
+                    int mapIndex = index < 8 ? 0 : 1;
+                    if ((~cpu.info.topology.coreDisableMap[mapIndex] >> index % 8 & 1) == 1)
+                    {
+                        cpu.SetPsmMarginSingleCore(EncodeCoreMarginBitmask(index), Convert.ToInt32(value));
+                    }
+                }
+            }
         }
 
         // TODO: Detect OC Mode and return PState freq if on auto
@@ -305,8 +323,8 @@ namespace ZenStatesDebugTool
                             if (control != null)
                             {
                                 control.Enabled = true;
-                                uint coreMask = cpu.MakeCoreMask((uint)i);
-                                uint? margin = cpu.GetPsmMarginSingleCore((uint)(((mapIndex << 8) | i % 8 & 0xF) << 20));
+                                //uint coreMask = cpu.MakeCoreMask((uint)i);
+                                uint? margin = cpu.GetPsmMarginSingleCore(EncodeCoreMarginBitmask(i));
                                 if (margin != null)
                                     control.Value = Convert.ToDecimal((int)margin);
                             }
@@ -859,6 +877,7 @@ namespace ZenStatesDebugTool
                         ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
                         break;
                     case Cpu.CodeName.Raphael:
+                    case Cpu.CodeName.GraniteRidge:
                         ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
                         // ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
                         break;
@@ -1407,10 +1426,26 @@ namespace ZenStatesDebugTool
             InitPBO();
         }
 
+        private uint EncodeCoreMarginBitmask(int coreIndex, int coresPerCCD = 8)
+        {
+            if (cpu.smu.SMU_TYPE >= SMU.SmuType.TYPE_APU0 && cpu.smu.SMU_TYPE <= SMU.SmuType.TYPE_APU2)
+            {
+                return (uint)coreIndex;
+            }
+
+            int ccdIndex = coreIndex / coresPerCCD;
+            int localCoreIndex = coreIndex % coresPerCCD;
+
+            int ccdMask = 1 << (ccdIndex + 4);
+            int mask = ccdMask | localCoreIndex;
+
+            return (uint)(mask << 20);
+        }
+
         private void ApplyCO()
         {
             //if (cpu.info.family == Cpu.Family.FAMILY_19H)
-            if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0)
+            //if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0)
             {
                 for (var i = 0; i < cpu.info.topology.physicalCores; i++)
                 {
@@ -1420,15 +1455,15 @@ namespace ZenStatesDebugTool
                         NumericUpDown control = (NumericUpDown)Controls.Find($"numericUpDownCO_{i}", true)[0];
                         if (control != null)
                         {
-                            cpu.SetPsmMarginSingleCore((uint)(((mapIndex << 8) | i % 8 & 0xF) << 20), Convert.ToInt32(control.Value));
+                            cpu.SetPsmMarginSingleCore(EncodeCoreMarginBitmask(i), Convert.ToInt32(control.Value));
                         }
                     }
                 }
             }
-            else
-            {
-                HandleError("Not supported");
-            }
+            //else
+            //{
+            //    HandleError("Not supported");
+            //}
         }
 
         private void ButtonApplyCO_Click(object sender, EventArgs e)
@@ -1639,8 +1674,8 @@ namespace ZenStatesDebugTool
             };
             info.family = (Family)(((info.cpuid & 0xf00) >> 8) + ((info.cpuid & 0xff00000) >> 20));
             info.baseModel = (info.cpuid & 0xf0) >> 4;
-            info.extModel = (info.cpuid & 0xf0000) >> 12;
-            info.model = info.baseModel + info.extModel;
+            info.extModel = (info.cpuid & 0xf0000) >> 16;
+            info.model = info.baseModel + info.extModel * 0x10;
             info.stepping = eax & 0xf;
 
             string responseString =
@@ -1649,9 +1684,9 @@ namespace ZenStatesDebugTool
                 Environment.NewLine +
                 $"family: {info.family} ({(uint)info.family:X2}h)" +
                 Environment.NewLine +
-                $"base model: 0x{info.baseModel:X2}" +
+                $"base model: 0x{info.baseModel:X1}" +
                 Environment.NewLine +
-                $"ext. model: 0x{info.extModel:X2}" +
+                $"ext. model: 0x{info.extModel:X1}" +
                 Environment.NewLine +
                 $"model: 0x{info.model:X2}" +
                 Environment.NewLine +
@@ -1720,8 +1755,8 @@ namespace ZenStatesDebugTool
                         if (line.StartsWith("["))
                         {
                             var values = line.Replace("[", "").Replace("]", "").Replace(" ", "").Split(',');
-                            Int32.TryParse(values[0], NumberStyles.Integer, CultureInfo.CurrentCulture, out int index);
-                            Int32.TryParse(values[1], NumberStyles.Integer, CultureInfo.CurrentCulture, out int margin);
+                            Int32.TryParse(values[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int index);
+                            Int32.TryParse(values[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out int margin);
                             margins.Add(new Tuple<int, int>(index, margin));
                         }
                     }
