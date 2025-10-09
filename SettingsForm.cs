@@ -1433,10 +1433,10 @@ namespace ZenStatesDebugTool
                 return (uint)coreIndex;
             }
 
-            int ccdIndex = coreIndex / coresPerCCD;
+            int ccdIndex = Convert.ToInt32(coreIndex / coresPerCCD);
             int localCoreIndex = coreIndex % coresPerCCD;
 
-            int ccdMask = 1 << (ccdIndex + 4);
+            int ccdMask = ccdIndex << 8;
             int mask = ccdMask | localCoreIndex;
 
             return (uint)(mask << 20);
