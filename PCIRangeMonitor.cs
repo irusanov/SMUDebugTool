@@ -19,6 +19,7 @@ namespace ZenStatesDebugTool
             public string Address { get; set; }
             public string Value { get; set; }
             public string ValueFloat { get; set; }
+            public string ValueBin { get; set; }
         }
 
         private BindingList<AddressMonitorItem> RefreshList()
@@ -39,7 +40,8 @@ namespace ZenStatesDebugTool
                         {
                             Address = $"0x{i:X8}",
                             Value = $"0x{value:X8}",
-                            ValueFloat = $"{floatValue:F4}"
+                            ValueFloat = $"{floatValue:F4}",
+                            ValueBin = $"{Convert.ToString(value, 2).PadLeft(32, '0')}"
                         });
                     }
                 }
@@ -63,6 +65,7 @@ namespace ZenStatesDebugTool
                     {
                         item.Value = newItem.Value;
                         item.ValueFloat = newItem.ValueFloat;
+                        item.ValueBin = newItem.ValueBin;
                         var rowIndex = list.IndexOf(item);
                         dataGridViewPCIRange.Rows[rowIndex].DefaultCellStyle.BackColor = System.Drawing.Color.LightGoldenrodYellow;
                     }
