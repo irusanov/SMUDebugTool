@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("irusanov")]
 [assembly: AssemblyProduct("Ryzen SDT")]
-[assembly: AssemblyCopyright("Copyright © 2022-2024")]
+[assembly: AssemblyCopyright("Copyright © 2022-2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en")]
@@ -34,4 +34,4 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.38.0")]
-[assembly: AssemblyFileVersion("1.38.0")]
+[assembly: AssemblyFileVersion("1.39.0")]
