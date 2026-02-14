@@ -184,7 +184,7 @@ namespace ZenStatesDebugTool
             numericUpDownBclk.Text = $"{currentBclk}";
 
             var prochotEnabled = cpu.IsProchotEnabled();
-            checkBoxPROCHOT.Checked = prochotEnabled;
+            checkBoxPROCHOT.Checked = prochotEnabled ?? false;
             //checkBoxPROCHOT.Enabled = prochotEnabled;
             //buttonApplyPROCHOT.Enabled = prochotEnabled;
 
@@ -1250,7 +1250,7 @@ namespace ZenStatesDebugTool
                 DisableOCMode();
             }
             EnableOCMode(checkBoxPROCHOT.Checked);
-            if (!checkBoxPROCHOT.Checked && cpu.IsProchotEnabled())
+            if (!checkBoxPROCHOT.Checked && cpu.IsProchotEnabled() == true)
             {
                 checkBoxPROCHOT.Checked = true;
                 HandleError($@"Error, PROCHOT could not be disabled!");
@@ -2023,6 +2023,51 @@ namespace ZenStatesDebugTool
             TryConvertToUint(textBoxPciEndReg.Text, out uint endAddress);
 
             new Thread(() => new PCIRangeMonitor(cpu, startAddress, endAddress).ShowDialog()).Start();
+        }
+
+        private void ButtonDump_Click(object sender, EventArgs e)
+        {
+            string name = textBoxDumpName.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                HandleError("Please specify a valid file name!");
+                return;
+            }
+
+            if (File.Exists(name))
+            {
+                var result = MessageBox.Show(
+                    $"File {name} already exists. Overwrite?",
+                    "Confirm Overwrite",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+                if (result != DialogResult.Yes)
+                {
+                    return;
+                }
+            }
+
+            try
+            {
+                TryConvertToUint(textBoxDumpStartAddress.Text.Trim(), out uint startAddress);
+                TryConvertToUint(textBoxDumpEndAddress.Text.Trim(), out uint endAddress);
+
+                SetStatusText(name + ": Dumping memory, please wait...");
+                
+                var stopwatch = Stopwatch.StartNew();
+                MemoryDumper.Dump32BitAddressSpaceAsBytes(name, startAddress, endAddress);
+                stopwatch.Stop();
+                
+                string elapsedTime = $"{stopwatch.Elapsed.TotalSeconds:F2}";
+                SetStatusText(name + $": Dump complete. ({elapsedTime}s)");
+                MessageBox.Show($"Memory dump completed successfully to file: {name}\n\nTime elapsed: {elapsedTime}s", "Dump Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception)
+            {
+                HandleError("Invalid address format!");
+                return;
+            }
         }
     }
 }

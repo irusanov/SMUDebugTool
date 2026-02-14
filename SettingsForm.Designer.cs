@@ -127,6 +127,13 @@ namespace ZenStatesDebugTool
             this.textBoxPciEndReg = new System.Windows.Forms.TextBox();
             this.buttonPciScan = new System.Windows.Forms.Button();
             this.ButtonPCIRangeMonitor = new System.Windows.Forms.Button();
+            this.label52 = new System.Windows.Forms.Label();
+            this.label53 = new System.Windows.Forms.Label();
+            this.label54 = new System.Windows.Forms.Label();
+            this.textBoxDumpStartAddress = new System.Windows.Forms.TextBox();
+            this.textBoxDumpEndAddress = new System.Windows.Forms.TextBox();
+            this.textBoxDumpName = new System.Windows.Forms.TextBox();
+            this.buttonDump = new System.Windows.Forms.Button();
             this.tabPageMsr = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonMsrWrite = new System.Windows.Forms.Button();
@@ -1350,17 +1357,28 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel4.Controls.Add(this.textBoxPciEndReg, 1, 4);
             this.tableLayoutPanel4.Controls.Add(this.buttonPciScan, 3, 3);
             this.tableLayoutPanel4.Controls.Add(this.ButtonPCIRangeMonitor, 3, 4);
+            this.tableLayoutPanel4.Controls.Add(this.label52, 0, 6);
+            this.tableLayoutPanel4.Controls.Add(this.label53, 0, 7);
+            this.tableLayoutPanel4.Controls.Add(this.label54, 0, 8);
+            this.tableLayoutPanel4.Controls.Add(this.textBoxDumpStartAddress, 1, 6);
+            this.tableLayoutPanel4.Controls.Add(this.textBoxDumpEndAddress, 1, 7);
+            this.tableLayoutPanel4.Controls.Add(this.textBoxDumpName, 1, 8);
+            this.tableLayoutPanel4.Controls.Add(this.buttonDump, 3, 6);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.tableLayoutPanel4.RowCount = 5;
+            this.tableLayoutPanel4.RowCount = 9;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(331, 152);
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(331, 253);
             this.tableLayoutPanel4.TabIndex = 0;
             // 
             // buttonPciWrite
@@ -1498,6 +1516,74 @@ namespace ZenStatesDebugTool
             this.ButtonPCIRangeMonitor.Text = "Monitor";
             this.ButtonPCIRangeMonitor.UseVisualStyleBackColor = true;
             this.ButtonPCIRangeMonitor.Click += new System.EventHandler(this.ButtonPCIRangeMonitor_Click);
+            // 
+            // label52
+            // 
+            this.label52.AutoSize = true;
+            this.label52.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label52.Location = new System.Drawing.Point(3, 167);
+            this.label52.Name = "label52";
+            this.label52.Size = new System.Drawing.Size(94, 29);
+            this.label52.TabIndex = 12;
+            this.label52.Text = "Start Address";
+            this.label52.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label53
+            // 
+            this.label53.AutoSize = true;
+            this.label53.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label53.Location = new System.Drawing.Point(3, 196);
+            this.label53.Name = "label53";
+            this.label53.Size = new System.Drawing.Size(94, 26);
+            this.label53.TabIndex = 13;
+            this.label53.Text = "End Address";
+            this.label53.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label54
+            // 
+            this.label54.AutoSize = true;
+            this.label54.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label54.Location = new System.Drawing.Point(3, 222);
+            this.label54.Name = "label54";
+            this.label54.Size = new System.Drawing.Size(94, 26);
+            this.label54.TabIndex = 14;
+            this.label54.Text = "Dump Name";
+            this.label54.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // textBoxDumpStartAddress
+            // 
+            this.textBoxDumpStartAddress.Location = new System.Drawing.Point(103, 170);
+            this.textBoxDumpStartAddress.Name = "textBoxDumpStartAddress";
+            this.textBoxDumpStartAddress.Size = new System.Drawing.Size(94, 20);
+            this.textBoxDumpStartAddress.TabIndex = 15;
+            this.textBoxDumpStartAddress.Text = "0xFE000000";
+            // 
+            // textBoxDumpEndAddress
+            // 
+            this.textBoxDumpEndAddress.Location = new System.Drawing.Point(103, 199);
+            this.textBoxDumpEndAddress.Name = "textBoxDumpEndAddress";
+            this.textBoxDumpEndAddress.Size = new System.Drawing.Size(94, 20);
+            this.textBoxDumpEndAddress.TabIndex = 16;
+            this.textBoxDumpEndAddress.Text = "0xFFFFFFFF";
+            // 
+            // textBoxDumpName
+            // 
+            this.textBoxDumpName.Location = new System.Drawing.Point(103, 225);
+            this.textBoxDumpName.Name = "textBoxDumpName";
+            this.textBoxDumpName.Size = new System.Drawing.Size(94, 20);
+            this.textBoxDumpName.TabIndex = 17;
+            this.textBoxDumpName.Text = "dump.bin";
+            // 
+            // buttonDump
+            // 
+            this.buttonDump.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonDump.Location = new System.Drawing.Point(248, 170);
+            this.buttonDump.Name = "buttonDump";
+            this.buttonDump.Size = new System.Drawing.Size(75, 23);
+            this.buttonDump.TabIndex = 18;
+            this.buttonDump.Text = "Dump";
+            this.buttonDump.UseVisualStyleBackColor = true;
+            this.buttonDump.Click += new System.EventHandler(this.ButtonDump_Click);
             // 
             // tabPageMsr
             // 
@@ -3657,6 +3743,13 @@ namespace ZenStatesDebugTool
         private Button buttonApplyFMax;
         private NumericUpDown numericUpDownFmax;
         private Button ButtonPCIRangeMonitor;
+        private Label label52;
+        private Label label53;
+        private Label label54;
+        private TextBox textBoxDumpStartAddress;
+        private TextBox textBoxDumpEndAddress;
+        private TextBox textBoxDumpName;
+        private Button buttonDump;
     }
 }
 

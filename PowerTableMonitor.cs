@@ -1,11 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
+using System.Globalization;
 using ZenStates.Core;
 
 namespace ZenStatesDebugTool
@@ -20,6 +16,7 @@ namespace ZenStatesDebugTool
             public string Index { get; set; }
             public string Offset { get; set; }
             public string Value { get; set; }
+            public string Max { get; set; }
         }
 
         private void FillInData(float[] table)
@@ -28,11 +25,14 @@ namespace ZenStatesDebugTool
 
             for (var i = 0; i < table.Length; i++)
             {
-                list.Add(new PowerMonitorItem {
+                var valueStr = table[i].ToString("F6", CultureInfo.InvariantCulture);
+                list.Add(new PowerMonitorItem
+                {
                     Index = $"{i:D4}",
-                    Offset = $"0x{(i*4):X4}",
-                    Value = $"{table[i]:F6}"
-                });;
+                    Offset = $"0x{(i * 4):X4}",
+                    Value = valueStr,
+                    Max = valueStr
+                });
             }
         }
 
@@ -42,7 +42,26 @@ namespace ZenStatesDebugTool
 
             foreach (var item in list)
             {
-                item.Value = $"{table[index]:F6}";
+                var current = table[index];
+                var currentStr = current.ToString("F6", CultureInfo.InvariantCulture);
+
+                // Update value string
+                item.Value = currentStr;
+
+                // Parse existing max; if parse fails, treat as 0
+                float existingMax = 0f;
+                if (!string.IsNullOrWhiteSpace(item.Max) &&
+                    !float.TryParse(item.Max, NumberStyles.Float, CultureInfo.InvariantCulture, out existingMax))
+                {
+                    existingMax = 0f;
+                }
+
+                // Update max if needed
+                if (current > existingMax)
+                {
+                    item.Max = currentStr;
+                }
+
                 index++;
             }
 

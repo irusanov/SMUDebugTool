@@ -73,6 +73,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CpuSingleton.cs" />
+    <Compile Include="MemoryDumper.cs" />
     <Compile Include="PCIRangeMonitor.cs">
       <SubType>Form</SubType>
     </Compile>
