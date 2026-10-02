@@ -9,8 +9,16 @@ namespace ZenStatesDebugTool
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
+            if (Array.Exists(args, DriverCleanup.IsCleanupArgument))
+            {
+                DriverCleanup.RunCleanupProcess(args);
+                return;
+            }
+
+            DriverCleanup.WaitForDriverCleanup();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.ThreadException += ApplicationThreadException;

@@ -67,10 +67,19 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="ZenStates-Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Prebuilt\ZenStates-Core.dll</HintPath>
-    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="ZenStates-Core\ZenStates-Core.csproj">
+      <Name>ZenStates-Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Prebuilt\inpoutx64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Prebuilt\InpOut.LICENSE.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CpuSingleton.cs" />
@@ -93,6 +102,10 @@
     <Compile Include="PowerTableMonitor.Designer.cs">
       <DependentUpon>PowerTableMonitor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utils\AppSettings.cs" />
+    <Compile Include="Utils\DriverCleaner.cs" />
+    <Compile Include="Utils\DriverCleanerNotification.cs" />
+    <Compile Include="Utils\DriverCleanup.cs" />
     <Compile Include="Utils\WmiCmdListItem.cs" />
     <Compile Include="Utils\SmuAddressSet.cs" />
     <Compile Include="Utils\CoreListItem.cs" />
