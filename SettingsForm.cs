@@ -163,14 +163,7 @@ namespace ZenStatesDebugTool
             InitTestMailbox(cpu.smu.Rsmu);
             DisplaySystemInfo();
 
-            pstateIdBox.SelectedIndex = 0;
-
-            pstateDid.KeyDown += PstateFidDid_KeyDown;
-            pstateDid.KeyPress += PstateFidDid_KeyPress;
-            pstateDid.KeyUp += PstateFidDid_KeyUp;
-            pstateFid.KeyDown += PstateFidDid_KeyDown;
-            pstateFid.KeyPress += PstateFidDid_KeyPress;
-            pstateFid.KeyUp += PstateFidDid_KeyUp;
+            InitPstates();
 
             PopulateFrequencyList(comboBoxACF.Items);
             PopulateFrequencyList(comboBoxSCF.Items);
@@ -1550,10 +1543,62 @@ namespace ZenStatesDebugTool
             MessageBox.Show($"Report saved as {fileName}");
         }
 
-        // MSRC001_006[4..B] P-state definition.
+        // MSRC001_006[4..B] P-state definition (P0..P7).
         // Family 17h/19h: CpuFid[7:0], CpuDfsId[13:8], CpuVid[21:14], IddValue[29:22], IddDiv[31:30]; CoreCOF = 200 * Fid / Did MHz.
         // Family 1Ah+:    CpuFid[11:0] (no DID), CpuVid[21:14], IddValue[29:22], IddDiv[31:30]; CoreCOF = Fid * 5 MHz.
+        // SVI3 parts (AM5 Raphael/Phoenix/Granite Ridge, ...): 9-bit VID with CpuVid[8] in bit 32 (EDX[0]).
+        // Bit 63 (EDX[31]) is PstateEn.
+        private const uint MSR_PSTATE_DEF_BASE = 0xC0010064;
+        private const int PSTATE_COUNT = 8;
+
+        private enum PstateVidEncoding
+        {
+            Unknown,
+            SVI2,
+            SVI3,
+        }
+
+        private static uint PstateMsr(int pstateId) => MSR_PSTATE_DEF_BASE + (uint)pstateId;
+
         private bool PstateHasDid => cpu.info.family < Cpu.Family.FAMILY_1AH;
+
+        private uint PstateMaxFid => PstateHasDid ? 0xFFu : 0xFFFu;
+
+        private PstateVidEncoding VidEncoding
+        {
+            get
+            {
+                if (cpu.info.family >= Cpu.Family.FAMILY_1AH)
+                    return PstateVidEncoding.SVI3;
+
+                if (cpu.info.family == Cpu.Family.FAMILY_17H)
+                    return PstateVidEncoding.SVI2;
+
+                switch (cpu.info.codeName)
+                {
+                    // Zen 4: AM5 (Raphael, Phoenix/Phoenix2/HawkPoint desktop APUs), mobile and server
+                    case Cpu.CodeName.Raphael:
+                    case Cpu.CodeName.DragonRange:
+                    case Cpu.CodeName.Phoenix:
+                    case Cpu.CodeName.Phoenix2:
+                    case Cpu.CodeName.HawkPoint:
+                    case Cpu.CodeName.Genoa:
+                    case Cpu.CodeName.Bergamo:
+                    case Cpu.CodeName.StormPeak:
+                        return PstateVidEncoding.SVI3;
+                    // Zen 3
+                    case Cpu.CodeName.Vermeer:
+                    case Cpu.CodeName.Cezanne:
+                    case Cpu.CodeName.Milan:
+                    case Cpu.CodeName.Chagall:
+                        return PstateVidEncoding.SVI2;
+                    default:
+                        return PstateVidEncoding.Unknown;
+                }
+            }
+        }
+
+        private static bool IsPstateEnabled(uint edx) => (edx >> 31 & 1) == 1;
 
         private void DecodePstate(uint eax, out uint fid, out uint did)
         {
@@ -1577,66 +1622,195 @@ namespace ZenStatesDebugTool
             return eax & ~0xFFFu | fid & 0xFFF;
         }
 
+        private uint DecodePstateVid(uint eax, uint edx)
+        {
+            uint vid = eax >> 14 & 0xFF;
+            if (VidEncoding == PstateVidEncoding.SVI3)
+                vid |= (edx & 1) << 8;
+            return vid;
+        }
+
+        private uint PstateMaxVid => VidEncoding == PstateVidEncoding.SVI3 ? 0x1FFu : 0xFFu;
+
+        // Accepts "0x7B", decimal "123", or a voltage such as "1.2" / "1.2V"; anything after "(" is ignored.
+        private bool TryParsePstateVid(string text, out uint vid)
+        {
+            vid = 0;
+            if (VidEncoding == PstateVidEncoding.Unknown || string.IsNullOrEmpty(text))
+                return false;
+
+            int paren = text.IndexOf('(');
+            string s = (paren >= 0 ? text.Substring(0, paren) : text).Trim();
+            if (s.Length == 0)
+                return false;
+
+            if (s.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                return uint.TryParse(s.Substring(2), System.Globalization.NumberStyles.HexNumber,
+                    System.Globalization.CultureInfo.InvariantCulture, out vid);
+
+            if (s.EndsWith("V", StringComparison.OrdinalIgnoreCase) || s.Contains("."))
+            {
+                if (!double.TryParse(s.TrimEnd('V', 'v').Trim(), System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out double voltage))
+                    return false;
+
+                vid = VidEncoding == PstateVidEncoding.SVI3
+                    ? ZenStates.Core.Utils.VoltageToVidSVI3(voltage)
+                    : ZenStates.Core.Utils.VoltageToVid(voltage);
+                return true;
+            }
+
+            return uint.TryParse(s, out vid);
+        }
+
+        private void EncodePstateVid(uint vid, ref uint eax, ref uint edx)
+        {
+            eax = eax & ~(0xFFu << 14) | (vid & 0xFF) << 14;
+            if (VidEncoding == PstateVidEncoding.SVI3)
+                edx = edx & ~1u | vid >> 8 & 1;
+        }
+
+        private string FormatPstateVid(uint eax, uint edx)
+        {
+            uint vid = DecodePstateVid(eax, edx);
+            switch (VidEncoding)
+            {
+                case PstateVidEncoding.SVI2:
+                    return $"0x{vid:X2} ({ZenStates.Core.Utils.VidToVoltage(vid):0.000}V)";
+                case PstateVidEncoding.SVI3:
+                    return $"0x{vid:X2} ({ZenStates.Core.Utils.VidToVoltageSVI3(vid):0.000}V)";
+                default:
+                    return $"0x{vid:X2}";
+            }
+        }
+
         private double PstateFrequencyMhz(uint fid, uint did)
         {
             if (PstateHasDid)
                 return did == 0 ? 0 : 200.0 * fid / did;
 
-            return fid * 5.0;
+            // FID values 0x00..0x0F are not valid on Family 1Ah
+            return fid > 0x0F ? fid * 5.0 : 0;
         }
 
-        private string FormatPstateFrequency(uint fid, uint did) => $"{PstateFrequencyMhz(fid, did):0.##}MHz";
+        private string FormatPstateFrequency(uint fid, uint did)
+        {
+            double mhz = PstateFrequencyMhz(fid, did);
+            return mhz > 0 ? $"{mhz:0.##}MHz" : "N/A";
+        }
+
+        // Returns an error message, or null when FID/DID are within the field ranges.
+        private string ValidatePstate(uint fid, uint did)
+        {
+            if (fid < 0x10 || fid > PstateMaxFid)
+                return $"FID must be between 16 and {PstateMaxFid}.";
+
+            if (PstateHasDid && (did < 1 || did > 0x3F))
+                return "DID must be between 1 and 63.";
+
+            return null;
+        }
+
+        private void InitPstates()
+        {
+            pstateIdBox.Items.Clear();
+            for (int i = 0; i < PSTATE_COUNT; i++)
+            {
+                uint eax = 0, edx = 0;
+                if (cpu.ReadMsr(PstateMsr(i), ref eax, ref edx) && IsPstateEnabled(edx))
+                    pstateIdBox.Items.Add(i.ToString());
+            }
+
+            // Fall back to the full list if no enabled P-state could be read
+            if (pstateIdBox.Items.Count == 0)
+            {
+                for (int i = 0; i < PSTATE_COUNT; i++)
+                    pstateIdBox.Items.Add(i.ToString());
+            }
+
+            pstateIdBox.SelectedIndex = 0;
+            pstateIdBox.SelectedIndexChanged += PstateIdBox_SelectedIndexChanged;
+
+            pstateFid.Minimum = 0;
+            pstateFid.Maximum = PstateMaxFid;
+            pstateDid.Minimum = 0;
+            pstateDid.Maximum = 0x3F;
+            pstateVid.Hexadecimal = true;
+            pstateVid.Minimum = 0;
+            pstateVid.Maximum = VidEncoding == PstateVidEncoding.Unknown ? 0xFF : PstateMaxVid;
+
+            pstateFid.ValueChanged += PstateFidDid_ValueChanged;
+            pstateDid.ValueChanged += PstateFidDid_ValueChanged;
+            pstateVid.ValueChanged += PstateVid_ValueChanged;
+
+            ToolTip toolTip = new ToolTip();
+            if (PstateHasDid)
+            {
+                toolTip.SetToolTip(pstateFid, "CpuFid[7:0]. Frequency = 200 x FID / DID MHz");
+                toolTip.SetToolTip(pstateDid, "CpuDfsId[13:8]");
+            }
+            else
+            {
+                // Family 1Ah (Zen 5, e.g. AM5 Granite Ridge): CpuFid[11:0], no divider
+                label9.Text = "DID (n/a)";
+                pstateDid.Enabled = false;
+                toolTip.SetToolTip(pstateFid, "CpuFid[11:0]. Frequency = FID x 5 MHz");
+            }
+
+            ResetPstateFields();
+        }
+
+        private void ResetPstateFields()
+        {
+            pstateDid.Value = 0;
+            pstateFid.Value = 0;
+            pstateVid.Value = 0;
+            pstateFrequency.Text = "";
+            labelPstateVid.Text = "VID";
+            pstateDid.Enabled = false;
+            pstateFid.Enabled = false;
+            pstateVid.Enabled = false;
+            btnPstateWrite.Enabled = false;
+        }
+
+        private void PstateIdBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Don't allow writing values that were read from a different P-state
+            ResetPstateFields();
+        }
 
         private void ButtonExport_Click(object sender, EventArgs e)
         {
             RunBackgroundTask(BackgroundWorkerTrySettings_DoWork, BackgroundWorkerReport_RunWorkerCompleted);
         }
 
-        private bool nonNumberEntered;
-
-        private void PstateFidDid_KeyDown(object sender, KeyEventArgs e)
+        private void PstateFidDid_ValueChanged(object sender, EventArgs e)
         {
-            nonNumberEntered = false;
-
-            if (e.KeyCode < Keys.D0 || e.KeyCode > Keys.D9)
-            {
-                if (e.KeyCode < Keys.NumPad0 || e.KeyCode > Keys.NumPad9)
-                {
-                    if (e.KeyCode != Keys.Back)
-                    {
-                        nonNumberEntered = true;
-                    }
-                }
-            }
-
-            if (ModifierKeys == Keys.Shift)
-            {
-                nonNumberEntered = true;
-            }
+            pstateFrequency.Text = FormatPstateFrequency((uint)pstateFid.Value, (uint)pstateDid.Value);
         }
 
-        private void PstateFidDid_KeyPress(object sender, KeyPressEventArgs e)
+        private void PstateVid_ValueChanged(object sender, EventArgs e)
         {
-            if (nonNumberEntered)
+            uint vid = (uint)pstateVid.Value;
+            switch (VidEncoding)
             {
-                e.Handled = true;
+                case PstateVidEncoding.SVI2:
+                    labelPstateVid.Text = $"VID ({ZenStates.Core.Utils.VidToVoltage(vid):0.000}V)";
+                    break;
+                case PstateVidEncoding.SVI3:
+                    labelPstateVid.Text = $"VID ({ZenStates.Core.Utils.VidToVoltageSVI3(vid):0.000}V)";
+                    break;
+                default:
+                    labelPstateVid.Text = "VID";
+                    break;
             }
-        }
-
-        private void PstateFidDid_KeyUp(object sender, KeyEventArgs e)
-        {
-            uint fid, did;
-            uint.TryParse(pstateFid.Text, out fid);
-            if (!uint.TryParse(pstateDid.Text, out did))
-                did = 0;
-            pstateFrequency.Text = FormatPstateFrequency(fid, did);
         }
 
         private void BtnPstateRead_Click(object sender, EventArgs e)
         {
             uint eax = default, edx = default;
-            var pstateId = pstateIdBox.SelectedIndex;
-            if (!cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx))
+            var pstateId = int.Parse((string)pstateIdBox.SelectedItem);
+            if (!cpu.ReadMsr(PstateMsr(pstateId), ref eax, ref edx))
             {
                 SetStatusText($@"Error reading PState {pstateId}!");
                 return;
@@ -1645,21 +1819,38 @@ namespace ZenStatesDebugTool
             uint CpuFid, CpuDfsId;
             DecodePstate(eax, out CpuFid, out CpuDfsId);
 
-            pstateDid.Text = PstateHasDid ? Convert.ToString(CpuDfsId, 10) : "-";
-            pstateFid.Text = Convert.ToString(CpuFid, 10);
+            pstateDid.Value = Math.Min(CpuDfsId, (uint)pstateDid.Maximum);
+            pstateFid.Value = Math.Min(CpuFid, (uint)pstateFid.Maximum);
+            pstateVid.Value = Math.Min(DecodePstateVid(eax, edx), (uint)pstateVid.Maximum);
             pstateFrequency.Text = FormatPstateFrequency(CpuFid, CpuDfsId);
+            PstateVid_ValueChanged(pstateVid, EventArgs.Empty);
 
-            SetStatusText($@"PState {pstateId} successfully read.");
+            SetStatusText(IsPstateEnabled(edx)
+                ? $@"PState {pstateId} successfully read."
+                : $@"PState {pstateId} read, but it is disabled (PstateEn=0).");
 
-            pstateDid.ReadOnly = !PstateHasDid;
-            pstateFid.ReadOnly = false;
+            pstateDid.Enabled = PstateHasDid;
+            pstateFid.Enabled = true;
+            pstateVid.Enabled = VidEncoding != PstateVidEncoding.Unknown;
             btnPstateWrite.Enabled = true;
         }
 
         private void BtnPstateWrite_Click(object sender, EventArgs e)
         {
+            uint fid = (uint)pstateFid.Value;
+            uint did = PstateHasDid ? (uint)pstateDid.Value : 0;
+
+            string validationError = ValidatePstate(fid, did);
+            if (validationError != null)
+            {
+                MessageBox.Show(validationError, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var pstateId = int.Parse((string)pstateIdBox.SelectedItem);
+
             var confirmResult = MessageBox.Show(
-                @"This will change the selected PState and your CPU frequency." +
+                $@"This will change PState {pstateId} to {FormatPstateFrequency(fid, did)} and your CPU frequency." +
                 Environment.NewLine +
                 @"Setting a high frequency could crash/damage your system." +
                 Environment.NewLine +
@@ -1670,29 +1861,26 @@ namespace ZenStatesDebugTool
 
             if (confirmResult != DialogResult.OK) return;
 
-            if (string.IsNullOrEmpty(pstateFid.Text) || (PstateHasDid && string.IsNullOrEmpty(pstateDid.Text)))
-            {
-                MessageBox.Show("Can't write because DID/FID is empty!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            uint fid, did = 0;
-            if (!uint.TryParse(pstateFid.Text, out fid) || (PstateHasDid && !uint.TryParse(pstateDid.Text, out did)))
-            {
-                MessageBox.Show("Invalid DID/FID value!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            var pstateId = pstateIdBox.SelectedIndex;
             uint eax = default, edx = default;
 
-            if (!cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx))
+            // Re-read so only FID (and DID, where present) change; VID, IDD, PstateEn and
+            // reserved bits keep their currently programmed values.
+            if (!cpu.ReadMsr(PstateMsr(pstateId), ref eax, ref edx))
             {
                 SetStatusText($@"Error reading PState {pstateId}!");
                 return;
             }
 
+            uint currentVid = DecodePstateVid(eax, edx);
             eax = EncodePstate(eax, fid, did);
+
+            if (pstateVid.Enabled)
+            {
+                uint newVid = (uint)pstateVid.Value;
+
+                if (newVid != currentVid)
+                    EncodePstateVid(newVid, ref eax, ref edx);
+            }
 
             if (_numaUtil.HighestNumaNode > 0)
             {
@@ -1706,6 +1894,7 @@ namespace ZenStatesDebugTool
                 if (!WritePstateClick(pstateId, eax, edx)) return;
             }
 
+            pstateFrequency.Text = FormatPstateFrequency(fid, did);
             SetStatusText($@"Successfully written PState {pstateId}.");
         }
 
@@ -1731,7 +1920,7 @@ namespace ZenStatesDebugTool
 
             if (!ApplyTscWorkaround()) return false;
 
-            if (!cpu.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
+            if (!cpu.WriteMsr(PstateMsr(pstateId), eax, edx))
             {
                 SetStatusText($@"Error writing PState {pstateId}!");
                 return false;
