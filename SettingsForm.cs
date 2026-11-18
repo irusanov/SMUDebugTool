@@ -17,6 +17,7 @@ using ZenStatesDebugTool.Properties;
 using Application = System.Windows.Forms.Application;
 using static ZenStates.Core.Cpu;
 using Microsoft.Win32.TaskScheduler;
+using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Diagnostics;
 using ZenStates.Core.Drivers;
@@ -51,8 +52,10 @@ namespace ZenStatesDebugTool
         public SettingsForm()
         {
             InitializeComponent();
+            InitTabStrip();
+            InitLogToolbar();
             _numaUtil = new NUMAUtil();
-            textBoxResult.Text = $@"Detected NUMA nodes. ({_numaUtil.HighestNumaNode + 1})" + textBoxResult.Text;
+            Log($"Detected NUMA nodes. ({_numaUtil.HighestNumaNode + 1})");
 
             try
             {
@@ -209,8 +212,16 @@ namespace ZenStatesDebugTool
             if (isApplyProfile)
             {
                 ApplyCOProfile();
+                ApplyCSProfile();
                 InitPBO();
+                InitCS();
                 tabControl1.SelectedTab = tabPagePbo;
+
+                // Launched non-interactively (scheduled task as SYSTEM, session 0): nothing to show, exit once the profile is applied
+                if (!Environment.UserInteractive)
+                {
+                    Load += (_, __) => BeginInvoke(new System.Action(Application.Exit));
+                }
             }
 
             SetStatusText($"{cpu.info.codeName}. Ready.");
@@ -357,6 +368,9 @@ namespace ZenStatesDebugTool
         private bool IsCurveOptimizerSupported =>
             cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0 || cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin != 0;
 
+        private Button buttonSaveCSProfile;
+        private Button buttonLoadCSProfile;
+
         private void InitCsLayout()
         {
             NumericUpDown[,] controls = CsControls;
@@ -376,6 +390,73 @@ namespace ZenStatesDebugTool
             formToolTip.SetToolTip(buttonRefreshCS, "Re-read the current margins from the SMU.");
             formToolTip.SetToolTip(buttonResetCS, "Discard pending edits and restore the last read values.");
             formToolTip.SetToolTip(buttonZeroCS, "Set all margins to 0 (not applied until you press Apply).");
+
+            // Profile buttons: same profile file as the Curve Optimizer tab, separate section
+            buttonSaveCSProfile = CreateActionButton("Save profile",
+                "Save the Curve Shaper margins shown here to the profile file. Curve Optimizer settings in the file are kept.",
+                BtnSaveCSProfile_Click);
+            buttonLoadCSProfile = CreateActionButton("Load profile",
+                "Load the saved Curve Shaper margins from the profile file (not applied until you press Apply).",
+                BtnLoadCSProfile_Click);
+
+            buttonResetCS.Text = "Discard";
+
+            // Same arrangement as the PBO tab: Zero all / Apply under the grid (Apply last), the info text
+            // at the bottom, and Refresh / Discard / Save profile / Load profile in a row below it.
+            buttonZeroCS.Text = "Zero all";
+
+            TableLayoutPanel topRow = CreateButtonRow(new Padding(0, 8, 0, 0), null, null, buttonZeroCS, buttonApplyCS);
+            TableLayoutPanel bottomRow = CreateButtonRow(new Padding(0), buttonRefreshCS, buttonResetCS, buttonSaveCSProfile, buttonLoadCSProfile);
+
+            tableLayoutPanel16.SuspendLayout();
+            tableLayoutPanel16.Controls.Remove(flowLayoutPanelCsActions);
+
+            tableLayoutPanel16.RowCount = 9;
+            tableLayoutPanel16.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+
+            tableLayoutPanel16.Controls.Add(topRow, 0, 6);
+            tableLayoutPanel16.SetColumnSpan(topRow, 5);
+            tableLayoutPanel16.Controls.Add(bottomRow, 0, 8);
+            tableLayoutPanel16.SetColumnSpan(bottomRow, 5);
+
+            // Info text fills the free space (row 7) and sits right above the bottom buttons
+            labelCsInfo.AutoSize = false;
+            labelCsInfo.Dock = DockStyle.Fill;
+            labelCsInfo.TextAlign = ContentAlignment.BottomLeft;
+            labelCsInfo.Margin = new Padding(0, 8, 0, 6);
+            tableLayoutPanel16.ResumeLayout();
+        }
+
+        // Four equal columns, like the PBO tab's button rows; null leaves a column empty
+        private static TableLayoutPanel CreateButtonRow(Padding margin, params Button[] buttons)
+        {
+            TableLayoutPanel row = new TableLayoutPanel
+            {
+                AutoSize = false,
+                ColumnCount = 4,
+                RowCount = 1,
+                Dock = DockStyle.Fill,
+                Margin = margin,
+                Height = 25,
+            };
+
+            for (int i = 0; i < 4; i++)
+                row.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            row.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                Button button = buttons[i];
+                if (button == null)
+                    continue;
+
+                button.AutoSize = false;
+                button.Dock = DockStyle.Fill;
+                button.Margin = new Padding(1, 0, 1, 0);
+                row.Controls.Add(button, i, 0);
+            }
+
+            return row;
         }
 
         private void SetCurveShaperEnabled(bool enabled)
@@ -385,8 +466,10 @@ namespace ZenStatesDebugTool
 
             buttonApplyCS.Enabled = enabled;
             buttonRefreshCS.Enabled = enabled;
-            buttonResetCS.Enabled = enabled;
             buttonZeroCS.Enabled = enabled;
+            if (buttonSaveCSProfile != null) buttonSaveCSProfile.Enabled = enabled;
+            if (buttonLoadCSProfile != null) buttonLoadCSProfile.Enabled = enabled;
+            UpdateDiscardButtons();
         }
 
         private void InitCS(bool showStatus = false)
@@ -423,6 +506,8 @@ namespace ZenStatesDebugTool
 
             labelCsInfo.Text = "Rows are frequency tiers, columns are temperature bands. Range -50 to +30. Edited cells are highlighted until applied.";
 
+            UpdateDiscardButtons();
+
             if (showStatus)
                 SetStatusText("Curve Shaper margins refreshed.");
         }
@@ -447,7 +532,28 @@ namespace ZenStatesDebugTool
         {
             NumericUpDown control = sender as NumericUpDown;
             if (control != null)
+            {
                 UpdateDirtyState(control);
+                UpdateDiscardButtons();
+            }
+        }
+
+        private static bool HasPendingEdits(IEnumerable<NumericUpDown> controls)
+        {
+            return controls.Any(c => c.Enabled && c.Tag is decimal baseline && c.Value != baseline);
+        }
+
+        // "Discard" is only useful while there are edits that have not been applied
+        private void UpdateDiscardButtons()
+        {
+            if (cpu == null)
+                return;
+
+            if (btnResetCO != null)
+                btnResetCO.Enabled = IsCurveOptimizerSupported && HasPendingEdits(coControls.Values);
+
+            if (buttonResetCS != null && buttonApplyCS != null)
+                buttonResetCS.Enabled = buttonApplyCS.Enabled && HasPendingEdits(CsControls.Cast<NumericUpDown>());
         }
 
         private void ResetToBaseline(IEnumerable<NumericUpDown> controls)
@@ -489,7 +595,7 @@ namespace ZenStatesDebugTool
 
             foreach (Control control in flowLayoutPanelCcdActions.Controls)
                 control.Enabled = supported;
-            btnResetCO.Enabled = supported;
+            UpdateDiscardButtons();
             btnSaveCOProfile.Enabled = supported;
             btnLoadCOProfile.Enabled = supported;
             buttonGetCO.Enabled = supported;
@@ -530,7 +636,7 @@ namespace ZenStatesDebugTool
 
             Button allDecBtn = CreateActionButton("All \u2212", "Decrease the margin of every enabled core by 1.", AllCcdDecrement_Click);
             Button allIncBtn = CreateActionButton("All +", "Increase the margin of every enabled core by 1.", AllCcdIncrement_Click);
-            Button allZeroBtn = CreateActionButton("All Zero", "Set the margin of every enabled core to 0 (not applied until you press Apply).", AllCcdZero_Click);
+            Button allZeroBtn = CreateActionButton("Zero all", "Set the margin of every enabled core to 0 (not applied until you press Apply).", AllCcdZero_Click);
             Button applyBtn = CreateActionButton("Apply", "Write the Curve Optimizer margins of all cores to the SMU.", ButtonApplyCO_Click);
 
             flowLayoutPanelCcdActions.Controls.Add(allDecBtn);
@@ -538,9 +644,11 @@ namespace ZenStatesDebugTool
             flowLayoutPanelCcdActions.Controls.Add(allZeroBtn);
             flowLayoutPanelCcdActions.Controls.Add(applyBtn);
 
+            btnResetCO.Text = "Discard";
             formToolTip.SetToolTip(buttonGetCO, "Re-read the current margins from the SMU.");
             formToolTip.SetToolTip(btnResetCO, "Discard pending edits and restore the last read values.");
-            formToolTip.SetToolTip(btnSaveCOProfile, "Save the current margins and FMax to the profile file.");
+            formToolTip.SetToolTip(btnSaveCOProfile, "Save the current margins and FMax to the profile file. Curve Shaper settings in the file are kept (save those from the Curve Shaper tab).");
+            formToolTip.SetToolTip(checkBoxApplyCOStartup, "Apply the saved profile (Curve Optimizer, FMax and Curve Shaper) at system startup, user logon and resume from sleep.");
             formToolTip.SetToolTip(btnLoadCOProfile, "Load margins from the profile file (not applied until you press Apply).");
             formToolTip.SetToolTip(numericUpDownFmax, "Maximum boost frequency limit in MHz.");
         }
@@ -981,18 +1089,13 @@ namespace ZenStatesDebugTool
         private void HandleError(string message, string title = "Error")
         {
             SetStatusText(Resources.Error);
+            Log(message, LogLevel.Error);
             MessageBox.Show(message, title);
         }
 
-        private void ShowResultMessageBox(uint data)
+        private void ShowResultMessageBox(uint[] data, string title = "SMU response", string context = null)
         {
-            uint[] d = { data };
-            ShowResultMessageBox(d);
-        }
-
-        private void ShowResultMessageBox(uint[] data)
-        {
-            string responseString = "";
+            string responseString = context ?? "";
             string[] hexArray = new string[data.Length];
             string[] decArray = new string[data.Length];
             string[] binArray = new string[data.Length];
@@ -1009,27 +1112,21 @@ namespace ZenStatesDebugTool
             responseString += "DEC: " + string.Join(", ", decArray);
             responseString += Environment.NewLine;
             responseString += "BIN: " + string.Join(", ", binArray);
-            responseString += Environment.NewLine;
-            responseString += Environment.NewLine;
 
             Console.WriteLine($"Response: {responseString}");
-            textBoxResult.Text = responseString + textBoxResult.Text;
+            LogCommand(title, responseString);
         }
 
         private void ShowResult(uint data)
         {
             string responseString =
-                $"REG: {textBoxPciAddress.Text.Trim()}" +
-                Environment.NewLine +
                 $"HEX: 0x{Convert.ToString(data, 16).ToUpper()}" +
                 Environment.NewLine +
                 $"INT: {Convert.ToString(data, 10).ToUpper()}" +
                 Environment.NewLine +
-                $"BIN: {Convert.ToString(data, 2).PadLeft(32, '0')}" +
-                Environment.NewLine +
-                Environment.NewLine;
+                $"BIN: {Convert.ToString(data, 2).PadLeft(32, '0')}";
             Console.WriteLine($"Response: {responseString}");
-            textBoxResult.Text = responseString + textBoxResult.Text;
+            LogCommand($"PCI read {textBoxPciAddress.Text.Trim()}", responseString);
         }
 
         private void ShowResultForm(string title="Result", string result="No result")
@@ -1075,14 +1172,24 @@ namespace ZenStatesDebugTool
                 Console.WriteLine("ARG0 Address: 0x" + Convert.ToString(testMailbox.SMU_ADDR_ARG, 16).ToUpper());
                 Console.WriteLine("ARG0        : 0x" + Convert.ToString(args[0], 16).ToUpper());
 
+                uint[] argsIn = (uint[])args.Clone();
                 SMU.Status status = cpu.smu.SendSmuCommand(testMailbox, command, ref args);
+                string statusText = GetSMUStatus.GetByType(status);
+
+                string context =
+                    $"Mailbox: {comboBoxMailboxSelect.Text}   MSG 0x{testMailbox.SMU_ADDR_MSG:X}   RSP 0x{testMailbox.SMU_ADDR_RSP:X}   ARG 0x{testMailbox.SMU_ADDR_ARG:X}" +
+                    Environment.NewLine +
+                    "ARG in: " + string.Join(", ", argsIn.Select(a => $"0x{a:X}")) +
+                    Environment.NewLine +
+                    $"Status: {statusText}" +
+                    Environment.NewLine;
 
                 if (status == SMU.Status.OK)
-                {
-                    ShowResultMessageBox(args);
-                }
+                    ShowResultMessageBox(args, $"SMU command 0x{command:X}", context);
+                else
+                    LogCommand($"SMU command 0x{command:X} failed", context, LogLevel.Error);
 
-                SetStatusText(GetSMUStatus.GetByType(status));
+                SetStatusText(statusText);
             }
             catch (ApplicationException ex)
             {
@@ -1288,14 +1395,9 @@ namespace ZenStatesDebugTool
                                 Environment.NewLine +
                                 $"RSP:  0x{pair.Value:X8}" +
                                 Environment.NewLine +
-                                $"ARG:  0x{address:X8}" +
-                                Environment.NewLine +
-                                Environment.NewLine;
+                                $"ARG:  0x{address:X8}";
 
-                        Invoke(new MethodInvoker(delegate
-                        {
-                            textBoxResult.Text += responseString;
-                        }));
+                        LogScanOutput(responseString);
 
                         break;
                     }
@@ -1348,16 +1450,11 @@ namespace ZenStatesDebugTool
                                         Environment.NewLine +
                                         $"RSP:  0x{smuRspAddress:X8}" +
                                         Environment.NewLine +
-                                        $"ARG:  0x{smuArgAddress:X8}" +
-                                        Environment.NewLine +
-                                        Environment.NewLine;
+                                        $"ARG:  0x{smuArgAddress:X8}";
 
                                     smuArgAddress += 20;
 
-                                    Invoke(new MethodInvoker(delegate
-                                    {
-                                        textBoxResult.Text += responseString;
-                                    }));
+                                    LogScanOutput(responseString);
                                 }
                             }
 
@@ -1370,15 +1467,24 @@ namespace ZenStatesDebugTool
             }
         }*/
 
-        private void RunBackgroundTask(DoWorkEventHandler task, RunWorkerCompletedEventHandler completedHandler)
+        private void RunBackgroundTask(DoWorkEventHandler task, RunWorkerCompletedEventHandler completedHandler, string title = "Task")
         {
             try
             {
                 SetButtonsState(false);
-                textBoxResult.Clear();
+                BeginLogSection($"{title} started");
 
                 backgroundWorker1 = new BackgroundWorker();
                 backgroundWorker1.DoWork += task;
+                backgroundWorker1.RunWorkerCompleted += (sender, e) =>
+                {
+                    if (e.Error != null)
+                        Log($"{title} failed: {e.Error.Message}", LogLevel.Error);
+                    else if (e.Cancelled)
+                        Log($"{title} cancelled", LogLevel.Warning);
+                    else
+                        Log($"{title} finished", LogLevel.Success);
+                };
                 backgroundWorker1.RunWorkerCompleted += completedHandler;
                 backgroundWorker1.RunWorkerAsync();
             }
@@ -1458,7 +1564,266 @@ namespace ZenStatesDebugTool
             );
 
             if (confirmResult == DialogResult.OK)
-                RunBackgroundTask(BackgroundWorkerTrySettings_DoWork, SmuScan_WorkerCompleted);
+                RunBackgroundTask(BackgroundWorkerTrySettings_DoWork, SmuScan_WorkerCompleted, "SMU address scan");
+        }
+
+        private enum LogLevel { Info, Success, Warning, Error }
+
+        private static readonly Color LogTimeColor = SystemColors.GrayText;
+        private static readonly Color LogSuccessColor = Color.FromArgb(0, 128, 0);
+        private static readonly Color LogWarningColor = Color.FromArgb(176, 112, 0);
+        private static readonly Color LogErrorColor = Color.FromArgb(192, 0, 0);
+
+        // Messages logged before the log control has a window handle (during form construction).
+        // Writing formatted text would force the handle, and the form's, to be created too early.
+        private readonly List<System.Action> pendingLog = new List<System.Action>();
+
+        // Where scan output is inserted (end of the section header written by BeginLogSection); -1 = end of log
+        private int logAppendAnchor = -1;
+        private Font logBoldFont;
+
+        private void RunOnLog(System.Action write)
+        {
+            if (!textBoxResult.IsHandleCreated)
+            {
+                pendingLog.Add(write);
+                return;
+            }
+
+            if (InvokeRequired)
+            {
+                Invoke(new MethodInvoker(() => write()));
+                return;
+            }
+
+            write();
+        }
+
+        private static Color GetLogColor(LogLevel level)
+        {
+            switch (level)
+            {
+                case LogLevel.Success: return LogSuccessColor;
+                case LogLevel.Warning: return LogWarningColor;
+                case LogLevel.Error: return LogErrorColor;
+                default: return SystemColors.WindowText;
+            }
+        }
+
+        // Status message: timestamped and colored by level, newest entry on top
+        private void Log(string message, LogLevel level = LogLevel.Info)
+        {
+            DateTime time = DateTime.Now;
+            RunOnLog(() => WriteLogEntry(time, message, null, level));
+        }
+
+        // Command and its output: timestamped bold header naming what was run, output indented below it,
+        // newest entry on top
+        private void LogCommand(string command, string output, LogLevel level = LogLevel.Info)
+        {
+            DateTime time = DateTime.Now;
+            RunOnLog(() => WriteLogEntry(time, command, output, level));
+        }
+
+        private static string Indent(string text)
+        {
+            string[] lines = text.TrimEnd('\r', '\n').Replace("\r\n", "\n").Split('\n');
+            return string.Join("\n", lines.Select(l => l.Length > 0 ? "  " + l : l));
+        }
+
+        private void WriteLogEntry(DateTime time, string title, string output, LogLevel level)
+        {
+            int lengthBefore = textBoxResult.TextLength;
+            bool hasOutput = !string.IsNullOrWhiteSpace(output);
+
+            if (logBoldFont == null)
+                logBoldFont = new Font(textBoxResult.Font, FontStyle.Bold);
+
+            textBoxResult.Select(0, 0);
+            textBoxResult.SelectionFont = textBoxResult.Font;
+            textBoxResult.SelectionColor = LogTimeColor;
+            textBoxResult.SelectedText = time.ToString("HH:mm:ss", CultureInfo.InvariantCulture) + "  ";
+
+            textBoxResult.SelectionFont = hasOutput ? logBoldFont : textBoxResult.Font;
+            textBoxResult.SelectionColor = GetLogColor(level);
+            textBoxResult.SelectedText = hasOutput ? title + "\n" : title + "\n\n";
+
+            if (hasOutput)
+            {
+                textBoxResult.SelectionFont = textBoxResult.Font;
+                textBoxResult.SelectionColor = SystemColors.WindowText;
+                textBoxResult.SelectedText = Indent(output) + "\n\n";
+            }
+
+            // Keep the scan insertion point attached to its section while newer entries are added above it
+            if (logAppendAnchor >= 0)
+                logAppendAnchor += textBoxResult.TextLength - lengthBefore;
+
+            textBoxResult.Select(0, 0);
+            textBoxResult.ScrollToCaret();
+        }
+
+        // Starts a section (for example a scan): header line on top, scan output follows right below it
+        private void BeginLogSection(string title)
+        {
+            Log(title);
+
+            if (textBoxResult.IsHandleCreated)
+            {
+                int newline = textBoxResult.Text.IndexOf('\n');
+                logAppendAnchor = newline >= 0 ? newline + 1 : textBoxResult.TextLength;
+            }
+        }
+
+        // Scan output: inserted under the current section header, in the order it is found
+        private void LogScanOutput(string text)
+        {
+            RunOnLog(() =>
+            {
+                int position = logAppendAnchor >= 0 ? Math.Min(logAppendAnchor, textBoxResult.TextLength) : textBoxResult.TextLength;
+
+                textBoxResult.Select(position, 0);
+                textBoxResult.SelectionFont = textBoxResult.Font;
+                textBoxResult.SelectionColor = SystemColors.WindowText;
+                textBoxResult.SelectedText = "\n" + Indent(text) + "\n";
+
+                if (logAppendAnchor >= 0)
+                    logAppendAnchor = textBoxResult.SelectionStart;
+            });
+        }
+
+        private void InitLogToolbar()
+        {
+            textBoxResult.HandleCreated += (s, e) =>
+            {
+                foreach (System.Action write in pendingLog)
+                    write();
+                pendingLog.Clear();
+            };
+
+            Button clear = CreateActionButton("Clear", "Clear the log.", (s, e) => textBoxResult.Clear());
+            Button copy = CreateActionButton("Copy", "Copy the selected log text, or the whole log if nothing is selected.", (s, e) =>
+            {
+                string text = textBoxResult.SelectionLength > 0 ? textBoxResult.SelectedText : textBoxResult.Text;
+                if (!string.IsNullOrEmpty(text))
+                    Clipboard.SetText(text);
+            });
+            Button save = CreateActionButton("Save...", "Save the log to a text file.", SaveLog_Click);
+
+            Button[] buttons = { clear, copy, save };
+            textBoxResult.TextChanged += (s, e) =>
+            {
+                foreach (Button button in buttons)
+                    button.Enabled = textBoxResult.TextLength > 0;
+            };
+            foreach (Button button in buttons)
+                button.Enabled = textBoxResult.TextLength > 0;
+
+            TableLayoutPanel row = CreateButtonRow(new Padding(0, 3, 0, 0), clear, copy, save);
+            tableLayoutPanel11.RowStyles[1].SizeType = SizeType.Absolute;
+            tableLayoutPanel11.RowStyles[1].Height = 28;
+            tableLayoutPanel11.Controls.Add(row, 0, 1);
+        }
+
+        private void SaveLog_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog dialog = new SaveFileDialog())
+            {
+                dialog.Filter = "Text file (*.txt)|*.txt|All files (*.*)|*.*";
+                dialog.FileName = "SMUDebugTool_log_" + DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture) + ".txt";
+
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                try
+                {
+                    File.WriteAllText(dialog.FileName, textBoxResult.Text);
+                    Log($"Log saved to {dialog.FileName}", LogLevel.Success);
+                }
+                catch (Exception ex)
+                {
+                    HandleError($"Could not save the log: {ex.Message}");
+                }
+            }
+        }
+
+        // Tab list shown as a column on the left. The TabControl itself has no visible headers
+        // (HiddenHeaderTabControl); this list selects its pages and draws horizontal text.
+        private ListBox tabStrip;
+        private bool syncingTabStrip;
+
+        // Purple from the application icon
+        private static readonly Color TabAccentColor = Color.FromArgb(104, 0, 173);
+
+        private void InitTabStrip()
+        {
+            tabStrip = new ListBox
+            {
+                Name = "listBoxTabs",
+                BorderStyle = BorderStyle.None,
+                BackColor = SystemColors.Control,
+                DrawMode = DrawMode.OwnerDrawFixed,
+                IntegralHeight = false,
+                ItemHeight = 28,
+                Width = 90,
+                Dock = DockStyle.Left,
+                TabStop = false,
+            };
+
+            foreach (TabPage page in tabControl1.TabPages)
+                tabStrip.Items.Add(page.Text);
+
+            tabStrip.SelectedIndex = tabControl1.SelectedIndex;
+            tabStrip.DrawItem += TabStrip_DrawItem;
+            tabStrip.SelectedIndexChanged += TabStrip_SelectedIndexChanged;
+            tabControl1.SelectedIndexChanged += TabControl1_SelectedIndexChanged;
+
+            splitContainer1.Panel1.Controls.Add(tabStrip);
+            tabControl1.BringToFront(); // keeps the TabControl as the Fill control next to the docked list
+        }
+
+        private void TabStrip_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (syncingTabStrip || tabStrip.SelectedIndex < 0)
+                return;
+
+            syncingTabStrip = true;
+            try { tabControl1.SelectedIndex = tabStrip.SelectedIndex; }
+            finally { syncingTabStrip = false; }
+        }
+
+        // Keeps the list in step when the page is changed from code (for example SelectedTab = tabPagePbo)
+        private void TabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (syncingTabStrip || tabControl1.SelectedIndex < 0)
+                return;
+
+            syncingTabStrip = true;
+            try { tabStrip.SelectedIndex = tabControl1.SelectedIndex; }
+            finally { syncingTabStrip = false; }
+        }
+
+        private void TabStrip_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            if (e.Index < 0 || e.Index >= tabStrip.Items.Count)
+                return;
+
+            bool selected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+            Rectangle bounds = e.Bounds;
+
+            using (Brush background = new SolidBrush(selected ? SystemColors.Window : SystemColors.Control))
+                e.Graphics.FillRectangle(background, bounds);
+
+            if (selected)
+            {
+                using (Brush accent = new SolidBrush(TabAccentColor))
+                    e.Graphics.FillRectangle(accent, new Rectangle(bounds.Left, bounds.Top, 3, bounds.Height));
+            }
+
+            Rectangle textBounds = new Rectangle(bounds.Left + 10, bounds.Top, bounds.Width - 12, bounds.Height);
+            TextRenderer.DrawText(e.Graphics, tabStrip.Items[e.Index].ToString(), tabStrip.Font, textBounds,
+                SystemColors.ControlText,
+                TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis);
         }
 
         private void TabControl1_Selected(object sender, TabControlEventArgs e)
@@ -1781,7 +2146,7 @@ namespace ZenStatesDebugTool
 
         private void ButtonExport_Click(object sender, EventArgs e)
         {
-            RunBackgroundTask(BackgroundWorkerTrySettings_DoWork, BackgroundWorkerReport_RunWorkerCompleted);
+            RunBackgroundTask(BackgroundWorkerTrySettings_DoWork, BackgroundWorkerReport_RunWorkerCompleted, "SMU report");
         }
 
         private void PstateFidDid_ValueChanged(object sender, EventArgs e)
@@ -1995,7 +2360,7 @@ namespace ZenStatesDebugTool
 
         private void ButtonPciScan_Click(object sender, EventArgs e)
         {
-            RunBackgroundTask(PciScan_DoWork, Scan_WorkerCompleted);
+            RunBackgroundTask(PciScan_DoWork, Scan_WorkerCompleted, "PCI scan");
         }
 
         private void ButtonApplyAC_Click(object sender, EventArgs e)
@@ -2095,7 +2460,7 @@ namespace ZenStatesDebugTool
 
         private void ButtonMsrScan_Click(object sender, EventArgs e)
         {
-            RunBackgroundTask(ReadMsr_Task, Scan_WorkerCompleted);
+            RunBackgroundTask(ReadMsr_Task, Scan_WorkerCompleted, "MSR scan");
         }
 
         private void ReadCPUID_Task(object sender, DoWorkEventArgs e)
@@ -2158,7 +2523,7 @@ namespace ZenStatesDebugTool
 
         private void ButtonCPUIDScan_Click(object sender, EventArgs e)
         {
-            RunBackgroundTask(ReadCPUID_Task, Scan_WorkerCompleted);
+            RunBackgroundTask(ReadCPUID_Task, Scan_WorkerCompleted, "CPUID scan");
         }
 
         private void ButtonPMTable_Click(object sender, EventArgs e)
@@ -2389,13 +2754,11 @@ namespace ZenStatesDebugTool
             if (value >= 0 && value < 0x10000)
             {
                 var response = WMI.RunCommand(classInstance, command.value, value);
-                var text = command.text + Environment.NewLine + "------------------------" + Environment.NewLine;
-                foreach (byte b in response)
-                {
-                    text += "0x" + b.ToString("X2") + Environment.NewLine;
-                }
-                text += "------------------------" + Environment.NewLine;
-                textBoxResult.Text = text + Environment.NewLine + textBoxResult.Text;
+                string bytes = string.Join(Environment.NewLine,
+                    response.Select((b, i) => new { b, i })
+                            .GroupBy(x => x.i / 8)
+                            .Select(g => string.Join(" ", g.Select(x => "0x" + x.b.ToString("X2")))));
+                LogCommand($"AMD ACPI: {command.text}" + (command.isSet ? $" (argument {value})" : ""), bytes);
             }
         }
 
@@ -2461,9 +2824,6 @@ namespace ZenStatesDebugTool
             info.stepping = eax & 0xf;
 
             string responseString =
-                Environment.NewLine +
-                $"cpuid: 0x{info.cpuid:X8}" +
-                Environment.NewLine +
                 $"family: {info.family} ({(uint)info.family:X2}h)" +
                 Environment.NewLine +
                 $"base model: 0x{info.baseModel:X1}" +
@@ -2472,14 +2832,9 @@ namespace ZenStatesDebugTool
                 Environment.NewLine +
                 $"model: 0x{info.model:X2}" +
                 Environment.NewLine +
-                $"stepping: {info.stepping}" +
-                Environment.NewLine +
-                Environment.NewLine;
+                $"stepping: {info.stepping}";
 
-            Invoke(new MethodInvoker(delegate
-            {
-                textBoxResult.Text += responseString;
-            }));
+            LogCommand($"CPUID decode 0x{info.cpuid:X8}", responseString);
         }
 
         private void BtnSaveCOProfile_Click(object sender, EventArgs e)
@@ -2502,6 +2857,9 @@ namespace ZenStatesDebugTool
             {
                 try
                 {
+                    // Keep the Curve Shaper section of the profile; this button only owns the CO/FMax part
+                    List<string> csLines = ReadProfileLines().Where(l => l.StartsWith(CsProfilePrefix)).ToList();
+
                     using (StreamWriter file = new StreamWriter(defaultsPath))
                     {
                         foreach (var entry in margins)
@@ -2509,7 +2867,10 @@ namespace ZenStatesDebugTool
 
                         file.WriteLine("fmax={0}", numericUpDownFmax.Value);
 
-                        textBoxResult.Text = $"Profile saved in {defaultsPath}" + Environment.NewLine + textBoxResult.Text;
+                        foreach (string line in csLines)
+                            file.WriteLine(line);
+
+                        Log($"Profile saved in {defaultsPath}", LogLevel.Success);
                     }
                 }
                 catch (Exception)
@@ -2517,6 +2878,124 @@ namespace ZenStatesDebugTool
                     HandleError("Could not save profile to file!");
                 }
             }
+        }
+
+        // Curve Shaper section of the profile: one line per frequency tier, "cs=<tier>,<low>,<medium>,<high>".
+        // Older versions ignore these lines.
+        private const string CsProfilePrefix = "cs=";
+
+        private List<string> ReadProfileLines()
+        {
+            return File.Exists(defaultsPath) ? File.ReadAllLines(defaultsPath).ToList() : new List<string>();
+        }
+
+        private List<int[]> LoadCSProfile()
+        {
+            List<int[]> rows = new List<int[]>();
+            int tiers = CsControls.GetLength(0);
+
+            foreach (string line in ReadProfileLines())
+            {
+                if (!line.StartsWith(CsProfilePrefix))
+                    continue;
+
+                string[] parts = line.Substring(CsProfilePrefix.Length).Replace(" ", "").Split(',');
+                if (parts.Length != 4)
+                    continue;
+
+                int[] row = new int[4];
+                bool ok = true;
+                for (int i = 0; i < 4; i++)
+                    ok &= int.TryParse(parts[i], NumberStyles.Integer, CultureInfo.InvariantCulture, out row[i]);
+
+                if (ok && row[0] >= 0 && row[0] < tiers)
+                    rows.Add(row);
+            }
+
+            return rows;
+        }
+
+        private void ApplyCSProfile()
+        {
+            if (!IsCurveShaperSupported)
+                return;
+
+            NumericUpDown[,] controls = CsControls;
+            foreach (int[] row in LoadCSProfile())
+            {
+                int tier = row[0];
+                SMU.Status status = cpu.SetCurveShaperMargin(
+                    marginHigh: ClampMargin(controls[tier, 2], row[3]),
+                    marginMedium: ClampMargin(controls[tier, 1], row[2]),
+                    marginLow: ClampMargin(controls[tier, 0], row[1]),
+                    frequencyTier: tier);
+
+                if (status != SMU.Status.OK)
+                    Console.WriteLine($"Failed to apply saved Curve Shaper margins for tier {tier}: {status}");
+            }
+        }
+
+        private static int ClampMargin(NumericUpDown control, int value)
+        {
+            return (int)Math.Max(control.Minimum, Math.Min(control.Maximum, value));
+        }
+
+        private void BtnSaveCSProfile_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                NumericUpDown[,] controls = CsControls;
+
+                // Keep everything that is not Curve Shaper (CO margins, FMax)
+                List<string> lines = ReadProfileLines().Where(l => !l.StartsWith(CsProfilePrefix)).ToList();
+
+                for (int tier = 0; tier < controls.GetLength(0); tier++)
+                {
+                    lines.Add(string.Format(CultureInfo.InvariantCulture, "{0}{1},{2},{3},{4}",
+                        CsProfilePrefix, tier,
+                        (int)controls[tier, 0].Value, (int)controls[tier, 1].Value, (int)controls[tier, 2].Value));
+                }
+
+                Directory.CreateDirectory(profilesPath);
+                File.WriteAllLines(defaultsPath, lines);
+
+                SetStatusText("Curve Shaper margins saved to profile.");
+                Log($"Curve Shaper margins saved in {defaultsPath}", LogLevel.Success);
+            }
+            catch (Exception)
+            {
+                HandleError("Could not save profile to file!");
+            }
+        }
+
+        private void BtnLoadCSProfile_Click(object sender, EventArgs e)
+        {
+            List<int[]> rows;
+            try
+            {
+                rows = LoadCSProfile();
+            }
+            catch (Exception)
+            {
+                HandleError("Could not load saved profile!");
+                return;
+            }
+
+            if (rows.Count == 0)
+            {
+                SetStatusText("No Curve Shaper margins saved in the profile.");
+                return;
+            }
+
+            NumericUpDown[,] controls = CsControls;
+            foreach (int[] row in rows)
+            {
+                for (int band = 0; band < 3; band++)
+                    controls[row[0], band].Value = ClampMargin(controls[row[0], band], row[band + 1]);
+            }
+
+            SetStatusText("Curve Shaper margins loaded from profile. Press Apply to write them to the SMU.");
+            Log($"Saved Curve Shaper margins loaded from {defaultsPath}", LogLevel.Success);
         }
 
         private List<Tuple<int, int>> LoadCOProfile()
@@ -2587,7 +3066,7 @@ namespace ZenStatesDebugTool
                 if (numericUpDownFmax.Tag is decimal savedFmax)
                     numericUpDownFmax.Value = savedFmax;
 
-                textBoxResult.Text = $"Saved CO profile loaded from {defaultsPath}" + Environment.NewLine + textBoxResult.Text;
+                Log($"Saved CO profile loaded from {defaultsPath}", LogLevel.Success);
             }
         }
 
@@ -2602,6 +3081,89 @@ namespace ZenStatesDebugTool
             }
         }
 
+        // Number of triggers a current-version task must have: startup, logon, resume from sleep
+        private const int StartupTaskTriggerCount = 3;
+
+        // Rights that let an account modify, replace or take over a file or folder
+        private const FileSystemRights ModifyRights =
+            FileSystemRights.WriteData | FileSystemRights.AppendData | FileSystemRights.Delete |
+            FileSystemRights.DeleteSubdirectoriesAndFiles | FileSystemRights.ChangePermissions |
+            FileSystemRights.TakeOwnership;
+
+        private static bool IsTrustedPrincipal(SecurityIdentifier sid)
+        {
+            if (sid.IsWellKnown(WellKnownSidType.LocalSystemSid) ||
+                sid.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid) ||
+                sid.IsWellKnown(WellKnownSidType.CreatorOwnerSid))
+                return true;
+
+            // NT SERVICE\TrustedInstaller
+            return sid.Value.StartsWith("S-1-5-80-956008885-");
+        }
+
+        private static bool HasUntrustedWriteAccess(AuthorizationRuleCollection rules, out string who)
+        {
+            who = null;
+            foreach (FileSystemAccessRule rule in rules)
+            {
+                if (rule.AccessControlType != AccessControlType.Allow || (rule.FileSystemRights & ModifyRights) == 0)
+                    continue;
+
+                SecurityIdentifier sid = (SecurityIdentifier)rule.IdentityReference;
+                if (IsTrustedPrincipal(sid))
+                    continue;
+
+                try { who = sid.Translate(typeof(NTAccount)).Value; }
+                catch (Exception) { who = sid.Value; }
+                return true;
+            }
+            return false;
+        }
+
+        // The startup task runs this executable as SYSTEM. If anyone other than SYSTEM/Administrators
+        // can modify the executable or the folder it loads files from, they can run code as SYSTEM.
+        static bool IsExecutableLocationSecure(string executablePath, out string reason)
+        {
+            reason = null;
+            try
+            {
+                string who;
+                string dir = Path.GetDirectoryName(executablePath);
+
+                if (HasUntrustedWriteAccess(new FileInfo(executablePath).GetAccessControl()
+                    .GetAccessRules(true, true, typeof(SecurityIdentifier)), out who))
+                {
+                    reason = $"The program file can be modified by \"{who}\".";
+                    return false;
+                }
+
+                if (HasUntrustedWriteAccess(new DirectoryInfo(dir).GetAccessControl()
+                    .GetAccessRules(true, true, typeof(SecurityIdentifier)), out who))
+                {
+                    reason = $"The folder \"{dir}\" can be modified by \"{who}\".";
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                reason = $"The permissions of the program folder could not be verified ({ex.Message}).";
+                return false;
+            }
+        }
+
+        static bool TaskIsUpToDate(string taskName)
+        {
+            using (TaskService taskService = new TaskService())
+            {
+                Task task = taskService.GetTask(taskName);
+                return task != null
+                    && task.Definition.Triggers.Count >= StartupTaskTriggerCount
+                    && task.Definition.Principal.LogonType == TaskLogonType.ServiceAccount;
+            }
+        }
+
         static void AddTaskToScheduler(string taskName, string executablePath, int delaySeconds = 0)
         {
             // Create a new task service
@@ -2611,22 +3173,43 @@ namespace ZenStatesDebugTool
                 TaskDefinition taskDefinition = taskService.NewTask();
 
                 // Set the task properties
-                taskDefinition.RegistrationInfo.Description = "Run Ryzen SMU Debug Tool on user logon to apply CO profile. Automatically created by RyzenSDT. Remove manually or from the checkbox in PBO tab.";
-                taskDefinition.Principal.UserId = WindowsIdentity.GetCurrent().Name;
+                taskDefinition.RegistrationInfo.Description = "Run Ryzen SMU Debug Tool on system startup, user logon and resume from sleep to apply CO profile. Automatically created by RyzenSDT. Remove manually or from the checkbox in PBO tab.";
+                taskDefinition.Principal.UserId = "SYSTEM";
                 taskDefinition.Principal.RunLevel = TaskRunLevel.Highest;
-                taskDefinition.Principal.LogonType = TaskLogonType.InteractiveToken;
+                taskDefinition.Principal.LogonType = TaskLogonType.ServiceAccount;
 
-                // Create a trigger that starts the task at logon with a specified delay
+                // Do not skip or kill the task on battery power (laptops), and do not time it out
+                taskDefinition.Settings.DisallowStartIfOnBatteries = false;
+                taskDefinition.Settings.StopIfGoingOnBatteries = false;
+                taskDefinition.Settings.ExecutionTimeLimit = TimeSpan.Zero;
+
+                // Trigger 1: system startup
+                BootTrigger bootTrigger = new BootTrigger();
+                bootTrigger.Delay = TimeSpan.FromSeconds(delaySeconds);
+                taskDefinition.Triggers.Add(bootTrigger);
+
+                // Trigger 2: user logon
                 LogonTrigger logonTrigger = new LogonTrigger();
-                logonTrigger.Delay = TimeSpan.FromSeconds(delaySeconds); // Set the delay
+                logonTrigger.Delay = TimeSpan.FromSeconds(delaySeconds);
                 taskDefinition.Triggers.Add(logonTrigger);
+
+                // Trigger 3: resume from sleep/hibernate (System log, Power-Troubleshooter, event ID 1)
+                EventTrigger resumeTrigger = new EventTrigger("System", "Microsoft-Windows-Power-Troubleshooter", 1);
+                resumeTrigger.Delay = TimeSpan.FromSeconds(delaySeconds);
+                taskDefinition.Triggers.Add(resumeTrigger);
 
                 // Create an action that runs the specified executable
                 ExecAction execAction = new ExecAction(executablePath, "--applyprofile");
                 taskDefinition.Actions.Add(execAction);
 
-                // Register the task in the root folder of the Task Scheduler
-                taskService.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
+                // Register the task in the root folder of the Task Scheduler (replaces an existing one)
+                taskService.RootFolder.RegisterTaskDefinition(
+                    taskName,
+                    taskDefinition,
+                    TaskCreation.CreateOrUpdate,
+                    "SYSTEM",
+                    null,
+                    TaskLogonType.ServiceAccount);
             }
         }
 
@@ -2640,7 +3223,7 @@ namespace ZenStatesDebugTool
             }
         }
 
-        private void SetStartup(bool isChecked = false)
+        private bool SetStartup(bool isChecked = false)
         {
             /*using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
             {
@@ -2654,20 +3237,55 @@ namespace ZenStatesDebugTool
                 }
             }*/
 
-            if (isChecked && !TaskExists("RyzenSDT"))
+            if (isChecked)
             {
+                bool exists = TaskExists("RyzenSDT");
+                if (exists && TaskIsUpToDate("RyzenSDT"))
+                    return true;
+
+                if (!IsExecutableLocationSecure(Application.ExecutablePath, out string reason))
+                {
+                    DialogResult answer = MessageBox.Show(
+                        "The startup task runs as SYSTEM (the most privileged account) at every boot, logon and resume from sleep.\n\n" +
+                        reason + "\n\n" +
+                        "Any non-administrator that can modify these files could make Windows run its own code as SYSTEM.\n\n" +
+                        "To be safe, move SMU Debug Tool to a folder only administrators can write to (for example under C:\\Program Files) and enable this option again.\n\n" +
+                        "Create the startup task anyway?",
+                        "Security warning",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning,
+                        MessageBoxDefaultButton.Button2);
+
+                    if (answer != DialogResult.Yes)
+                    {
+                        // Leave an existing (older) task as it is; do not create a new one
+                        return exists;
+                    }
+                }
+
+                // Create the task, or upgrade one made by an older version (logon-only, interactive user)
                 AddTaskToScheduler("RyzenSDT", Application.ExecutablePath, 0);
+                return true;
             }
-            else
+
+            if (TaskExists("RyzenSDT"))
             {
                 RemoveTaskFromScheduler("RyzenSDT");
             }
+            return false;
         }
 
         private void CheckBoxApplyCOStartup_CheckedChanged(object sender, EventArgs e)
         {
-            SetStartup((sender as CheckBox).Checked);
-            textBoxResult.Text = $"Startup settings saved." + Environment.NewLine + textBoxResult.Text;
+            CheckBox box = (CheckBox)sender;
+            bool requested = box.Checked;
+            bool active = SetStartup(requested);
+            box.Checked = active;
+
+            if (requested && !active)
+                Log("Startup task was not created.", LogLevel.Warning);
+            else
+                Log("Startup settings saved.", LogLevel.Success);
         }
 
         private sealed class NotificationLevelItem
@@ -2956,14 +3574,36 @@ namespace ZenStatesDebugTool
             if (errorMessages.Count == 0)
             {
                 SetStatusText("Curve Shaper margins applied successfully.");
+                Log("Curve Shaper margins applied successfully.", LogLevel.Success);
             }
             else
             {
-                textBoxResult.Text = string.Join(Environment.NewLine, errorMessages) + Environment.NewLine + textBoxResult.Text;
+                Log(string.Join(Environment.NewLine, errorMessages), LogLevel.Error);
                 SetStatusText("One or more errors occurred while applying Curve Shaper margins.");
             }
 
             InitCS();
+        }
+    }
+
+    /// <summary>
+    /// TabControl that reserves no space for its tab headers. Pages are selected from code
+    /// or from a separate control (see SettingsForm.InitTabStrip).
+    /// </summary>
+    internal class HiddenHeaderTabControl : TabControl
+    {
+        private const int TCM_ADJUSTRECT = 0x1328;
+
+        protected override void WndProc(ref Message m)
+        {
+            // Report that the headers take no room, so the pages fill the whole control
+            if (m.Msg == TCM_ADJUSTRECT && !DesignMode)
+            {
+                m.Result = (IntPtr)1;
+                return;
+            }
+
+            base.WndProc(ref m);
         }
     }
 }

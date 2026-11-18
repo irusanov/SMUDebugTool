@@ -55,7 +55,7 @@ namespace ZenStatesDebugTool
             this.buttonPMTable = new System.Windows.Forms.Button();
             this.buttonDefaults = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabControl1 = new ZenStatesDebugTool.HiddenHeaderTabControl();
             this.tabPageCPU = new System.Windows.Forms.TabPage();
             this.groupBoxCoreControl = new System.Windows.Forms.GroupBox();
             this.panelX3D = new System.Windows.Forms.Panel();
@@ -265,7 +265,7 @@ namespace ZenStatesDebugTool
             this.labelDriverNotifications = new System.Windows.Forms.Label();
             this.checkBoxAutoUninstallDriver = new System.Windows.Forms.CheckBox();
             this.buttonApplyCO = new System.Windows.Forms.Button();
-            this.textBoxResult = new System.Windows.Forms.TextBox();
+            this.textBoxResult = new System.Windows.Forms.RichTextBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel11 = new System.Windows.Forms.TableLayoutPanel();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
@@ -317,6 +317,9 @@ namespace ZenStatesDebugTool
             this.tabPagePstates.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBclk)).BeginInit();
             this.tableLayoutPanel5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pstateDid)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pstateFid)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pstateVid)).BeginInit();
             this.tabPageInfo.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tabPageSettings.SuspendLayout();
@@ -2935,20 +2938,20 @@ namespace ZenStatesDebugTool
             // pstateDid
             // 
             this.pstateDid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pstateDid.Enabled = false;
             this.pstateDid.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pstateDid.Location = new System.Drawing.Point(103, 39);
             this.pstateDid.Name = "pstateDid";
-            this.pstateDid.Enabled = false;
             this.pstateDid.Size = new System.Drawing.Size(94, 20);
             this.pstateDid.TabIndex = 4;
             // 
             // pstateFid
             // 
             this.pstateFid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pstateFid.Enabled = false;
             this.pstateFid.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pstateFid.Location = new System.Drawing.Point(103, 68);
             this.pstateFid.Name = "pstateFid";
-            this.pstateFid.Enabled = false;
             this.pstateFid.Size = new System.Drawing.Size(94, 20);
             this.pstateFid.TabIndex = 7;
             // 
@@ -3008,10 +3011,10 @@ namespace ZenStatesDebugTool
             // pstateVid
             // 
             this.pstateVid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pstateVid.Enabled = false;
             this.pstateVid.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pstateVid.Location = new System.Drawing.Point(103, 126);
             this.pstateVid.Name = "pstateVid";
-            this.pstateVid.Enabled = false;
             this.pstateVid.Size = new System.Drawing.Size(94, 20);
             this.pstateVid.TabIndex = 14;
             // 
@@ -3409,7 +3412,9 @@ namespace ZenStatesDebugTool
             // 
             // textBoxResult
             // 
+            this.textBoxResult.BackColor = System.Drawing.SystemColors.Window;
             this.textBoxResult.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBoxResult.DetectUrls = false;
             this.textBoxResult.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxResult.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxResult.Location = new System.Drawing.Point(3, 0);
@@ -3417,7 +3422,7 @@ namespace ZenStatesDebugTool
             this.textBoxResult.Multiline = true;
             this.textBoxResult.Name = "textBoxResult";
             this.textBoxResult.ReadOnly = true;
-            this.textBoxResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBoxResult.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
             this.textBoxResult.Size = new System.Drawing.Size(289, 380);
             this.textBoxResult.TabIndex = 4;
             // 
@@ -3439,8 +3444,8 @@ namespace ZenStatesDebugTool
             this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel11);
             this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
             this.splitContainer1.Panel2MinSize = 0;
-            this.splitContainer1.Size = new System.Drawing.Size(676, 410);
-            this.splitContainer1.SplitterDistance = 378;
+            this.splitContainer1.Size = new System.Drawing.Size(766, 410);
+            this.splitContainer1.SplitterDistance = 468;
             this.splitContainer1.SplitterWidth = 1;
             this.splitContainer1.TabIndex = 5;
             // 
@@ -3463,7 +3468,7 @@ namespace ZenStatesDebugTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(676, 432);
+            this.ClientSize = new System.Drawing.Size(766, 432);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -3541,6 +3546,9 @@ namespace ZenStatesDebugTool
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBclk)).EndInit();
             this.tableLayoutPanel5.ResumeLayout(false);
             this.tableLayoutPanel5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pstateDid)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pstateFid)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pstateVid)).EndInit();
             this.tabPageInfo.ResumeLayout(false);
             this.tabPageInfo.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
@@ -3599,7 +3607,7 @@ namespace ZenStatesDebugTool
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBoxPciAddress;
         private System.Windows.Forms.Button buttonPciRead;
-        private System.Windows.Forms.TextBox textBoxResult;
+        private System.Windows.Forms.RichTextBox textBoxResult;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label cpuIdLabel;
@@ -3607,7 +3615,7 @@ namespace ZenStatesDebugTool
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textBoxPciValue;
         private System.Windows.Forms.Button buttonExport;
-        private System.Windows.Forms.TabControl tabControl1;
+        private ZenStatesDebugTool.HiddenHeaderTabControl tabControl1;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
