@@ -2219,10 +2219,12 @@ namespace ZenStatesDebugTool
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             RectangleF pill = new RectangleF(bounds.Left + ControlStyler.Px(6), bounds.Top + ControlStyler.Px(2),
                 bounds.Width - ControlStyler.Px(10), bounds.Height - ControlStyler.Px(4));
+            // Subtle background from the sidebar color (not the accent): a little stronger for the selected page than
+            // for hover. The selected page is marked by the accent bar and icon.
             if (selected || hover)
             {
-                Color fill = selected ? Palette.Blend(p.Bg, p.Accent, p.IsDark ? 0.32f : 0.12f) : p.Hover;
-                using (var path = ControlStyler.RoundedRect(pill, ControlStyler.Px(6)))
+                Color fill = Palette.Blend(p.Bg, p.Text, selected ? (p.IsDark ? 0.10f : 0.07f) : (p.IsDark ? 0.05f : 0.035f));
+                using (var path = ControlStyler.RoundedRect(pill, ControlStyler.Px(3)))
                 using (Brush brush = new SolidBrush(fill))
                     g.FillPath(brush, path);
             }
