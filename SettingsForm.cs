@@ -194,8 +194,21 @@ namespace ZenStatesDebugTool
             PopulateWmiFunctions();
 
             double? currentBclk = cpu.bclk?.GetBclk();
-            labelBCLK.Text = currentBclk + " MHz";
-            numericUpDownBclk.Text = $"{currentBclk}";
+            if (currentBclk == null)
+            {
+                Log("BCLK can't be detected.", LogLevel.Warning);
+                labelBCLK.Text = "n/a";
+                buttonBCLKApply.Enabled = false;
+                ShowBclkInfo();
+                SetStatusText("Error getting current BCLK!");
+                numericUpDownBclk.Text = null;
+                numericUpDownBclk.Enabled = false;
+            }
+            else
+            {
+                labelBCLK.Text = currentBclk + " MHz";
+                numericUpDownBclk.Text = $"{currentBclk}";
+            }
 
             var prochotEnabled = cpu.IsProchotEnabled();
             checkBoxPROCHOT.Checked = prochotEnabled ?? false;
@@ -3307,6 +3320,96 @@ namespace ZenStatesDebugTool
                             .Select(g => string.Join(" ", g.Select(x => "0x" + x.b.ToString("X2")))));
                 LogCommand($"AMD ACPI: {command.text}" + (command.isSet ? $" (argument {value})" : ""), bytes);
             }
+        }
+
+        // ---- BCLK not readable from the PLL register ----
+
+        // Shown on the PStates tab when GetBclk() gives nothing: why BCLK cannot be read or changed here, and what the core
+        // still knows about the clocks (strap, eCLK mode, reference clock source, measured CPU and memory BCLK), for information.
+        // The layout is in the designer (tableLayoutPanelBclkInfo).
+        private void ShowBclkInfo()
+        {
+            Bclk bclk = cpu.bclk;
+            tableLayoutPanelBclkInfo.Visible = true;
+
+            if (bclk == null || !bclk.IsAvailable)
+            {
+                labelBclkInfo.Text = "BCLK can't be detected or changed here: the FCH clock registers are not accessible.";
+                foreach (Label value in new[] { labelBclkStrap, labelBclkEclk, labelBclkRefClk, labelBclkCpu, labelBclkMem })
+                    value.Text = "n/a";
+                return;
+            }
+
+            Bclk.ClkGen strap = bclk.GetStrapStatus();
+            Bclk.EclkMode eclk = bclk.GetEclkMode();
+            Bclk.CpuRefClkSource source = bclk.GetCpuRefClkSource();
+
+            string reason;
+            if (bclk.IsLegacyApuClocking)
+                reason = "the CPU is not clocked from the FCH PLL (CG1_PLL).";
+            else if (strap == Bclk.ClkGen.EXTERNAL && eclk == Bclk.EclkMode.ASYNC)
+                reason = "the CPU has its own external reference clock (asynchronous eCLK mode), which the FCH PLL register does not hold.";
+            else
+                reason = "the FCH PLL register does not hold the CPU clock.";
+            labelBclkInfo.Text = "BCLK can't be detected or changed here: " + reason + " The values below are for information only.";
+
+            labelBclkStrap.Text = strap == Bclk.ClkGen.INTERNAL ? "Internal (48 MHz crystal)"
+                : strap == Bclk.ClkGen.EXTERNAL ? "External (100 MHz reference)" : "Unknown";
+            labelBclkEclk.Text = eclk == Bclk.EclkMode.SYNC ? "Sync (eCLK0)"
+                : eclk == Bclk.EclkMode.ASYNC ? "Async (eCLK1)"
+                : eclk == Bclk.EclkMode.AUTO ? "Auto" : "Unknown";
+            labelBclkRefClk.Text = source == Bclk.CpuRefClkSource.CG1_PLL ? "CG1_PLL"
+                : source == Bclk.CpuRefClkSource.EXTERNAL_GPP1 ? "External (GPP1)"
+                : source == Bclk.CpuRefClkSource.EXT_GPP0_SRC ? "External (GPP0)" : "Unknown";
+            labelBclkCpu.Text = "Measuring...";
+            labelBclkMem.Text = "Measuring...";
+
+            // The measurements block for about a second: run them in the background
+            new Thread(() =>
+            {
+                double? cpuBclk = null, memoryBclk = null;
+                string memorySource = null;
+                try
+                {
+                    cpuBclk = bclk.RefreshCpuBclk();
+                    memoryBclk = bclk.MemoryBclk ?? bclk.RefreshMemoryBclk();
+                    memorySource = bclk.MemoryBclkSource;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"BCLK measurement failed: {ex.Message}");
+                }
+
+                RunOnUiThread(() =>
+                {
+                    labelBclkCpu.Text = FormatMhz(cpuBclk);
+                    labelBclkMem.Text = FormatMhz(memoryBclk) + (memoryBclk.HasValue && !string.IsNullOrEmpty(memorySource) ? $" ({memorySource})" : "");
+                });
+            })
+            { IsBackground = true, Name = "BCLK info" }.Start();
+        }
+
+        private static string FormatMhz(double? mhz) =>
+            mhz.HasValue ? mhz.Value.ToString("0.00", CultureInfo.InvariantCulture) + " MHz" : "n/a";
+
+        private void RunOnUiThread(System.Action action)
+        {
+            if (IsDisposed)
+                return;
+
+            if (IsHandleCreated)
+            {
+                BeginInvoke(new MethodInvoker(() => action()));
+                return;
+            }
+
+            EventHandler created = null;
+            created = (s, e) =>
+            {
+                HandleCreated -= created;
+                BeginInvoke(new MethodInvoker(() => action()));
+            };
+            HandleCreated += created;
         }
 
         private void ButtonBCLKApply_Click(object sender, EventArgs e)

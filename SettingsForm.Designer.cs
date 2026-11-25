@@ -236,6 +236,18 @@ namespace ZenStatesDebugTool
             this.numericUpDownBclk = new System.Windows.Forms.NumericUpDown();
             this.labelBCLK = new System.Windows.Forms.Label();
             this.buttonBCLKApply = new System.Windows.Forms.Button();
+            this.labelBclkInfo = new System.Windows.Forms.Label();
+            this.tableLayoutPanelBclkInfo = new System.Windows.Forms.TableLayoutPanel();
+            this.labelBclkStrapCaption = new System.Windows.Forms.Label();
+            this.labelBclkEclkCaption = new System.Windows.Forms.Label();
+            this.labelBclkRefClkCaption = new System.Windows.Forms.Label();
+            this.labelBclkCpuCaption = new System.Windows.Forms.Label();
+            this.labelBclkMemCaption = new System.Windows.Forms.Label();
+            this.labelBclkStrap = new System.Windows.Forms.Label();
+            this.labelBclkEclk = new System.Windows.Forms.Label();
+            this.labelBclkRefClk = new System.Windows.Forms.Label();
+            this.labelBclkCpu = new System.Windows.Forms.Label();
+            this.labelBclkMem = new System.Windows.Forms.Label();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.label10 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -334,6 +346,7 @@ namespace ZenStatesDebugTool
             this.tabPagePstates.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBclk)).BeginInit();
             this.tableLayoutPanel5.SuspendLayout();
+            this.tableLayoutPanelBclkInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pstateDid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pstateFid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pstateVid)).BeginInit();
@@ -3083,6 +3096,7 @@ namespace ZenStatesDebugTool
             this.tabPagePstates.Controls.Add(this.numericUpDownBclk);
             this.tabPagePstates.Controls.Add(this.labelBCLK);
             this.tabPagePstates.Controls.Add(this.buttonBCLKApply);
+            this.tabPagePstates.Controls.Add(this.tableLayoutPanelBclkInfo);
             this.tabPagePstates.Controls.Add(this.tableLayoutPanel5);
             this.tabPagePstates.Location = new System.Drawing.Point(4, 40);
             this.tabPagePstates.Name = "tabPagePstates";
@@ -3125,9 +3139,9 @@ namespace ZenStatesDebugTool
             this.labelBCLK.AutoSize = true;
             this.labelBCLK.Location = new System.Drawing.Point(6, 179);
             this.labelBCLK.Name = "labelBCLK";
-            this.labelBCLK.Size = new System.Drawing.Size(41, 13);
+            this.labelBCLK.Size = new System.Drawing.Size(34, 13);
             this.labelBCLK.TabIndex = 4;
-            this.labelBCLK.Text = "label50";
+            this.labelBCLK.Text = "BCLK";
             // 
             // buttonBCLKApply
             // 
@@ -3138,6 +3152,155 @@ namespace ZenStatesDebugTool
             this.buttonBCLKApply.Text = "Apply";
             this.buttonBCLKApply.UseVisualStyleBackColor = true;
             this.buttonBCLKApply.Click += new System.EventHandler(this.ButtonBCLKApply_Click);
+            // 
+            // tableLayoutPanelBclkInfo
+            // 
+            this.tableLayoutPanelBclkInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanelBclkInfo.ColumnCount = 2;
+            this.tableLayoutPanelBclkInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.tableLayoutPanelBclkInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkInfo, 0, 0);
+            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkStrapCaption, 0, 1);
+            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkStrap, 1, 1);
+            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkEclkCaption, 0, 2);
+            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkEclk, 1, 2);
+            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkRefClkCaption, 0, 3);
+            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkRefClk, 1, 3);
+            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkCpuCaption, 0, 4);
+            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkCpu, 1, 4);
+            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkMemCaption, 0, 5);
+            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkMem, 1, 5);
+            this.tableLayoutPanelBclkInfo.Location = new System.Drawing.Point(3, 206);
+            this.tableLayoutPanelBclkInfo.Name = "tableLayoutPanelBclkInfo";
+            this.tableLayoutPanelBclkInfo.RowCount = 6;
+            this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelBclkInfo.Size = new System.Drawing.Size(445, 147);
+            this.tableLayoutPanelBclkInfo.TabIndex = 6;
+            this.tableLayoutPanelBclkInfo.Visible = false;
+            // 
+            // labelBclkInfo
+            // 
+            this.labelBclkInfo.AutoSize = true;
+            this.tableLayoutPanelBclkInfo.SetColumnSpan(this.labelBclkInfo, 2);
+            this.labelBclkInfo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelBclkInfo.Location = new System.Drawing.Point(3, 0);
+            this.labelBclkInfo.Margin = new System.Windows.Forms.Padding(3, 0, 3, 6);
+            this.labelBclkInfo.Name = "labelBclkInfo";
+            this.labelBclkInfo.Size = new System.Drawing.Size(439, 26);
+            this.labelBclkInfo.TabIndex = 0;
+            this.labelBclkInfo.Text = "BCLK can't be detected, so it can't be changed here.";
+            // 
+            // labelBclkStrapCaption
+            // 
+            this.labelBclkStrapCaption.AutoSize = true;
+            this.labelBclkStrapCaption.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.labelBclkStrapCaption.Location = new System.Drawing.Point(3, 34);
+            this.labelBclkStrapCaption.Margin = new System.Windows.Forms.Padding(3, 1, 12, 1);
+            this.labelBclkStrapCaption.Name = "labelBclkStrapCaption";
+            this.labelBclkStrapCaption.Size = new System.Drawing.Size(120, 13);
+            this.labelBclkStrapCaption.TabIndex = 1;
+            this.labelBclkStrapCaption.Text = "Clock generator strap";
+            // 
+            // labelBclkStrap
+            // 
+            this.labelBclkStrap.AutoSize = true;
+            this.labelBclkStrap.Location = new System.Drawing.Point(138, 34);
+            this.labelBclkStrap.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.labelBclkStrap.Name = "labelBclkStrap";
+            this.labelBclkStrap.Size = new System.Drawing.Size(10, 13);
+            this.labelBclkStrap.TabIndex = 2;
+            this.labelBclkStrap.Text = "-";
+            // 
+            // labelBclkEclkCaption
+            // 
+            this.labelBclkEclkCaption.AutoSize = true;
+            this.labelBclkEclkCaption.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.labelBclkEclkCaption.Location = new System.Drawing.Point(3, 51);
+            this.labelBclkEclkCaption.Margin = new System.Windows.Forms.Padding(3, 1, 12, 1);
+            this.labelBclkEclkCaption.Name = "labelBclkEclkCaption";
+            this.labelBclkEclkCaption.Size = new System.Drawing.Size(120, 13);
+            this.labelBclkEclkCaption.TabIndex = 3;
+            this.labelBclkEclkCaption.Text = "eCLK mode";
+            // 
+            // labelBclkEclk
+            // 
+            this.labelBclkEclk.AutoSize = true;
+            this.labelBclkEclk.Location = new System.Drawing.Point(138, 51);
+            this.labelBclkEclk.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.labelBclkEclk.Name = "labelBclkEclk";
+            this.labelBclkEclk.Size = new System.Drawing.Size(10, 13);
+            this.labelBclkEclk.TabIndex = 4;
+            this.labelBclkEclk.Text = "-";
+            // 
+            // labelBclkRefClkCaption
+            // 
+            this.labelBclkRefClkCaption.AutoSize = true;
+            this.labelBclkRefClkCaption.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.labelBclkRefClkCaption.Location = new System.Drawing.Point(3, 68);
+            this.labelBclkRefClkCaption.Margin = new System.Windows.Forms.Padding(3, 1, 12, 1);
+            this.labelBclkRefClkCaption.Name = "labelBclkRefClkCaption";
+            this.labelBclkRefClkCaption.Size = new System.Drawing.Size(120, 13);
+            this.labelBclkRefClkCaption.TabIndex = 5;
+            this.labelBclkRefClkCaption.Text = "CPU reference clock";
+            // 
+            // labelBclkRefClk
+            // 
+            this.labelBclkRefClk.AutoSize = true;
+            this.labelBclkRefClk.Location = new System.Drawing.Point(138, 68);
+            this.labelBclkRefClk.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.labelBclkRefClk.Name = "labelBclkRefClk";
+            this.labelBclkRefClk.Size = new System.Drawing.Size(10, 13);
+            this.labelBclkRefClk.TabIndex = 6;
+            this.labelBclkRefClk.Text = "-";
+            // 
+            // labelBclkCpuCaption
+            // 
+            this.labelBclkCpuCaption.AutoSize = true;
+            this.labelBclkCpuCaption.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.labelBclkCpuCaption.Location = new System.Drawing.Point(3, 85);
+            this.labelBclkCpuCaption.Margin = new System.Windows.Forms.Padding(3, 1, 12, 1);
+            this.labelBclkCpuCaption.Name = "labelBclkCpuCaption";
+            this.labelBclkCpuCaption.Size = new System.Drawing.Size(120, 13);
+            this.labelBclkCpuCaption.TabIndex = 7;
+            this.labelBclkCpuCaption.Text = "CPU BCLK (measured)";
+            // 
+            // labelBclkCpu
+            // 
+            this.labelBclkCpu.AutoSize = true;
+            this.labelBclkCpu.Location = new System.Drawing.Point(138, 85);
+            this.labelBclkCpu.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.labelBclkCpu.Name = "labelBclkCpu";
+            this.labelBclkCpu.Size = new System.Drawing.Size(10, 13);
+            this.labelBclkCpu.TabIndex = 8;
+            this.labelBclkCpu.Text = "-";
+            // 
+            // labelBclkMemCaption
+            // 
+            this.labelBclkMemCaption.AutoSize = true;
+            this.labelBclkMemCaption.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.labelBclkMemCaption.Location = new System.Drawing.Point(3, 102);
+            this.labelBclkMemCaption.Margin = new System.Windows.Forms.Padding(3, 1, 12, 1);
+            this.labelBclkMemCaption.Name = "labelBclkMemCaption";
+            this.labelBclkMemCaption.Size = new System.Drawing.Size(120, 13);
+            this.labelBclkMemCaption.TabIndex = 9;
+            this.labelBclkMemCaption.Text = "Memory BCLK (measured)";
+            // 
+            // labelBclkMem
+            // 
+            this.labelBclkMem.AutoSize = true;
+            this.labelBclkMem.Location = new System.Drawing.Point(138, 102);
+            this.labelBclkMem.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.labelBclkMem.Name = "labelBclkMem";
+            this.labelBclkMem.Size = new System.Drawing.Size(10, 13);
+            this.labelBclkMem.TabIndex = 10;
+            this.labelBclkMem.Text = "-";
             // 
             // tableLayoutPanel5
             // 
@@ -3775,6 +3938,8 @@ namespace ZenStatesDebugTool
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBclk)).EndInit();
             this.tableLayoutPanel5.ResumeLayout(false);
             this.tableLayoutPanel5.PerformLayout();
+            this.tableLayoutPanelBclkInfo.ResumeLayout(false);
+            this.tableLayoutPanelBclkInfo.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pstateDid)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pstateFid)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pstateVid)).EndInit();
@@ -3934,6 +4099,18 @@ namespace ZenStatesDebugTool
         private Button buttonWmiCmdSend;
         private Label labelBCLK;
         private Button buttonBCLKApply;
+        private Label labelBclkInfo;
+        private TableLayoutPanel tableLayoutPanelBclkInfo;
+        private Label labelBclkStrapCaption;
+        private Label labelBclkEclkCaption;
+        private Label labelBclkRefClkCaption;
+        private Label labelBclkCpuCaption;
+        private Label labelBclkMemCaption;
+        private Label labelBclkStrap;
+        private Label labelBclkEclk;
+        private Label labelBclkRefClk;
+        private Label labelBclkCpu;
+        private Label labelBclkMem;
         private NumericUpDown numericUpDownBclk;
         private TableLayoutPanel tableLayoutPanel14;
         private Label label50;
