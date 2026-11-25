@@ -179,16 +179,7 @@ namespace ZenStatesDebugTool
             PopulateMailboxesList(comboBoxMailboxSelect.Items);
 
             comboBoxCore.SelectedIndex = 0;
-            double multi = GetCurrentMulti();
-            if (multi >= 5.50)
-            {
-                int index = (int)((multi - 5.50) / 0.25);
-                if (index > -1 && index < comboBoxACF.Items.Count && index < comboBoxSCF.Items.Count)
-                {
-                    comboBoxACF.SelectedIndex = index;
-                    comboBoxSCF.SelectedIndex = index;
-                }
-            }
+            SelectCurrentFrequency();
 
             InitCoreControl();
             InitPboLayout();
@@ -214,17 +205,17 @@ namespace ZenStatesDebugTool
                 numericUpDownBclk.Text = $"{currentBclk}";
             }
 
-            var prochotEnabled = cpu.IsProchotEnabled();
-            checkBoxPROCHOT.Checked = prochotEnabled ?? false;
-            //checkBoxPROCHOT.Enabled = prochotEnabled;
-            //buttonApplyPROCHOT.Enabled = prochotEnabled;
+            ReadOcModeState();
 
             comboBoxMailboxSelect.SelectedIndex = 0;
 
             checkBoxAutoUninstallDriver.Checked = AppSettings.Instance.AutoUninstallDriver;
             InitDriverNotificationCombo();
+            UpdateStartupControls(GetStartupTaskMode());
 
-            formToolTip.SetToolTip(checkBoxPROCHOT, "Disables temperature throttling. Can be useful on extreme cooling.");
+            formToolTip.SetToolTip(checkBoxOcMode, "Manual OC mode: Precision Boost and PBO stop controlling the clocks. Needed to set a fixed all-core or per-core frequency. Press Apply to turn it on or off.");
+            formToolTip.SetToolTip(checkBoxApplyCOStartup, "Apply the saved profile (Curve Optimizer, PPT/TDC/EDC, scalar, FMax and Curve Shaper) when you log on and on resume from sleep. Only for your account, with your administrator rights.");
+            formToolTip.SetToolTip(checkBoxStartupAllUsers, "Apply the saved profile when any user logs on and on resume from sleep, also when you are not logged on. The task runs as SYSTEM (the most privileged account).");
             formToolTip.SetToolTip(checkBoxAutoUninstallDriver, "Stops and removes the inpoutx64 driver service when the last instance of SMUDebugTool or ZenTimings exits.");
 
             if (isApplyProfile)
@@ -335,6 +326,36 @@ namespace ZenStatesDebugTool
                 ProfileNotification.ShowInCurrentSession(message, failed > 0);
             else
                 ProfileNotification.ShowInUserSession(message, failed > 0);
+        }
+
+        // Selects the current core frequency in the all-core and single-core lists
+        private void SelectCurrentFrequency()
+        {
+            double multi = GetCurrentMulti();
+            if (multi >= 5.50)
+            {
+                int index = (int)((multi - 5.50) / 0.25);
+                if (index > -1 && index < comboBoxACF.Items.Count && index < comboBoxSCF.Items.Count)
+                {
+                    comboBoxACF.SelectedIndex = index;
+                    comboBoxSCF.SelectedIndex = index;
+                }
+            }
+        }
+
+        // The PROCHOT state can't be read on every CPU (not on Zen 5), the OC mode state can
+        private bool ReadOcModeState()
+        {
+            bool enabled = cpu.GetOcMode();
+            checkBoxOcMode.Checked = enabled;
+            return enabled;
+        }
+
+        private void ButtonRefreshCpu_Click(object sender, EventArgs e)
+        {
+            SelectCurrentFrequency();
+            bool ocMode = ReadOcModeState();
+            SetStatusText($"CPU values refreshed. Manual OC mode {(ocMode ? "on" : "off")}.");
         }
 
         // TODO: Detect OC Mode and return PState freq if on auto
@@ -707,7 +728,6 @@ namespace ZenStatesDebugTool
                 }
             }*/
 
-            UpdateStartupControls(GetStartupTaskMode());
             SetBaselineValue(numericUpDownFmax, cpu.GetFMax());
             UpdateDiscardButtons();
         }
@@ -743,8 +763,6 @@ namespace ZenStatesDebugTool
             formToolTip.SetToolTip(buttonGetCO, "Re-read the current margins, PPT/TDC/EDC limits, PBO scalar and FMax.");
             formToolTip.SetToolTip(btnResetCO, "Discard pending edits and restore the last read values.");
             formToolTip.SetToolTip(btnSaveCOProfile, "Save the values shown here (margins, PPT/TDC/EDC, scalar and FMax) to the profile file. Curve Shaper settings in the file are kept (save those from the Curve Shaper tab).");
-            formToolTip.SetToolTip(checkBoxApplyCOStartup, "Apply the saved profile (Curve Optimizer, PPT/TDC/EDC, scalar, FMax and Curve Shaper) when you log on and on resume from sleep. Only for your account, with your administrator rights.");
-            formToolTip.SetToolTip(checkBoxStartupAllUsers, "Apply the saved profile when any user logs on and on resume from sleep, also when you are not logged on. The task runs as SYSTEM (the most privileged account).");
             formToolTip.SetToolTip(btnLoadCOProfile, "Load the values from the profile file (not applied until you press Apply).");
             formToolTip.SetToolTip(buttonApplyPbo, "Write the highlighted (changed) values to the SMU: Curve Optimizer margins, PPT, TDC, EDC, scalar and FMax.");
             formToolTip.SetToolTip(numericUpDownFmax, "Maximum boost frequency limit in MHz.");
@@ -1381,20 +1399,51 @@ namespace ZenStatesDebugTool
                 HandleError("Error setting frequency!");
         }
 
-        private void EnableOCMode(bool prochotEnabled = true)
+        private bool SetOcMode(bool enabled)
         {
-            if (cpu.smu.SendSmuCommand(cpu.smu.Rsmu, cpu.smu.Rsmu.SMU_MSG_EnableOcMode, prochotEnabled ? 0U : 0x1000000))
-                SetStatusText(prochotEnabled ? "PROCHOT enabled." : "PROCHOT disabled.");
-            else
-                HandleError("Error setting OC Mode!");
+            SMU.Status status = enabled ? cpu.EnableOcMode() : cpu.DisableOcMode();
+            if (status != SMU.Status.OK)
+            {
+                HandleError(enabled ? "Error enabling manual OC mode!" : "Error disabling manual OC mode!");
+                ReadOcModeState();
+                return false;
+            }
+
+            checkBoxOcMode.Checked = enabled;
+            SetStatusText(enabled ? "Manual OC mode enabled." : "Manual OC mode disabled.");
+            return true;
         }
 
-        private void DisableOCMode()
+        private bool ConfirmEnableOcMode(string reason)
         {
-            if (cpu.DisableOcMode() == SMU.Status.OK)
-                SetStatusText(string.Format("Set OK!"));
-            else
-                HandleError("Error disabling OC Mode!");
+            DialogResult answer = ThemedMessageBox.Show(
+                reason +
+                "Precision Boost and PBO no longer control the clocks until manual OC mode is turned off or the PC is restarted.\n\n" +
+                "Enable manual OC mode?",
+                "Manual OC mode",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2);
+
+            return answer == DialogResult.Yes;
+        }
+
+        // Fixed frequencies only work in manual OC mode. It is never turned on without asking.
+        private bool EnsureOcMode()
+        {
+            if (cpu.GetOcMode())
+            {
+                checkBoxOcMode.Checked = true;
+                return true;
+            }
+
+            if (!ConfirmEnableOcMode("Setting a fixed frequency needs manual OC mode, which is currently off.\n\n"))
+            {
+                SetStatusText("Frequency not applied: manual OC mode is off.");
+                return false;
+            }
+
+            return SetOcMode(true);
         }
 
         private void SetStatusText(string status)
@@ -2869,34 +2918,40 @@ namespace ZenStatesDebugTool
 
         private void ButtonApplyAC_Click(object sender, EventArgs e)
         {
+            if (!EnsureOcMode())
+                return;
+
             int frequency = (int)(((FrequencyListItem)comboBoxACF.SelectedItem).multi * 100.00);
             ApplyFrequencyAllCoreSetting(frequency);
         }
 
         private void ButtonApplySC_Click(object sender, EventArgs e)
         {
+            if (!EnsureOcMode())
+                return;
+
             ApplyFrequencyAllCoreSetting(550);
             int frequency = (int)(((FrequencyListItem)comboBoxSCF.SelectedItem).multi * 100.00);
             ApplyFrequencySingleCoreSetting((CoreListItem)comboBoxCore.SelectedItem, frequency);
         }
 
-        private void ButtonApplyPROCHOT_Click(object sender, EventArgs e)
+        private void ButtonApplyOcMode_Click(object sender, EventArgs e)
         {
-            if (checkBoxPROCHOT.Checked)
+            bool enable = checkBoxOcMode.Checked;
+
+            if (enable == cpu.GetOcMode())
             {
-                DisableOCMode();
+                SetStatusText($"Manual OC mode is already {(enable ? "on" : "off")}.");
+                return;
             }
-            EnableOCMode(checkBoxPROCHOT.Checked);
-            if (!checkBoxPROCHOT.Checked && cpu.IsProchotEnabled() == true)
+
+            if (enable && !ConfirmEnableOcMode("Manual OC mode lets you set fixed core frequencies.\n\n"))
             {
-                checkBoxPROCHOT.Checked = true;
-                HandleError($@"Error, PROCHOT could not be disabled!");
+                ReadOcModeState();
+                return;
             }
-            /*else
-            {
-                checkBoxPROCHOT.Enabled = false;
-                buttonApplyPROCHOT.Enabled = false;
-            }*/
+
+            SetOcMode(enable);
         }
 
         private void ReadMsr_Task(object sender, DoWorkEventArgs e)

@@ -84,7 +84,7 @@ namespace ZenStatesDebugTool
             this.checkBoxSMT = new System.Windows.Forms.CheckBox();
             this.radioButtonX3D = new System.Windows.Forms.RadioButton();
             this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
-            this.buttonApplyPROCHOT = new System.Windows.Forms.Button();
+            this.buttonApplyOcMode = new System.Windows.Forms.Button();
             this.buttonApplySC = new System.Windows.Forms.Button();
             this.buttonApplyAC = new System.Windows.Forms.Button();
             this.label14 = new System.Windows.Forms.Label();
@@ -92,7 +92,8 @@ namespace ZenStatesDebugTool
             this.comboBoxACF = new System.Windows.Forms.ComboBox();
             this.comboBoxSCF = new System.Windows.Forms.ComboBox();
             this.comboBoxCore = new System.Windows.Forms.ComboBox();
-            this.checkBoxPROCHOT = new System.Windows.Forms.CheckBox();
+            this.checkBoxOcMode = new System.Windows.Forms.CheckBox();
+            this.buttonRefreshCpu = new System.Windows.Forms.Button();
             this.tabPageSmu = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
@@ -182,8 +183,6 @@ namespace ZenStatesDebugTool
             this.numericUpDownEdc = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownScalar = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownFmax = new System.Windows.Forms.NumericUpDown();
-            this.checkBoxApplyCOStartup = new System.Windows.Forms.CheckBox();
-            this.checkBoxStartupAllUsers = new System.Windows.Forms.CheckBox();
             this.flowLayoutPanelPboActions = new System.Windows.Forms.TableLayoutPanel();
             this.buttonGetCO = new System.Windows.Forms.Button();
             this.btnResetCO = new System.Windows.Forms.Button();
@@ -285,6 +284,8 @@ namespace ZenStatesDebugTool
             this.label29 = new System.Windows.Forms.Label();
             this.configInfoLabel = new System.Windows.Forms.Label();
             this.tabPageSettings = new System.Windows.Forms.TabPage();
+            this.checkBoxStartupAllUsers = new System.Windows.Forms.CheckBox();
+            this.checkBoxApplyCOStartup = new System.Windows.Forms.CheckBox();
             this.comboBoxDriverNotifications = new System.Windows.Forms.ComboBox();
             this.labelDriverNotifications = new System.Windows.Forms.Label();
             this.checkBoxAutoUninstallDriver = new System.Windows.Forms.CheckBox();
@@ -361,7 +362,7 @@ namespace ZenStatesDebugTool
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.labelStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 410);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 388);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(766, 22);
             this.statusStrip1.SizingGrip = false;
@@ -387,7 +388,7 @@ namespace ZenStatesDebugTool
             this.textBoxResult.Name = "textBoxResult";
             this.textBoxResult.ReadOnly = true;
             this.textBoxResult.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.textBoxResult.Size = new System.Drawing.Size(289, 380);
+            this.textBoxResult.Size = new System.Drawing.Size(289, 358);
             this.textBoxResult.TabIndex = 4;
             this.textBoxResult.Text = "";
             // 
@@ -409,7 +410,7 @@ namespace ZenStatesDebugTool
             this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel11);
             this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
             this.splitContainer1.Panel2MinSize = 0;
-            this.splitContainer1.Size = new System.Drawing.Size(766, 410);
+            this.splitContainer1.Size = new System.Drawing.Size(766, 388);
             this.splitContainer1.SplitterDistance = 468;
             this.splitContainer1.SplitterWidth = 1;
             this.splitContainer1.TabIndex = 5;
@@ -432,7 +433,7 @@ namespace ZenStatesDebugTool
             this.tabControl1.Multiline = true;
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(459, 400);
+            this.tabControl1.Size = new System.Drawing.Size(459, 378);
             this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.tabControl1.TabIndex = 2;
             this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.TabControl1_Selected);
@@ -444,7 +445,7 @@ namespace ZenStatesDebugTool
             this.tabPageCPU.Location = new System.Drawing.Point(4, 40);
             this.tabPageCPU.Name = "tabPageCPU";
             this.tabPageCPU.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageCPU.Size = new System.Drawing.Size(451, 356);
+            this.tabPageCPU.Size = new System.Drawing.Size(451, 334);
             this.tabPageCPU.TabIndex = 4;
             this.tabPageCPU.Text = "CPU";
             this.tabPageCPU.UseVisualStyleBackColor = true;
@@ -455,9 +456,10 @@ namespace ZenStatesDebugTool
             this.groupBoxCoreControl.Controls.Add(this.radioButtonManualCoreControl);
             this.groupBoxCoreControl.Controls.Add(this.panelManualCoreControl);
             this.groupBoxCoreControl.Controls.Add(this.radioButtonX3D);
-            this.groupBoxCoreControl.Location = new System.Drawing.Point(3, 163);
+            this.groupBoxCoreControl.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.groupBoxCoreControl.Location = new System.Drawing.Point(3, 140);
             this.groupBoxCoreControl.Name = "groupBoxCoreControl";
-            this.groupBoxCoreControl.Size = new System.Drawing.Size(331, 191);
+            this.groupBoxCoreControl.Size = new System.Drawing.Size(445, 191);
             this.groupBoxCoreControl.TabIndex = 2;
             this.groupBoxCoreControl.TabStop = false;
             this.groupBoxCoreControl.Text = "Core Control";
@@ -508,10 +510,11 @@ namespace ZenStatesDebugTool
             this.panelManualCoreControl.Controls.Add(this.tableLayoutPanel15);
             this.panelManualCoreControl.Controls.Add(this.buttonApplyCoreMap);
             this.panelManualCoreControl.Controls.Add(this.checkBoxSMT);
+            this.panelManualCoreControl.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panelManualCoreControl.Enabled = false;
-            this.panelManualCoreControl.Location = new System.Drawing.Point(6, 64);
+            this.panelManualCoreControl.Location = new System.Drawing.Point(3, 66);
             this.panelManualCoreControl.Name = "panelManualCoreControl";
-            this.panelManualCoreControl.Size = new System.Drawing.Size(322, 122);
+            this.panelManualCoreControl.Size = new System.Drawing.Size(439, 122);
             this.panelManualCoreControl.TabIndex = 8;
             // 
             // label67
@@ -974,7 +977,8 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel8.Controls.Add(this.buttonApplyPROCHOT, 0, 6);
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel8.Controls.Add(this.buttonApplyOcMode, 0, 6);
             this.tableLayoutPanel8.Controls.Add(this.buttonApplySC, 3, 4);
             this.tableLayoutPanel8.Controls.Add(this.buttonApplyAC, 3, 1);
             this.tableLayoutPanel8.Controls.Add(this.label14, 0, 0);
@@ -982,37 +986,40 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel8.Controls.Add(this.comboBoxACF, 0, 1);
             this.tableLayoutPanel8.Controls.Add(this.comboBoxSCF, 0, 4);
             this.tableLayoutPanel8.Controls.Add(this.comboBoxCore, 1, 4);
-            this.tableLayoutPanel8.Controls.Add(this.checkBoxPROCHOT, 0, 6);
+            this.tableLayoutPanel8.Controls.Add(this.checkBoxOcMode, 0, 6);
+            this.tableLayoutPanel8.Controls.Add(this.buttonRefreshCpu, 3, 8);
             this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel8.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel8.Name = "tableLayoutPanel8";
-            this.tableLayoutPanel8.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.tableLayoutPanel8.RowCount = 7;
+            this.tableLayoutPanel8.Padding = new System.Windows.Forms.Padding(0, 2, 5, 0);
+            this.tableLayoutPanel8.RowCount = 9;
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 2F));
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 2F));
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel8.Size = new System.Drawing.Size(445, 159);
+            this.tableLayoutPanel8.Size = new System.Drawing.Size(445, 168);
             this.tableLayoutPanel8.TabIndex = 1;
             // 
-            // buttonApplyPROCHOT
+            // buttonApplyOcMode
             // 
-            this.buttonApplyPROCHOT.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonApplyPROCHOT.Location = new System.Drawing.Point(361, 128);
-            this.buttonApplyPROCHOT.Name = "buttonApplyPROCHOT";
-            this.buttonApplyPROCHOT.Size = new System.Drawing.Size(76, 23);
-            this.buttonApplyPROCHOT.TabIndex = 12;
-            this.buttonApplyPROCHOT.Text = "Apply";
-            this.buttonApplyPROCHOT.UseVisualStyleBackColor = true;
-            this.buttonApplyPROCHOT.Click += new System.EventHandler(this.ButtonApplyPROCHOT_Click);
+            this.buttonApplyOcMode.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonApplyOcMode.Location = new System.Drawing.Point(361, 109);
+            this.buttonApplyOcMode.Name = "buttonApplyOcMode";
+            this.buttonApplyOcMode.Size = new System.Drawing.Size(76, 23);
+            this.buttonApplyOcMode.TabIndex = 12;
+            this.buttonApplyOcMode.Text = "Apply";
+            this.buttonApplyOcMode.UseVisualStyleBackColor = true;
+            this.buttonApplyOcMode.Click += new System.EventHandler(this.ButtonApplyOcMode_Click);
             // 
             // buttonApplySC
             // 
             this.buttonApplySC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonApplySC.Location = new System.Drawing.Point(361, 88);
+            this.buttonApplySC.Location = new System.Drawing.Point(361, 77);
             this.buttonApplySC.Name = "buttonApplySC";
             this.buttonApplySC.Size = new System.Drawing.Size(76, 24);
             this.buttonApplySC.TabIndex = 5;
@@ -1023,7 +1030,7 @@ namespace ZenStatesDebugTool
             // buttonApplyAC
             // 
             this.buttonApplyAC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonApplyAC.Location = new System.Drawing.Point(361, 28);
+            this.buttonApplyAC.Location = new System.Drawing.Point(361, 25);
             this.buttonApplyAC.Name = "buttonApplyAC";
             this.buttonApplyAC.Size = new System.Drawing.Size(76, 24);
             this.buttonApplyAC.TabIndex = 2;
@@ -1036,7 +1043,7 @@ namespace ZenStatesDebugTool
             this.label14.AutoSize = true;
             this.tableLayoutPanel8.SetColumnSpan(this.label14, 4);
             this.label14.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label14.Location = new System.Drawing.Point(3, 5);
+            this.label14.Location = new System.Drawing.Point(3, 2);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(434, 20);
             this.label14.TabIndex = 6;
@@ -1048,7 +1055,7 @@ namespace ZenStatesDebugTool
             this.label16.AutoSize = true;
             this.tableLayoutPanel8.SetColumnSpan(this.label16, 4);
             this.label16.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label16.Location = new System.Drawing.Point(3, 65);
+            this.label16.Location = new System.Drawing.Point(3, 54);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(434, 20);
             this.label16.TabIndex = 7;
@@ -1060,7 +1067,7 @@ namespace ZenStatesDebugTool
             this.comboBoxACF.Dock = System.Windows.Forms.DockStyle.Fill;
             this.comboBoxACF.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxACF.FormattingEnabled = true;
-            this.comboBoxACF.Location = new System.Drawing.Point(3, 28);
+            this.comboBoxACF.Location = new System.Drawing.Point(3, 25);
             this.comboBoxACF.Name = "comboBoxACF";
             this.comboBoxACF.Size = new System.Drawing.Size(94, 21);
             this.comboBoxACF.TabIndex = 9;
@@ -1070,7 +1077,7 @@ namespace ZenStatesDebugTool
             this.comboBoxSCF.Dock = System.Windows.Forms.DockStyle.Fill;
             this.comboBoxSCF.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxSCF.FormattingEnabled = true;
-            this.comboBoxSCF.Location = new System.Drawing.Point(3, 88);
+            this.comboBoxSCF.Location = new System.Drawing.Point(3, 77);
             this.comboBoxSCF.Name = "comboBoxSCF";
             this.comboBoxSCF.Size = new System.Drawing.Size(94, 21);
             this.comboBoxSCF.TabIndex = 10;
@@ -1080,22 +1087,34 @@ namespace ZenStatesDebugTool
             this.comboBoxCore.Dock = System.Windows.Forms.DockStyle.Fill;
             this.comboBoxCore.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxCore.FormattingEnabled = true;
-            this.comboBoxCore.Location = new System.Drawing.Point(103, 88);
+            this.comboBoxCore.Location = new System.Drawing.Point(103, 77);
             this.comboBoxCore.Name = "comboBoxCore";
             this.comboBoxCore.Size = new System.Drawing.Size(94, 21);
             this.comboBoxCore.TabIndex = 8;
             // 
-            // checkBoxPROCHOT
+            // checkBoxOcMode
             // 
-            this.checkBoxPROCHOT.AutoSize = true;
-            this.tableLayoutPanel8.SetColumnSpan(this.checkBoxPROCHOT, 3);
-            this.checkBoxPROCHOT.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.checkBoxPROCHOT.Location = new System.Drawing.Point(3, 128);
-            this.checkBoxPROCHOT.Name = "checkBoxPROCHOT";
-            this.checkBoxPROCHOT.Size = new System.Drawing.Size(352, 23);
-            this.checkBoxPROCHOT.TabIndex = 11;
-            this.checkBoxPROCHOT.Text = "PROCHOT";
-            this.checkBoxPROCHOT.UseVisualStyleBackColor = true;
+            this.checkBoxOcMode.AutoSize = true;
+            this.tableLayoutPanel8.SetColumnSpan(this.checkBoxOcMode, 3);
+            this.checkBoxOcMode.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.checkBoxOcMode.Location = new System.Drawing.Point(3, 109);
+            this.checkBoxOcMode.Name = "checkBoxOcMode";
+            this.checkBoxOcMode.Size = new System.Drawing.Size(352, 23);
+            this.checkBoxOcMode.TabIndex = 11;
+            this.checkBoxOcMode.Text = "Manual OC mode";
+            this.checkBoxOcMode.UseVisualStyleBackColor = true;
+            // 
+            // buttonRefreshCpu
+            // 
+            this.buttonRefreshCpu.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonRefreshCpu.Location = new System.Drawing.Point(361, 145);
+            this.buttonRefreshCpu.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.buttonRefreshCpu.Name = "buttonRefreshCpu";
+            this.buttonRefreshCpu.Size = new System.Drawing.Size(76, 23);
+            this.buttonRefreshCpu.TabIndex = 13;
+            this.buttonRefreshCpu.Text = "Refresh";
+            this.buttonRefreshCpu.UseVisualStyleBackColor = true;
+            this.buttonRefreshCpu.Click += new System.EventHandler(this.ButtonRefreshCpu_Click);
             // 
             // tabPageSmu
             // 
@@ -1104,7 +1123,7 @@ namespace ZenStatesDebugTool
             this.tabPageSmu.Location = new System.Drawing.Point(4, 40);
             this.tabPageSmu.Margin = new System.Windows.Forms.Padding(0);
             this.tabPageSmu.Name = "tabPageSmu";
-            this.tabPageSmu.Size = new System.Drawing.Size(451, 356);
+            this.tabPageSmu.Size = new System.Drawing.Size(451, 334);
             this.tabPageSmu.TabIndex = 0;
             this.tabPageSmu.Text = "SMU";
             this.tabPageSmu.UseVisualStyleBackColor = true;
@@ -1408,7 +1427,7 @@ namespace ZenStatesDebugTool
             this.tabPagePci.Location = new System.Drawing.Point(4, 40);
             this.tabPagePci.Name = "tabPagePci";
             this.tabPagePci.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPagePci.Size = new System.Drawing.Size(451, 356);
+            this.tabPagePci.Size = new System.Drawing.Size(451, 334);
             this.tabPagePci.TabIndex = 1;
             this.tabPagePci.Text = "PCI";
             this.tabPagePci.UseVisualStyleBackColor = true;
@@ -1667,7 +1686,7 @@ namespace ZenStatesDebugTool
             this.tabPageMsr.Location = new System.Drawing.Point(4, 40);
             this.tabPageMsr.Name = "tabPageMsr";
             this.tabPageMsr.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageMsr.Size = new System.Drawing.Size(451, 356);
+            this.tabPageMsr.Size = new System.Drawing.Size(451, 334);
             this.tabPageMsr.TabIndex = 5;
             this.tabPageMsr.Text = "MSR";
             this.tabPageMsr.UseVisualStyleBackColor = true;
@@ -1860,7 +1879,7 @@ namespace ZenStatesDebugTool
             this.tabPageCPUID.Location = new System.Drawing.Point(4, 40);
             this.tabPageCPUID.Name = "tabPageCPUID";
             this.tabPageCPUID.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageCPUID.Size = new System.Drawing.Size(451, 356);
+            this.tabPageCPUID.Size = new System.Drawing.Size(451, 334);
             this.tabPageCPUID.TabIndex = 6;
             this.tabPageCPUID.Text = "CPUID";
             this.tabPageCPUID.UseVisualStyleBackColor = true;
@@ -2082,7 +2101,7 @@ namespace ZenStatesDebugTool
             this.tabPagePbo.Controls.Add(this.tableLayoutPanel12);
             this.tabPagePbo.Location = new System.Drawing.Point(4, 40);
             this.tabPagePbo.Name = "tabPagePbo";
-            this.tabPagePbo.Size = new System.Drawing.Size(451, 356);
+            this.tabPagePbo.Size = new System.Drawing.Size(451, 334);
             this.tabPagePbo.TabIndex = 7;
             this.tabPagePbo.Text = "PBO";
             this.tabPagePbo.UseVisualStyleBackColor = true;
@@ -2107,23 +2126,20 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel12.Controls.Add(this.numericUpDownEdc, 2, 3);
             this.tableLayoutPanel12.Controls.Add(this.numericUpDownScalar, 3, 3);
             this.tableLayoutPanel12.Controls.Add(this.numericUpDownFmax, 4, 3);
-            this.tableLayoutPanel12.Controls.Add(this.checkBoxApplyCOStartup, 0, 4);
-            this.tableLayoutPanel12.Controls.Add(this.checkBoxStartupAllUsers, 0, 5);
-            this.tableLayoutPanel12.Controls.Add(this.flowLayoutPanelPboActions, 0, 6);
+            this.tableLayoutPanel12.Controls.Add(this.flowLayoutPanelPboActions, 0, 5);
             this.tableLayoutPanel12.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel12.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel12.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel12.Name = "tableLayoutPanel12";
             this.tableLayoutPanel12.Padding = new System.Windows.Forms.Padding(3);
-            this.tableLayoutPanel12.RowCount = 7;
+            this.tableLayoutPanel12.RowCount = 6;
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel12.Size = new System.Drawing.Size(451, 356);
+            this.tableLayoutPanel12.Size = new System.Drawing.Size(451, 334);
             this.tableLayoutPanel12.TabIndex = 0;
             // 
             // flowLayoutPanelCcdActions
@@ -2325,35 +2341,6 @@ namespace ZenStatesDebugTool
             this.numericUpDownFmax.TabIndex = 59;
             this.numericUpDownFmax.ValueChanged += new System.EventHandler(this.MarginControl_ValueChanged);
             // 
-            // checkBoxApplyCOStartup
-            // 
-            this.checkBoxApplyCOStartup.AutoSize = true;
-            this.tableLayoutPanel12.SetColumnSpan(this.checkBoxApplyCOStartup, 5);
-            this.checkBoxApplyCOStartup.Dock = System.Windows.Forms.DockStyle.Left;
-            this.checkBoxApplyCOStartup.Location = new System.Drawing.Point(6, 288);
-            this.checkBoxApplyCOStartup.Margin = new System.Windows.Forms.Padding(3, 2, 3, 3);
-            this.checkBoxApplyCOStartup.Name = "checkBoxApplyCOStartup";
-            this.checkBoxApplyCOStartup.Size = new System.Drawing.Size(214, 17);
-            this.checkBoxApplyCOStartup.TabIndex = 55;
-            this.checkBoxApplyCOStartup.Text = "Apply saved profile at logon and resume";
-            this.checkBoxApplyCOStartup.UseVisualStyleBackColor = true;
-            this.checkBoxApplyCOStartup.Click += new System.EventHandler(this.CheckBoxApplyCOStartup_CheckedChanged);
-            // 
-            // checkBoxStartupAllUsers
-            // 
-            this.checkBoxStartupAllUsers.AutoSize = true;
-            this.tableLayoutPanel12.SetColumnSpan(this.checkBoxStartupAllUsers, 5);
-            this.checkBoxStartupAllUsers.Dock = System.Windows.Forms.DockStyle.Left;
-            this.checkBoxStartupAllUsers.Enabled = false;
-            this.checkBoxStartupAllUsers.Location = new System.Drawing.Point(23, 308);
-            this.checkBoxStartupAllUsers.Margin = new System.Windows.Forms.Padding(20, 0, 3, 3);
-            this.checkBoxStartupAllUsers.Name = "checkBoxStartupAllUsers";
-            this.checkBoxStartupAllUsers.Size = new System.Drawing.Size(172, 17);
-            this.checkBoxStartupAllUsers.TabIndex = 56;
-            this.checkBoxStartupAllUsers.Text = "For all users (runs as SYSTEM)";
-            this.checkBoxStartupAllUsers.UseVisualStyleBackColor = true;
-            this.checkBoxStartupAllUsers.Click += new System.EventHandler(this.CheckBoxStartupAllUsers_Click);
-            // 
             // flowLayoutPanelPboActions
             // 
             this.flowLayoutPanelPboActions.ColumnCount = 5;
@@ -2369,7 +2356,7 @@ namespace ZenStatesDebugTool
             this.flowLayoutPanelPboActions.Controls.Add(this.btnLoadCOProfile, 3, 0);
             this.flowLayoutPanelPboActions.Controls.Add(this.buttonApplyPbo, 4, 0);
             this.flowLayoutPanelPboActions.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanelPboActions.Location = new System.Drawing.Point(3, 328);
+            this.flowLayoutPanelPboActions.Location = new System.Drawing.Point(3, 306);
             this.flowLayoutPanelPboActions.Margin = new System.Windows.Forms.Padding(0);
             this.flowLayoutPanelPboActions.Name = "flowLayoutPanelPboActions";
             this.flowLayoutPanelPboActions.RowCount = 1;
@@ -2443,7 +2430,7 @@ namespace ZenStatesDebugTool
             this.tabPageCS.Controls.Add(this.tableLayoutPanel16);
             this.tabPageCS.Location = new System.Drawing.Point(4, 40);
             this.tabPageCS.Name = "tabPageCS";
-            this.tabPageCS.Size = new System.Drawing.Size(451, 356);
+            this.tabPageCS.Size = new System.Drawing.Size(451, 334);
             this.tabPageCS.TabIndex = 9;
             this.tabPageCS.Text = "Curve Shaper";
             this.tabPageCS.UseVisualStyleBackColor = true;
@@ -2496,7 +2483,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel16.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel16.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel16.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel16.Size = new System.Drawing.Size(451, 356);
+            this.tableLayoutPanel16.Size = new System.Drawing.Size(451, 334);
             this.tableLayoutPanel16.TabIndex = 0;
             // 
             // cs_min_high
@@ -2892,7 +2879,7 @@ namespace ZenStatesDebugTool
             this.labelCsInfo.Location = new System.Drawing.Point(3, 165);
             this.labelCsInfo.Margin = new System.Windows.Forms.Padding(0, 8, 0, 6);
             this.labelCsInfo.Name = "labelCsInfo";
-            this.labelCsInfo.Size = new System.Drawing.Size(445, 157);
+            this.labelCsInfo.Size = new System.Drawing.Size(445, 135);
             this.labelCsInfo.TabIndex = 28;
             this.labelCsInfo.Text = "Rows are frequency tiers, columns are temperature bands. Range -50 to +30.\r\n\r\nSav" +
     "e and Load use the same profile as the PBO tab.";
@@ -2913,7 +2900,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanelCsActions.Controls.Add(this.buttonLoadCSProfile, 3, 0);
             this.tableLayoutPanelCsActions.Controls.Add(this.buttonApplyCS, 4, 0);
             this.tableLayoutPanelCsActions.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanelCsActions.Location = new System.Drawing.Point(3, 328);
+            this.tableLayoutPanelCsActions.Location = new System.Drawing.Point(3, 306);
             this.tableLayoutPanelCsActions.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanelCsActions.Name = "tableLayoutPanelCsActions";
             this.tableLayoutPanelCsActions.RowCount = 1;
@@ -2988,7 +2975,7 @@ namespace ZenStatesDebugTool
             this.tabPageWmi.Controls.Add(this.tableLayoutPanel13);
             this.tabPageWmi.Location = new System.Drawing.Point(4, 40);
             this.tabPageWmi.Name = "tabPageWmi";
-            this.tabPageWmi.Size = new System.Drawing.Size(451, 356);
+            this.tabPageWmi.Size = new System.Drawing.Size(451, 334);
             this.tabPageWmi.TabIndex = 8;
             this.tabPageWmi.Text = "AMD ACPI";
             this.tabPageWmi.UseVisualStyleBackColor = true;
@@ -3014,7 +3001,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel13.Size = new System.Drawing.Size(451, 356);
+            this.tableLayoutPanel13.Size = new System.Drawing.Size(451, 334);
             this.tableLayoutPanel13.TabIndex = 0;
             // 
             // label49
@@ -3097,7 +3084,7 @@ namespace ZenStatesDebugTool
             this.tabPagePstates.Location = new System.Drawing.Point(4, 40);
             this.tabPagePstates.Name = "tabPagePstates";
             this.tabPagePstates.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPagePstates.Size = new System.Drawing.Size(451, 356);
+            this.tabPagePstates.Size = new System.Drawing.Size(451, 334);
             this.tabPagePstates.TabIndex = 3;
             this.tabPagePstates.Text = "PStates";
             this.tabPagePstates.UseVisualStyleBackColor = true;
@@ -3131,7 +3118,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelBclkInfo.Size = new System.Drawing.Size(445, 147);
+            this.tableLayoutPanelBclkInfo.Size = new System.Drawing.Size(445, 125);
             this.tableLayoutPanelBclkInfo.TabIndex = 6;
             this.tableLayoutPanelBclkInfo.Visible = false;
             // 
@@ -3490,7 +3477,7 @@ namespace ZenStatesDebugTool
             this.tabPageInfo.Location = new System.Drawing.Point(4, 40);
             this.tabPageInfo.Name = "tabPageInfo";
             this.tabPageInfo.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageInfo.Size = new System.Drawing.Size(451, 356);
+            this.tabPageInfo.Size = new System.Drawing.Size(451, 334);
             this.tabPageInfo.TabIndex = 2;
             this.tabPageInfo.Text = "Info";
             this.tabPageInfo.UseVisualStyleBackColor = true;
@@ -3539,7 +3526,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(445, 350);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(445, 328);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // buttonExport
@@ -3547,7 +3534,7 @@ namespace ZenStatesDebugTool
             this.buttonExport.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.buttonExport.AutoSize = true;
             this.tableLayoutPanel3.SetColumnSpan(this.buttonExport, 2);
-            this.buttonExport.Location = new System.Drawing.Point(3, 316);
+            this.buttonExport.Location = new System.Drawing.Point(3, 294);
             this.buttonExport.Name = "buttonExport";
             this.buttonExport.Size = new System.Drawing.Size(102, 26);
             this.buttonExport.TabIndex = 1;
@@ -3798,16 +3785,41 @@ namespace ZenStatesDebugTool
             // 
             // tabPageSettings
             // 
+            this.tabPageSettings.Controls.Add(this.checkBoxStartupAllUsers);
+            this.tabPageSettings.Controls.Add(this.checkBoxApplyCOStartup);
             this.tabPageSettings.Controls.Add(this.comboBoxDriverNotifications);
             this.tabPageSettings.Controls.Add(this.labelDriverNotifications);
             this.tabPageSettings.Controls.Add(this.checkBoxAutoUninstallDriver);
             this.tabPageSettings.Location = new System.Drawing.Point(4, 40);
             this.tabPageSettings.Name = "tabPageSettings";
             this.tabPageSettings.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSettings.Size = new System.Drawing.Size(451, 356);
+            this.tabPageSettings.Size = new System.Drawing.Size(451, 334);
             this.tabPageSettings.TabIndex = 10;
             this.tabPageSettings.Text = "Settings";
             this.tabPageSettings.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxStartupAllUsers
+            // 
+            this.checkBoxStartupAllUsers.AutoSize = true;
+            this.checkBoxStartupAllUsers.Enabled = false;
+            this.checkBoxStartupAllUsers.Location = new System.Drawing.Point(27, 89);
+            this.checkBoxStartupAllUsers.Name = "checkBoxStartupAllUsers";
+            this.checkBoxStartupAllUsers.Size = new System.Drawing.Size(172, 17);
+            this.checkBoxStartupAllUsers.TabIndex = 4;
+            this.checkBoxStartupAllUsers.Text = "For all users (runs as SYSTEM)";
+            this.checkBoxStartupAllUsers.UseVisualStyleBackColor = true;
+            this.checkBoxStartupAllUsers.Click += new System.EventHandler(this.CheckBoxStartupAllUsers_Click);
+            // 
+            // checkBoxApplyCOStartup
+            // 
+            this.checkBoxApplyCOStartup.AutoSize = true;
+            this.checkBoxApplyCOStartup.Location = new System.Drawing.Point(9, 66);
+            this.checkBoxApplyCOStartup.Name = "checkBoxApplyCOStartup";
+            this.checkBoxApplyCOStartup.Size = new System.Drawing.Size(214, 17);
+            this.checkBoxApplyCOStartup.TabIndex = 3;
+            this.checkBoxApplyCOStartup.Text = "Apply saved profile at logon and resume";
+            this.checkBoxApplyCOStartup.UseVisualStyleBackColor = true;
+            this.checkBoxApplyCOStartup.Click += new System.EventHandler(this.CheckBoxApplyCOStartup_CheckedChanged);
             // 
             // comboBoxDriverNotifications
             // 
@@ -3851,14 +3863,14 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel11.RowCount = 2;
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel11.Size = new System.Drawing.Size(292, 400);
+            this.tableLayoutPanel11.Size = new System.Drawing.Size(292, 378);
             this.tableLayoutPanel11.TabIndex = 5;
             // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(766, 432);
+            this.ClientSize = new System.Drawing.Size(766, 410);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -4037,8 +4049,9 @@ namespace ZenStatesDebugTool
         private ComboBox comboBoxCore;
         private ComboBox comboBoxACF;
         private ComboBox comboBoxSCF;
-        private CheckBox checkBoxPROCHOT;
-        private Button buttonApplyPROCHOT;
+        private CheckBox checkBoxOcMode;
+        private Button buttonApplyOcMode;
+        private Button buttonRefreshCpu;
         private TabPage tabPageMsr;
         private TableLayoutPanel tableLayoutPanel9;
         private Button buttonMsrWrite;
