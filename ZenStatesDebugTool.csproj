@@ -106,6 +106,9 @@
     <Compile Include="Utils\InpOutUsage.cs" />
     <Compile Include="Utils\ProfileNotification.cs" />
     <Compile Include="Theming\ControlStyler.cs" />
+    <Compile Include="Theming\IconBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Theming\LucideIcon.cs" />
     <Compile Include="Theming\Theme.cs" />
     <Compile Include="Theming\ThemedForm.cs">

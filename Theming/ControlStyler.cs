@@ -1208,6 +1208,8 @@ namespace ZenStatesDebugTool.Theming
                     break;
 
                 case ThemeRole.Card:
+                case ThemeRole.DangerZone:
+                case ThemeRole.Callout:
                     control.ResetBackColor();
                     if (cards.Add(control))
                     {
@@ -1232,11 +1234,24 @@ namespace ZenStatesDebugTool.Theming
         private static void PaintCard(object sender, PaintEventArgs e)
         {
             Control control = (Control)sender;
+            Palette p = Theme.Current;
+            ThemeRole role = Theme.GetRole(control);
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             e.Graphics.PixelOffsetMode = PixelOffsetMode.Half;
             using (var path = RoundedRect(new RectangleF(0.5f, 0.5f, control.Width - 1, control.Height - 1), Px(6)))
-            using (var pen = new Pen(Theme.Current.Border))
-                e.Graphics.DrawPath(pen, path);
+            {
+                Color border = role == ThemeRole.DangerZone ? p.Danger : p.Border;
+                if (role == ThemeRole.Callout)
+                {
+                    // Accent tint; labels inside need a transparent background to show it
+                    using (var brush = new SolidBrush(Palette.Blend(control.BackColor, p.Accent, p.IsDark ? 0.16f : 0.07f)))
+                        e.Graphics.FillPath(brush, path);
+                    border = Palette.Blend(control.BackColor, p.Accent, p.IsDark ? 0.45f : 0.3f);
+                }
+
+                using (var pen = new Pen(border))
+                    e.Graphics.DrawPath(pen, path);
+            }
         }
     }
 }

@@ -145,6 +145,12 @@ namespace ZenStatesDebugTool.Theming
         /// <summary>lucide: minus</summary>
         public static readonly LucideIcon Minus = new LucideIcon("M5 12 L19 12");
 
+        /// <summary>lucide: panel-right-close (log panel shown, click hides it)</summary>
+        public static readonly LucideIcon PanelRightClose = new LucideIcon("M5 3 L19 3 C19.351 3 19.696 3.092 20 3.268 C20.304 3.443 20.557 3.696 20.732 4 C20.908 4.304 21 4.649 21 5 L21 19 C21 19.351 20.908 19.696 20.732 20 C20.557 20.304 20.304 20.557 20 20.732 C19.696 20.908 19.351 21 19 21 L5 21 C4.649 21 4.304 20.908 4 20.732 C3.696 20.557 3.443 20.304 3.268 20 C3.092 19.696 3 19.351 3 19 L3 5 C3 4.649 3.092 4.304 3.268 4 C3.443 3.696 3.696 3.443 4 3.268 C4.304 3.092 4.649 3 5 3 Z M15 3 L15 21 M8 9 L11 12 L8 15");
+
+        /// <summary>lucide: panel-right-open (log panel hidden, click shows it)</summary>
+        public static readonly LucideIcon PanelRightOpen = new LucideIcon("M5 3 L19 3 C19.351 3 19.696 3.092 20 3.268 C20.304 3.443 20.557 3.696 20.732 4 C20.908 4.304 21 4.649 21 5 L21 19 C21 19.351 20.908 19.696 20.732 20 C20.557 20.304 20.304 20.557 20 20.732 C19.696 20.908 19.351 21 19 21 L5 21 C4.649 21 4.304 20.908 4 20.732 C3.696 20.557 3.443 20.304 3.268 20 C3.092 19.696 3 19.351 3 19 L3 5 C3 4.649 3.092 4.304 3.268 4 C3.443 3.696 3.696 3.443 4 3.268 C4.304 3.092 4.649 3 5 3 Z M15 3 L15 21 M10 15 L7 12 L10 9");
+
         /// <summary>lucide: square</summary>
         public static readonly LucideIcon Square = new LucideIcon("M5 3 L19 3 C19.351 3 19.696 3.092 20 3.268 C20.304 3.443 20.557 3.696 20.732 4 C20.908 4.304 21 4.649 21 5 L21 19 C21 19.351 20.908 19.696 20.732 20 C20.557 20.304 20.304 20.557 20 20.732 C19.696 20.908 19.351 21 19 21 L5 21 C4.649 21 4.304 20.908 4 20.732 C3.696 20.557 3.443 20.304 3.268 20 C3.092 19.696 3 19.351 3 19 L3 5 C3 4.649 3.092 4.304 3.268 4 C3.443 3.696 3.696 3.443 4 3.268 C4.304 3.092 4.649 3 5 3 Z");
 

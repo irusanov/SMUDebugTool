@@ -84,15 +84,20 @@ namespace ZenStatesDebugTool
             this.checkBoxSMT = new System.Windows.Forms.CheckBox();
             this.radioButtonX3D = new System.Windows.Forms.RadioButton();
             this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
+            this.checkBoxOcMode = new System.Windows.Forms.CheckBox();
+            this.labelDangerZone = new System.Windows.Forms.Label();
             this.buttonApplyOcMode = new System.Windows.Forms.Button();
-            this.buttonApplySC = new System.Windows.Forms.Button();
-            this.buttonApplyAC = new System.Windows.Forms.Button();
             this.label14 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
             this.comboBoxACF = new System.Windows.Forms.ComboBox();
+            this.buttonApplyAC = new System.Windows.Forms.Button();
+            this.label16 = new System.Windows.Forms.Label();
             this.comboBoxSCF = new System.Windows.Forms.ComboBox();
             this.comboBoxCore = new System.Windows.Forms.ComboBox();
-            this.checkBoxOcMode = new System.Windows.Forms.CheckBox();
+            this.buttonApplySC = new System.Windows.Forms.Button();
+            this.labelVid = new System.Windows.Forms.Label();
+            this.comboBoxVid = new System.Windows.Forms.ComboBox();
+            this.labelVidLimit = new System.Windows.Forms.Label();
+            this.buttonApplyVid = new System.Windows.Forms.Button();
             this.buttonRefreshCpu = new System.Windows.Forms.Button();
             this.tabPageSmu = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
@@ -233,7 +238,10 @@ namespace ZenStatesDebugTool
             this.buttonWmiCmdSend = new System.Windows.Forms.Button();
             this.tabPagePstates = new System.Windows.Forms.TabPage();
             this.tableLayoutPanelBclkInfo = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanelBclkNotice = new System.Windows.Forms.TableLayoutPanel();
+            this.iconBoxBclkNotice = new ZenStatesDebugTool.Theming.IconBox();
             this.labelBclkInfo = new System.Windows.Forms.Label();
+            this.tableLayoutPanelBclkDetails = new System.Windows.Forms.TableLayoutPanel();
             this.labelBclkStrapCaption = new System.Windows.Forms.Label();
             this.labelBclkStrap = new System.Windows.Forms.Label();
             this.labelBclkEclkCaption = new System.Windows.Forms.Label();
@@ -284,6 +292,12 @@ namespace ZenStatesDebugTool
             this.label29 = new System.Windows.Forms.Label();
             this.configInfoLabel = new System.Windows.Forms.Label();
             this.tabPageSettings = new System.Windows.Forms.TabPage();
+            this.comboBoxDefaultTab = new System.Windows.Forms.ComboBox();
+            this.labelDefaultTab = new System.Windows.Forms.Label();
+            this.buttonDiscardSettings = new System.Windows.Forms.Button();
+            this.buttonSaveSettings = new System.Windows.Forms.Button();
+            this.numericUpDownMaxVoltage = new System.Windows.Forms.NumericUpDown();
+            this.labelMaxVoltage = new System.Windows.Forms.Label();
             this.checkBoxStartupAllUsers = new System.Windows.Forms.CheckBox();
             this.checkBoxApplyCOStartup = new System.Windows.Forms.CheckBox();
             this.comboBoxDriverNotifications = new System.Windows.Forms.ComboBox();
@@ -345,6 +359,8 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel13.SuspendLayout();
             this.tabPagePstates.SuspendLayout();
             this.tableLayoutPanelBclkInfo.SuspendLayout();
+            this.tableLayoutPanelBclkNotice.SuspendLayout();
+            this.tableLayoutPanelBclkDetails.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBclk)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pstateDid)).BeginInit();
@@ -353,6 +369,7 @@ namespace ZenStatesDebugTool
             this.tabPageInfo.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tabPageSettings.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMaxVoltage)).BeginInit();
             this.tableLayoutPanel11.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             this.SuspendLayout();
@@ -973,142 +990,206 @@ namespace ZenStatesDebugTool
             // 
             this.tableLayoutPanel8.AutoSize = true;
             this.tableLayoutPanel8.ColumnCount = 4;
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel8.Controls.Add(this.buttonApplyOcMode, 0, 6);
-            this.tableLayoutPanel8.Controls.Add(this.buttonApplySC, 3, 4);
+            this.tableLayoutPanel8.Controls.Add(this.checkBoxOcMode, 0, 0);
+            this.tableLayoutPanel8.Controls.Add(this.labelDangerZone, 2, 0);
+            this.tableLayoutPanel8.Controls.Add(this.buttonApplyOcMode, 3, 0);
+            this.tableLayoutPanel8.Controls.Add(this.label14, 0, 1);
+            this.tableLayoutPanel8.Controls.Add(this.comboBoxACF, 1, 1);
             this.tableLayoutPanel8.Controls.Add(this.buttonApplyAC, 3, 1);
-            this.tableLayoutPanel8.Controls.Add(this.label14, 0, 0);
-            this.tableLayoutPanel8.Controls.Add(this.label16, 0, 3);
-            this.tableLayoutPanel8.Controls.Add(this.comboBoxACF, 0, 1);
-            this.tableLayoutPanel8.Controls.Add(this.comboBoxSCF, 0, 4);
-            this.tableLayoutPanel8.Controls.Add(this.comboBoxCore, 1, 4);
-            this.tableLayoutPanel8.Controls.Add(this.checkBoxOcMode, 0, 6);
-            this.tableLayoutPanel8.Controls.Add(this.buttonRefreshCpu, 3, 8);
+            this.tableLayoutPanel8.Controls.Add(this.label16, 0, 2);
+            this.tableLayoutPanel8.Controls.Add(this.comboBoxSCF, 1, 2);
+            this.tableLayoutPanel8.Controls.Add(this.comboBoxCore, 2, 2);
+            this.tableLayoutPanel8.Controls.Add(this.buttonApplySC, 3, 2);
+            this.tableLayoutPanel8.Controls.Add(this.labelVid, 0, 3);
+            this.tableLayoutPanel8.Controls.Add(this.comboBoxVid, 1, 3);
+            this.tableLayoutPanel8.Controls.Add(this.labelVidLimit, 2, 3);
+            this.tableLayoutPanel8.Controls.Add(this.buttonApplyVid, 3, 3);
+            this.tableLayoutPanel8.Controls.Add(this.buttonRefreshCpu, 3, 4);
             this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel8.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel8.Name = "tableLayoutPanel8";
-            this.tableLayoutPanel8.Padding = new System.Windows.Forms.Padding(0, 2, 5, 0);
-            this.tableLayoutPanel8.RowCount = 9;
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel8.Padding = new System.Windows.Forms.Padding(4, 3, 5, 3);
+            this.tableLayoutPanel8.RowCount = 5;
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 2F));
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 2F));
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel8.Size = new System.Drawing.Size(445, 168);
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel8.Size = new System.Drawing.Size(445, 136);
             this.tableLayoutPanel8.TabIndex = 1;
+            // 
+            // checkBoxOcMode
+            // 
+            this.checkBoxOcMode.AutoSize = true;
+            this.tableLayoutPanel8.SetColumnSpan(this.checkBoxOcMode, 2);
+            this.checkBoxOcMode.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.checkBoxOcMode.Location = new System.Drawing.Point(7, 4);
+            this.checkBoxOcMode.Margin = new System.Windows.Forms.Padding(3, 1, 3, 2);
+            this.checkBoxOcMode.Name = "checkBoxOcMode";
+            this.checkBoxOcMode.Size = new System.Drawing.Size(174, 23);
+            this.checkBoxOcMode.TabIndex = 0;
+            this.checkBoxOcMode.Text = "Manual OC mode";
+            this.checkBoxOcMode.UseVisualStyleBackColor = true;
+            // 
+            // labelDangerZone
+            // 
+            this.labelDangerZone.AutoSize = true;
+            this.labelDangerZone.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelDangerZone.Location = new System.Drawing.Point(187, 3);
+            this.labelDangerZone.Name = "labelDangerZone";
+            this.labelDangerZone.Size = new System.Drawing.Size(168, 26);
+            this.labelDangerZone.TabIndex = 14;
+            this.labelDangerZone.Text = "Danger zone";
+            this.labelDangerZone.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // buttonApplyOcMode
             // 
             this.buttonApplyOcMode.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonApplyOcMode.Location = new System.Drawing.Point(361, 109);
+            this.buttonApplyOcMode.Location = new System.Drawing.Point(361, 4);
+            this.buttonApplyOcMode.Margin = new System.Windows.Forms.Padding(3, 1, 3, 2);
             this.buttonApplyOcMode.Name = "buttonApplyOcMode";
             this.buttonApplyOcMode.Size = new System.Drawing.Size(76, 23);
-            this.buttonApplyOcMode.TabIndex = 12;
+            this.buttonApplyOcMode.TabIndex = 1;
             this.buttonApplyOcMode.Text = "Apply";
             this.buttonApplyOcMode.UseVisualStyleBackColor = true;
             this.buttonApplyOcMode.Click += new System.EventHandler(this.ButtonApplyOcMode_Click);
             // 
-            // buttonApplySC
-            // 
-            this.buttonApplySC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonApplySC.Location = new System.Drawing.Point(361, 77);
-            this.buttonApplySC.Name = "buttonApplySC";
-            this.buttonApplySC.Size = new System.Drawing.Size(76, 24);
-            this.buttonApplySC.TabIndex = 5;
-            this.buttonApplySC.Text = "Apply";
-            this.buttonApplySC.UseVisualStyleBackColor = true;
-            this.buttonApplySC.Click += new System.EventHandler(this.ButtonApplySC_Click);
-            // 
-            // buttonApplyAC
-            // 
-            this.buttonApplyAC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonApplyAC.Location = new System.Drawing.Point(361, 25);
-            this.buttonApplyAC.Name = "buttonApplyAC";
-            this.buttonApplyAC.Size = new System.Drawing.Size(76, 24);
-            this.buttonApplyAC.TabIndex = 2;
-            this.buttonApplyAC.Text = "Apply";
-            this.buttonApplyAC.UseVisualStyleBackColor = true;
-            this.buttonApplyAC.Click += new System.EventHandler(this.ButtonApplyAC_Click);
-            // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.tableLayoutPanel8.SetColumnSpan(this.label14, 4);
             this.label14.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label14.Location = new System.Drawing.Point(3, 2);
+            this.label14.Location = new System.Drawing.Point(7, 29);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(434, 20);
-            this.label14.TabIndex = 6;
-            this.label14.Text = "All Core Frequency";
+            this.label14.Size = new System.Drawing.Size(74, 26);
+            this.label14.TabIndex = 2;
+            this.label14.Text = "All cores";
             this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.tableLayoutPanel8.SetColumnSpan(this.label16, 4);
-            this.label16.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label16.Location = new System.Drawing.Point(3, 54);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(434, 20);
-            this.label16.TabIndex = 7;
-            this.label16.Text = "Single Core Frequency";
-            this.label16.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // comboBoxACF
             // 
             this.comboBoxACF.Dock = System.Windows.Forms.DockStyle.Fill;
             this.comboBoxACF.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxACF.FormattingEnabled = true;
-            this.comboBoxACF.Location = new System.Drawing.Point(3, 25);
+            this.comboBoxACF.Location = new System.Drawing.Point(87, 31);
+            this.comboBoxACF.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.comboBoxACF.Name = "comboBoxACF";
             this.comboBoxACF.Size = new System.Drawing.Size(94, 21);
-            this.comboBoxACF.TabIndex = 9;
+            this.comboBoxACF.TabIndex = 3;
+            // 
+            // buttonApplyAC
+            // 
+            this.buttonApplyAC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonApplyAC.Location = new System.Drawing.Point(361, 30);
+            this.buttonApplyAC.Margin = new System.Windows.Forms.Padding(3, 1, 3, 2);
+            this.buttonApplyAC.Name = "buttonApplyAC";
+            this.buttonApplyAC.Size = new System.Drawing.Size(76, 23);
+            this.buttonApplyAC.TabIndex = 4;
+            this.buttonApplyAC.Tag = "secondary";
+            this.buttonApplyAC.Text = "Apply";
+            this.buttonApplyAC.UseVisualStyleBackColor = true;
+            this.buttonApplyAC.Click += new System.EventHandler(this.ButtonApplyAC_Click);
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label16.Location = new System.Drawing.Point(7, 55);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(74, 26);
+            this.label16.TabIndex = 5;
+            this.label16.Text = "Single core";
+            this.label16.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // comboBoxSCF
             // 
             this.comboBoxSCF.Dock = System.Windows.Forms.DockStyle.Fill;
             this.comboBoxSCF.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxSCF.FormattingEnabled = true;
-            this.comboBoxSCF.Location = new System.Drawing.Point(3, 77);
+            this.comboBoxSCF.Location = new System.Drawing.Point(87, 57);
+            this.comboBoxSCF.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.comboBoxSCF.Name = "comboBoxSCF";
             this.comboBoxSCF.Size = new System.Drawing.Size(94, 21);
-            this.comboBoxSCF.TabIndex = 10;
+            this.comboBoxSCF.TabIndex = 6;
             // 
             // comboBoxCore
             // 
-            this.comboBoxCore.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.comboBoxCore.Dock = System.Windows.Forms.DockStyle.Left;
             this.comboBoxCore.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxCore.FormattingEnabled = true;
-            this.comboBoxCore.Location = new System.Drawing.Point(103, 77);
+            this.comboBoxCore.Location = new System.Drawing.Point(187, 57);
+            this.comboBoxCore.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.comboBoxCore.Name = "comboBoxCore";
             this.comboBoxCore.Size = new System.Drawing.Size(94, 21);
-            this.comboBoxCore.TabIndex = 8;
+            this.comboBoxCore.TabIndex = 7;
             // 
-            // checkBoxOcMode
+            // buttonApplySC
             // 
-            this.checkBoxOcMode.AutoSize = true;
-            this.tableLayoutPanel8.SetColumnSpan(this.checkBoxOcMode, 3);
-            this.checkBoxOcMode.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.checkBoxOcMode.Location = new System.Drawing.Point(3, 109);
-            this.checkBoxOcMode.Name = "checkBoxOcMode";
-            this.checkBoxOcMode.Size = new System.Drawing.Size(352, 23);
-            this.checkBoxOcMode.TabIndex = 11;
-            this.checkBoxOcMode.Text = "Manual OC mode";
-            this.checkBoxOcMode.UseVisualStyleBackColor = true;
+            this.buttonApplySC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonApplySC.Location = new System.Drawing.Point(361, 56);
+            this.buttonApplySC.Margin = new System.Windows.Forms.Padding(3, 1, 3, 2);
+            this.buttonApplySC.Name = "buttonApplySC";
+            this.buttonApplySC.Size = new System.Drawing.Size(76, 23);
+            this.buttonApplySC.TabIndex = 8;
+            this.buttonApplySC.Tag = "secondary";
+            this.buttonApplySC.Text = "Apply";
+            this.buttonApplySC.UseVisualStyleBackColor = true;
+            this.buttonApplySC.Click += new System.EventHandler(this.ButtonApplySC_Click);
+            // 
+            // labelVid
+            // 
+            this.labelVid.AutoSize = true;
+            this.labelVid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelVid.Location = new System.Drawing.Point(7, 81);
+            this.labelVid.Name = "labelVid";
+            this.labelVid.Size = new System.Drawing.Size(74, 26);
+            this.labelVid.TabIndex = 9;
+            this.labelVid.Text = "Voltage (VID)";
+            this.labelVid.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // comboBoxVid
+            // 
+            this.comboBoxVid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.comboBoxVid.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxVid.FormattingEnabled = true;
+            this.comboBoxVid.Location = new System.Drawing.Point(87, 83);
+            this.comboBoxVid.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.comboBoxVid.Name = "comboBoxVid";
+            this.comboBoxVid.Size = new System.Drawing.Size(94, 21);
+            this.comboBoxVid.TabIndex = 10;
+            // 
+            // labelVidLimit
+            // 
+            this.labelVidLimit.AutoSize = true;
+            this.labelVidLimit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelVidLimit.Location = new System.Drawing.Point(187, 81);
+            this.labelVidLimit.Name = "labelVidLimit";
+            this.labelVidLimit.Size = new System.Drawing.Size(168, 26);
+            this.labelVidLimit.TabIndex = 11;
+            this.labelVidLimit.Text = "Max. 1.350 V";
+            this.labelVidLimit.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // buttonApplyVid
+            // 
+            this.buttonApplyVid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonApplyVid.Location = new System.Drawing.Point(361, 82);
+            this.buttonApplyVid.Margin = new System.Windows.Forms.Padding(3, 1, 3, 2);
+            this.buttonApplyVid.Name = "buttonApplyVid";
+            this.buttonApplyVid.Size = new System.Drawing.Size(76, 23);
+            this.buttonApplyVid.TabIndex = 12;
+            this.buttonApplyVid.Tag = "secondary";
+            this.buttonApplyVid.Text = "Apply";
+            this.buttonApplyVid.UseVisualStyleBackColor = true;
+            this.buttonApplyVid.Click += new System.EventHandler(this.ButtonApplyVid_Click);
             // 
             // buttonRefreshCpu
             // 
             this.buttonRefreshCpu.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonRefreshCpu.Location = new System.Drawing.Point(361, 145);
-            this.buttonRefreshCpu.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.buttonRefreshCpu.Location = new System.Drawing.Point(361, 108);
+            this.buttonRefreshCpu.Margin = new System.Windows.Forms.Padding(3, 1, 3, 2);
             this.buttonRefreshCpu.Name = "buttonRefreshCpu";
             this.buttonRefreshCpu.Size = new System.Drawing.Size(76, 23);
             this.buttonRefreshCpu.TabIndex = 13;
@@ -3094,51 +3175,95 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanelBclkInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanelBclkInfo.ColumnCount = 2;
-            this.tableLayoutPanelBclkInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanelBclkInfo.ColumnCount = 1;
             this.tableLayoutPanelBclkInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkInfo, 0, 1);
-            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkStrapCaption, 0, 2);
-            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkStrap, 1, 2);
-            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkEclkCaption, 0, 3);
-            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkEclk, 1, 3);
-            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkRefClkCaption, 0, 4);
-            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkRefClk, 1, 4);
-            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkCpuCaption, 0, 5);
-            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkCpu, 1, 5);
-            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkMemCaption, 0, 6);
-            this.tableLayoutPanelBclkInfo.Controls.Add(this.labelBclkMem, 1, 6);
+            this.tableLayoutPanelBclkInfo.Controls.Add(this.tableLayoutPanelBclkNotice, 0, 0);
+            this.tableLayoutPanelBclkInfo.Controls.Add(this.tableLayoutPanelBclkDetails, 0, 1);
             this.tableLayoutPanelBclkInfo.Location = new System.Drawing.Point(3, 206);
             this.tableLayoutPanelBclkInfo.Name = "tableLayoutPanelBclkInfo";
-            this.tableLayoutPanelBclkInfo.RowCount = 7;
-            this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanelBclkInfo.RowCount = 3;
             this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanelBclkInfo.Size = new System.Drawing.Size(445, 125);
             this.tableLayoutPanelBclkInfo.TabIndex = 6;
             this.tableLayoutPanelBclkInfo.Visible = false;
             // 
+            // tableLayoutPanelBclkNotice
+            // 
+            this.tableLayoutPanelBclkNotice.AutoSize = true;
+            this.tableLayoutPanelBclkNotice.ColumnCount = 2;
+            this.tableLayoutPanelBclkNotice.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanelBclkNotice.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanelBclkNotice.Controls.Add(this.iconBoxBclkNotice, 0, 0);
+            this.tableLayoutPanelBclkNotice.Controls.Add(this.labelBclkInfo, 1, 0);
+            this.tableLayoutPanelBclkNotice.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanelBclkNotice.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanelBclkNotice.Margin = new System.Windows.Forms.Padding(0, 0, 0, 3);
+            this.tableLayoutPanelBclkNotice.Name = "tableLayoutPanelBclkNotice";
+            this.tableLayoutPanelBclkNotice.Padding = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            this.tableLayoutPanelBclkNotice.RowCount = 1;
+            this.tableLayoutPanelBclkNotice.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelBclkNotice.Size = new System.Drawing.Size(445, 26);
+            this.tableLayoutPanelBclkNotice.TabIndex = 0;
+            // 
+            // iconBoxBclkNotice
+            // 
+            this.iconBoxBclkNotice.BackColor = System.Drawing.Color.Transparent;
+            this.iconBoxBclkNotice.Location = new System.Drawing.Point(6, 5);
+            this.iconBoxBclkNotice.Margin = new System.Windows.Forms.Padding(0, 0, 6, 0);
+            this.iconBoxBclkNotice.Name = "iconBoxBclkNotice";
+            this.iconBoxBclkNotice.Size = new System.Drawing.Size(16, 16);
+            this.iconBoxBclkNotice.TabIndex = 0;
+            this.iconBoxBclkNotice.TabStop = false;
+            // 
             // labelBclkInfo
             // 
             this.labelBclkInfo.AutoSize = true;
-            this.tableLayoutPanelBclkInfo.SetColumnSpan(this.labelBclkInfo, 2);
+            this.labelBclkInfo.BackColor = System.Drawing.Color.Transparent;
             this.labelBclkInfo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelBclkInfo.Location = new System.Drawing.Point(3, 20);
-            this.labelBclkInfo.Margin = new System.Windows.Forms.Padding(3, 0, 3, 6);
+            this.labelBclkInfo.Location = new System.Drawing.Point(28, 6);
+            this.labelBclkInfo.Margin = new System.Windows.Forms.Padding(0, 1, 0, 0);
             this.labelBclkInfo.Name = "labelBclkInfo";
-            this.labelBclkInfo.Size = new System.Drawing.Size(439, 13);
+            this.labelBclkInfo.Size = new System.Drawing.Size(411, 15);
             this.labelBclkInfo.TabIndex = 0;
             this.labelBclkInfo.Text = "BCLK can\'t be detected, so it can\'t be changed here.";
+            // 
+            // tableLayoutPanelBclkDetails
+            // 
+            this.tableLayoutPanelBclkDetails.AutoSize = true;
+            this.tableLayoutPanelBclkDetails.ColumnCount = 2;
+            this.tableLayoutPanelBclkDetails.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanelBclkDetails.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanelBclkDetails.Controls.Add(this.labelBclkStrapCaption, 0, 0);
+            this.tableLayoutPanelBclkDetails.Controls.Add(this.labelBclkStrap, 1, 0);
+            this.tableLayoutPanelBclkDetails.Controls.Add(this.labelBclkEclkCaption, 0, 1);
+            this.tableLayoutPanelBclkDetails.Controls.Add(this.labelBclkEclk, 1, 1);
+            this.tableLayoutPanelBclkDetails.Controls.Add(this.labelBclkRefClkCaption, 0, 2);
+            this.tableLayoutPanelBclkDetails.Controls.Add(this.labelBclkRefClk, 1, 2);
+            this.tableLayoutPanelBclkDetails.Controls.Add(this.labelBclkCpuCaption, 0, 3);
+            this.tableLayoutPanelBclkDetails.Controls.Add(this.labelBclkCpu, 1, 3);
+            this.tableLayoutPanelBclkDetails.Controls.Add(this.labelBclkMemCaption, 0, 4);
+            this.tableLayoutPanelBclkDetails.Controls.Add(this.labelBclkMem, 1, 4);
+            this.tableLayoutPanelBclkDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanelBclkDetails.Location = new System.Drawing.Point(0, 29);
+            this.tableLayoutPanelBclkDetails.Margin = new System.Windows.Forms.Padding(0);
+            this.tableLayoutPanelBclkDetails.Name = "tableLayoutPanelBclkDetails";
+            this.tableLayoutPanelBclkDetails.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
+            this.tableLayoutPanelBclkDetails.RowCount = 5;
+            this.tableLayoutPanelBclkDetails.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelBclkDetails.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelBclkDetails.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelBclkDetails.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelBclkDetails.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelBclkDetails.Size = new System.Drawing.Size(445, 83);
+            this.tableLayoutPanelBclkDetails.TabIndex = 1;
             // 
             // labelBclkStrapCaption
             // 
             this.labelBclkStrapCaption.AutoSize = true;
             this.labelBclkStrapCaption.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelBclkStrapCaption.Location = new System.Drawing.Point(3, 40);
+            this.labelBclkStrapCaption.Location = new System.Drawing.Point(9, 5);
             this.labelBclkStrapCaption.Margin = new System.Windows.Forms.Padding(3, 1, 12, 1);
             this.labelBclkStrapCaption.Name = "labelBclkStrapCaption";
             this.labelBclkStrapCaption.Size = new System.Drawing.Size(108, 13);
@@ -3148,7 +3273,7 @@ namespace ZenStatesDebugTool
             // labelBclkStrap
             // 
             this.labelBclkStrap.AutoSize = true;
-            this.labelBclkStrap.Location = new System.Drawing.Point(147, 40);
+            this.labelBclkStrap.Location = new System.Drawing.Point(153, 5);
             this.labelBclkStrap.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.labelBclkStrap.Name = "labelBclkStrap";
             this.labelBclkStrap.Size = new System.Drawing.Size(10, 13);
@@ -3159,7 +3284,7 @@ namespace ZenStatesDebugTool
             // 
             this.labelBclkEclkCaption.AutoSize = true;
             this.labelBclkEclkCaption.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelBclkEclkCaption.Location = new System.Drawing.Point(3, 55);
+            this.labelBclkEclkCaption.Location = new System.Drawing.Point(9, 20);
             this.labelBclkEclkCaption.Margin = new System.Windows.Forms.Padding(3, 1, 12, 1);
             this.labelBclkEclkCaption.Name = "labelBclkEclkCaption";
             this.labelBclkEclkCaption.Size = new System.Drawing.Size(62, 13);
@@ -3169,7 +3294,7 @@ namespace ZenStatesDebugTool
             // labelBclkEclk
             // 
             this.labelBclkEclk.AutoSize = true;
-            this.labelBclkEclk.Location = new System.Drawing.Point(147, 55);
+            this.labelBclkEclk.Location = new System.Drawing.Point(153, 20);
             this.labelBclkEclk.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.labelBclkEclk.Name = "labelBclkEclk";
             this.labelBclkEclk.Size = new System.Drawing.Size(10, 13);
@@ -3180,7 +3305,7 @@ namespace ZenStatesDebugTool
             // 
             this.labelBclkRefClkCaption.AutoSize = true;
             this.labelBclkRefClkCaption.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelBclkRefClkCaption.Location = new System.Drawing.Point(3, 70);
+            this.labelBclkRefClkCaption.Location = new System.Drawing.Point(9, 35);
             this.labelBclkRefClkCaption.Margin = new System.Windows.Forms.Padding(3, 1, 12, 1);
             this.labelBclkRefClkCaption.Name = "labelBclkRefClkCaption";
             this.labelBclkRefClkCaption.Size = new System.Drawing.Size(106, 13);
@@ -3190,7 +3315,7 @@ namespace ZenStatesDebugTool
             // labelBclkRefClk
             // 
             this.labelBclkRefClk.AutoSize = true;
-            this.labelBclkRefClk.Location = new System.Drawing.Point(147, 70);
+            this.labelBclkRefClk.Location = new System.Drawing.Point(153, 35);
             this.labelBclkRefClk.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.labelBclkRefClk.Name = "labelBclkRefClk";
             this.labelBclkRefClk.Size = new System.Drawing.Size(10, 13);
@@ -3201,7 +3326,7 @@ namespace ZenStatesDebugTool
             // 
             this.labelBclkCpuCaption.AutoSize = true;
             this.labelBclkCpuCaption.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelBclkCpuCaption.Location = new System.Drawing.Point(3, 85);
+            this.labelBclkCpuCaption.Location = new System.Drawing.Point(9, 50);
             this.labelBclkCpuCaption.Margin = new System.Windows.Forms.Padding(3, 1, 12, 1);
             this.labelBclkCpuCaption.Name = "labelBclkCpuCaption";
             this.labelBclkCpuCaption.Size = new System.Drawing.Size(114, 13);
@@ -3211,7 +3336,7 @@ namespace ZenStatesDebugTool
             // labelBclkCpu
             // 
             this.labelBclkCpu.AutoSize = true;
-            this.labelBclkCpu.Location = new System.Drawing.Point(147, 85);
+            this.labelBclkCpu.Location = new System.Drawing.Point(153, 50);
             this.labelBclkCpu.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.labelBclkCpu.Name = "labelBclkCpu";
             this.labelBclkCpu.Size = new System.Drawing.Size(10, 13);
@@ -3222,7 +3347,7 @@ namespace ZenStatesDebugTool
             // 
             this.labelBclkMemCaption.AutoSize = true;
             this.labelBclkMemCaption.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelBclkMemCaption.Location = new System.Drawing.Point(3, 100);
+            this.labelBclkMemCaption.Location = new System.Drawing.Point(9, 65);
             this.labelBclkMemCaption.Margin = new System.Windows.Forms.Padding(3, 1, 12, 1);
             this.labelBclkMemCaption.Name = "labelBclkMemCaption";
             this.labelBclkMemCaption.Size = new System.Drawing.Size(129, 13);
@@ -3232,7 +3357,7 @@ namespace ZenStatesDebugTool
             // labelBclkMem
             // 
             this.labelBclkMem.AutoSize = true;
-            this.labelBclkMem.Location = new System.Drawing.Point(147, 100);
+            this.labelBclkMem.Location = new System.Drawing.Point(153, 65);
             this.labelBclkMem.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.labelBclkMem.Name = "labelBclkMem";
             this.labelBclkMem.Size = new System.Drawing.Size(10, 13);
@@ -3785,6 +3910,12 @@ namespace ZenStatesDebugTool
             // 
             // tabPageSettings
             // 
+            this.tabPageSettings.Controls.Add(this.comboBoxDefaultTab);
+            this.tabPageSettings.Controls.Add(this.labelDefaultTab);
+            this.tabPageSettings.Controls.Add(this.buttonDiscardSettings);
+            this.tabPageSettings.Controls.Add(this.buttonSaveSettings);
+            this.tabPageSettings.Controls.Add(this.numericUpDownMaxVoltage);
+            this.tabPageSettings.Controls.Add(this.labelMaxVoltage);
             this.tabPageSettings.Controls.Add(this.checkBoxStartupAllUsers);
             this.tabPageSettings.Controls.Add(this.checkBoxApplyCOStartup);
             this.tabPageSettings.Controls.Add(this.comboBoxDriverNotifications);
@@ -3797,6 +3928,87 @@ namespace ZenStatesDebugTool
             this.tabPageSettings.TabIndex = 10;
             this.tabPageSettings.Text = "Settings";
             this.tabPageSettings.UseVisualStyleBackColor = true;
+            // 
+            // comboBoxDefaultTab
+            // 
+            this.comboBoxDefaultTab.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxDefaultTab.FormattingEnabled = true;
+            this.comboBoxDefaultTab.Location = new System.Drawing.Point(160, 151);
+            this.comboBoxDefaultTab.Name = "comboBoxDefaultTab";
+            this.comboBoxDefaultTab.Size = new System.Drawing.Size(120, 21);
+            this.comboBoxDefaultTab.TabIndex = 7;
+            this.comboBoxDefaultTab.SelectedIndexChanged += new System.EventHandler(this.SettingsControl_Changed);
+            // 
+            // labelDefaultTab
+            // 
+            this.labelDefaultTab.AutoSize = true;
+            this.labelDefaultTab.Location = new System.Drawing.Point(9, 154);
+            this.labelDefaultTab.Name = "labelDefaultTab";
+            this.labelDefaultTab.Size = new System.Drawing.Size(59, 13);
+            this.labelDefaultTab.TabIndex = 7;
+            this.labelDefaultTab.Text = "Default tab";
+            // 
+            // buttonDiscardSettings
+            // 
+            this.buttonDiscardSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonDiscardSettings.Enabled = false;
+            this.buttonDiscardSettings.Location = new System.Drawing.Point(276, 303);
+            this.buttonDiscardSettings.Name = "buttonDiscardSettings";
+            this.buttonDiscardSettings.Size = new System.Drawing.Size(80, 25);
+            this.buttonDiscardSettings.TabIndex = 8;
+            this.buttonDiscardSettings.Text = "Discard";
+            this.buttonDiscardSettings.UseVisualStyleBackColor = true;
+            this.buttonDiscardSettings.Click += new System.EventHandler(this.ButtonDiscardSettings_Click);
+            // 
+            // buttonSaveSettings
+            // 
+            this.buttonSaveSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonSaveSettings.Enabled = false;
+            this.buttonSaveSettings.Location = new System.Drawing.Point(362, 303);
+            this.buttonSaveSettings.Name = "buttonSaveSettings";
+            this.buttonSaveSettings.Size = new System.Drawing.Size(80, 25);
+            this.buttonSaveSettings.TabIndex = 9;
+            this.buttonSaveSettings.Text = "Save";
+            this.buttonSaveSettings.UseVisualStyleBackColor = true;
+            this.buttonSaveSettings.Click += new System.EventHandler(this.ButtonSaveSettings_Click);
+            // 
+            // numericUpDownMaxVoltage
+            // 
+            this.numericUpDownMaxVoltage.DecimalPlaces = 3;
+            this.numericUpDownMaxVoltage.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            196608});
+            this.numericUpDownMaxVoltage.Location = new System.Drawing.Point(160, 121);
+            this.numericUpDownMaxVoltage.Maximum = new decimal(new int[] {
+            1550,
+            0,
+            0,
+            196608});
+            this.numericUpDownMaxVoltage.Minimum = new decimal(new int[] {
+            800,
+            0,
+            0,
+            196608});
+            this.numericUpDownMaxVoltage.Name = "numericUpDownMaxVoltage";
+            this.numericUpDownMaxVoltage.Size = new System.Drawing.Size(70, 20);
+            this.numericUpDownMaxVoltage.TabIndex = 6;
+            this.numericUpDownMaxVoltage.Value = new decimal(new int[] {
+            1350,
+            0,
+            0,
+            196608});
+            this.numericUpDownMaxVoltage.ValueChanged += new System.EventHandler(this.NumericUpDownMaxVoltage_ValueChanged);
+            // 
+            // labelMaxVoltage
+            // 
+            this.labelMaxVoltage.AutoSize = true;
+            this.labelMaxVoltage.Location = new System.Drawing.Point(9, 124);
+            this.labelMaxVoltage.Name = "labelMaxVoltage";
+            this.labelMaxVoltage.Size = new System.Drawing.Size(134, 13);
+            this.labelMaxVoltage.TabIndex = 5;
+            this.labelMaxVoltage.Text = "Manual OC voltage limit (V)";
             // 
             // checkBoxStartupAllUsers
             // 
@@ -3953,6 +4165,10 @@ namespace ZenStatesDebugTool
             this.tabPagePstates.PerformLayout();
             this.tableLayoutPanelBclkInfo.ResumeLayout(false);
             this.tableLayoutPanelBclkInfo.PerformLayout();
+            this.tableLayoutPanelBclkNotice.ResumeLayout(false);
+            this.tableLayoutPanelBclkNotice.PerformLayout();
+            this.tableLayoutPanelBclkDetails.ResumeLayout(false);
+            this.tableLayoutPanelBclkDetails.PerformLayout();
             this.tableLayoutPanel5.ResumeLayout(false);
             this.tableLayoutPanel5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBclk)).EndInit();
@@ -3965,6 +4181,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel3.PerformLayout();
             this.tabPageSettings.ResumeLayout(false);
             this.tabPageSettings.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMaxVoltage)).EndInit();
             this.tableLayoutPanel11.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             this.ResumeLayout(false);
@@ -4047,6 +4264,12 @@ namespace ZenStatesDebugTool
         private Label label14;
         private Label label16;
         private ComboBox comboBoxCore;
+        private Label labelVid;
+        private ComboBox comboBoxVid;
+        private Label labelVidLimit;
+        private Button buttonApplyVid;
+        private Label labelMaxVoltage;
+        private NumericUpDown numericUpDownMaxVoltage;
         private ComboBox comboBoxACF;
         private ComboBox comboBoxSCF;
         private CheckBox checkBoxOcMode;
@@ -4118,6 +4341,9 @@ namespace ZenStatesDebugTool
         private Button buttonBCLKApply;
         private Label labelBclkInfo;
         private TableLayoutPanel tableLayoutPanelBclkInfo;
+        private TableLayoutPanel tableLayoutPanelBclkNotice;
+        private ZenStatesDebugTool.Theming.IconBox iconBoxBclkNotice;
+        private TableLayoutPanel tableLayoutPanelBclkDetails;
         private Label labelBclkStrapCaption;
         private Label labelBclkEclkCaption;
         private Label labelBclkRefClkCaption;
@@ -4136,6 +4362,11 @@ namespace ZenStatesDebugTool
         private Button btnLoadCOProfile;
         private CheckBox checkBoxApplyCOStartup;
         private CheckBox checkBoxStartupAllUsers;
+        private Button buttonSaveSettings;
+        private Button buttonDiscardSettings;
+        private Label labelDefaultTab;
+        private ComboBox comboBoxDefaultTab;
+        private Label labelDangerZone;
         private GroupBox groupBoxCoreControl;
         private TableLayoutPanel tableLayoutPanel15;
         private CheckBox checkBox7;

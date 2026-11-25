@@ -31,6 +31,11 @@ namespace ZenStatesDebugTool.Theming
         private CaptionButton hover = CaptionButton.None;
         private CaptionButton pressed = CaptionButton.None;
         private Icon smallIcon;
+        private ToolTip titleToolTip;
+
+        // Buttons a form adds to its title bar (left of the theme toggle) are CaptionButton values from this one up
+        private const int CustomButtonBase = 100;
+        private readonly System.Collections.Generic.List<TitleBarButton> titleBarButtons = new System.Collections.Generic.List<TitleBarButton>();
         private static readonly Font TitleFont = new Font("Segoe UI Semibold", 9f);
 
         public ThemedForm()
@@ -53,6 +58,40 @@ namespace ZenStatesDebugTool.Theming
         /// <summary>Show the light/dark toggle in the title bar.</summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool ShowThemeToggle { get; set; } = true;
+
+        /// <summary>A button in the title bar, drawn like the caption buttons.</summary>
+        public sealed class TitleBarButton
+        {
+            /// <param name="icon">Icon to draw, asked on every paint so it can follow a state</param>
+            /// <param name="click">Called when the button is clicked</param>
+            /// <param name="toolTip">Tooltip text, asked when the pointer enters the button; null for none</param>
+            public TitleBarButton(Func<LucideIcon> icon, Action click, Func<string> toolTip = null)
+            {
+                Icon = icon;
+                Click = click;
+                ToolTip = toolTip;
+            }
+
+            public Func<LucideIcon> Icon { get; }
+            public Action Click { get; }
+            public Func<string> ToolTip { get; }
+        }
+
+        /// <summary>Adds a button to the title bar, left of the theme toggle. Buttons added later go further left.</summary>
+        protected void AddTitleBarButton(TitleBarButton button)
+        {
+            titleBarButtons.Insert(0, button);
+            Invalidate(TitleBounds);
+        }
+
+        /// <summary>Redraws the title bar, for example after the state shown by a title bar button changed.</summary>
+        protected void RefreshTitleBar() => Invalidate(TitleBounds);
+
+        private TitleBarButton CustomButton(CaptionButton button)
+        {
+            int index = (int)button - CustomButtonBase;
+            return index >= 0 && index < titleBarButtons.Count ? titleBarButtons[index] : null;
+        }
 
         /// <summary>Drag the window by any empty part of the form (dialogs without a title bar).</summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -88,6 +127,21 @@ namespace ZenStatesDebugTool.Theming
         protected override Size SizeFromClientSize(Size clientSize)
         {
             return chrome && ControlStyler.IsWindows ? clientSize : base.SizeFromClientSize(clientSize);
+        }
+
+        // Setting ClientSize at runtime (after the handle exists) does not go through SizeFromClientSize(Size):
+        // WinForms adds the old caption and border itself, so the window came out wider and taller than asked, while
+        // ClientSize still reported the requested size (the caption buttons were drawn short of the right edge).
+        // The window is all client area, so the window size is the client size.
+        protected override void SetClientSizeCore(int x, int y)
+        {
+            if (chrome && ControlStyler.IsWindows && WindowState == FormWindowState.Normal)
+            {
+                Size = new Size(x, y);
+                return;
+            }
+
+            base.SetClientSizeCore(x, y);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -150,6 +204,7 @@ namespace ZenStatesDebugTool.Theming
             {
                 Theme.Changed -= OnThemeChanged;
                 smallIcon?.Dispose();
+                titleToolTip?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -232,6 +287,8 @@ namespace ZenStatesDebugTool.Theming
         private CaptionButton[] VisibleButtons()
         {
             var buttons = new System.Collections.Generic.List<CaptionButton>();
+            for (int i = 0; i < titleBarButtons.Count; i++)
+                buttons.Add((CaptionButton)(CustomButtonBase + i));
             if (ShowThemeToggle) buttons.Add(CaptionButton.Theme);
             if (MinimizeBox && FormBorderStyle != FormBorderStyle.SizableToolWindow && FormBorderStyle != FormBorderStyle.FixedToolWindow)
                 buttons.Add(CaptionButton.Minimize);
@@ -322,7 +379,19 @@ namespace ZenStatesDebugTool.Theming
                     glyph = Color.White;
             }
 
+            TitleBarButton custom = CustomButton(button);
             LucideIcon icon;
+            if (custom != null)
+            {
+                icon = custom.Icon?.Invoke();
+                if (icon != null)
+                {
+                    g.SmoothingMode = SmoothingMode.AntiAlias;
+                    icon.Draw(g, bounds, glyph, ControlStyler.Px(15), 2f);
+                }
+                return;
+            }
+
             switch (button)
             {
                 case CaptionButton.Theme: icon = p.IsDark ? Icons.Sun : Icons.Moon; break;
@@ -384,6 +453,9 @@ namespace ZenStatesDebugTool.Theming
                 case CaptionButton.Close:
                     Close();
                     break;
+                default:
+                    CustomButton(released)?.Click?.Invoke();
+                    break;
             }
         }
 
@@ -393,6 +465,27 @@ namespace ZenStatesDebugTool.Theming
                 return;
             hover = button;
             Invalidate(TitleBounds);
+            UpdateTitleToolTip(button);
+        }
+
+        // Title bar buttons are painted, not controls: their tooltip is shown by hand
+        private void UpdateTitleToolTip(CaptionButton button)
+        {
+            string text = CustomButton(button)?.ToolTip?.Invoke();
+            if (string.IsNullOrEmpty(text))
+            {
+                titleToolTip?.Hide(this);
+                return;
+            }
+
+            if (titleToolTip == null)
+            {
+                titleToolTip = new ToolTip();
+                Theme.StyleToolTip(titleToolTip);
+            }
+
+            Rectangle bounds = ButtonBounds(button);
+            titleToolTip.Show(text, this, bounds.Left, bounds.Bottom + ControlStyler.Px(4), 5000);
         }
 
         protected override void OnTextChanged(EventArgs e)

@@ -96,6 +96,8 @@ namespace ZenStatesDebugTool.Theming
         Header,         // strip with a Surface2 background (CCD headers)
         IconButton,     // flat square button showing only its icon
         Card,           // panel with a 1px rounded border
+        DangerZone,     // panel with a 1px rounded border in the danger color (settings that can make the system unstable)
+        Callout,        // panel with a tinted rounded fill and border, for a notice (put an IconBox and a label in it)
         Plain,          // left alone by the theme
     }
 
@@ -334,7 +336,7 @@ namespace ZenStatesDebugTool.Theming
             else if (control is Label || control is LinkLabel)
             {
                 ControlStyler.StyleLabel((Label)control);
-                control.ForeColor = role == ThemeRole.Muted ? p.Muted : p.Text;
+                control.ForeColor = role == ThemeRole.Muted ? p.Muted : role == ThemeRole.Danger ? p.Danger : p.Text;
                 if (role == ThemeRole.Header)
                     control.BackColor = Color.Transparent;
                 else if (control.BackColor != Color.Transparent)
@@ -350,18 +352,33 @@ namespace ZenStatesDebugTool.Theming
             }
         }
 
-        // Colors set in the designer that mean "secondary text" become the Muted role
+        /// <summary>Tag value that keeps an "Apply" button in the default (secondary) style.</summary>
+        public const string SecondaryTag = "secondary";
+
+        // True when the button is marked secondary in the designer: Tag = "secondary"
+        private static bool IsMarkedSecondary(Control control) =>
+            control.Tag is string tag && string.Equals(tag.Trim(), SecondaryTag, StringComparison.OrdinalIgnoreCase);
+
+        // Roles that follow from designer properties:
+        // - a label colored GrayText/ControlDark is Muted (secondary text)
+        // - an "Apply" button is Primary, unless its Tag is "secondary" (set it in the designer, or call
+        //   Theme.SetRole(button, ThemeRole.Default) before or after the theme is applied)
+        // A role set in code before the theme is applied is kept. Standard action buttons get their icon either way.
         private static void RememberDesignerRole(Control control)
         {
-            if (roles.ContainsKey(control))
+            bool hasRole = roles.TryGetValue(control, out ThemeRole role);
+
+            if (control is Button button && IconForText(button.Text) != null && !icons.ContainsKey(control)
+                && role != ThemeRole.IconButton && role != ThemeRole.Plain)
+                icons[control] = IconForText(button.Text);
+
+            if (hasRole)
                 return;
 
             if (control is Label && (control.ForeColor == SystemColors.GrayText || control.ForeColor == SystemColors.ControlDark))
                 roles[control] = ThemeRole.Muted;
-            else if (control is Button button && IconForText(button.Text) != null && !icons.ContainsKey(control))
-                icons[control] = IconForText(button.Text);
-
-            if (control is Button applyButton && string.Equals(applyButton.Text, "Apply", StringComparison.OrdinalIgnoreCase))
+            else if (control is Button applyButton && string.Equals(applyButton.Text, "Apply", StringComparison.OrdinalIgnoreCase)
+                && !IsMarkedSecondary(applyButton))
                 roles[control] = ThemeRole.Primary;
         }
 

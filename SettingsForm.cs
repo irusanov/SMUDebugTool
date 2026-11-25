@@ -57,6 +57,8 @@ namespace ZenStatesDebugTool
         {
             InitializeComponent();
             InitTabStrip();
+            InitLogPanelToggle();
+            InitDangerZone();
             InitLogToolbar();
             _numaUtil = new NUMAUtil();
             Log($"Detected NUMA nodes. ({_numaUtil.HighestNumaNode + 1})");
@@ -180,6 +182,7 @@ namespace ZenStatesDebugTool
 
             comboBoxCore.SelectedIndex = 0;
             SelectCurrentFrequency();
+            PopulateVidList();
 
             InitCoreControl();
             InitPboLayout();
@@ -192,7 +195,8 @@ namespace ZenStatesDebugTool
             if (currentBclk == null)
             {
                 Log("BCLK can't be detected.", LogLevel.Warning);
-                labelBCLK.Text = "n/a";
+                //labelBCLK.Text = null;
+                labelBCLK.Enabled = false;
                 buttonBCLKApply.Enabled = false;
                 ShowBclkInfo();
                 SetStatusText("Error getting current BCLK!");
@@ -209,14 +213,16 @@ namespace ZenStatesDebugTool
 
             comboBoxMailboxSelect.SelectedIndex = 0;
 
-            checkBoxAutoUninstallDriver.Checked = AppSettings.Instance.AutoUninstallDriver;
-            InitDriverNotificationCombo();
-            UpdateStartupControls(GetStartupTaskMode());
+            InitSettingsTab();
 
-            formToolTip.SetToolTip(checkBoxOcMode, "Manual OC mode: Precision Boost and PBO stop controlling the clocks. Needed to set a fixed all-core or per-core frequency. Press Apply to turn it on or off.");
+            formToolTip.SetToolTip(checkBoxOcMode, "Manual OC mode: Precision Boost and PBO stop controlling the clocks. Needed to set a fixed frequency or voltage. Press Apply to turn it on or off.");
+            formToolTip.SetToolTip(comboBoxVid, "Core voltage (VID) in manual OC mode. The list stops at the voltage limit set in the Settings tab.");
+            formToolTip.SetToolTip(numericUpDownMaxVoltage, "Highest voltage offered by the manual OC voltage (VID) control on the CPU tab. Default 1.350 V.");
             formToolTip.SetToolTip(checkBoxApplyCOStartup, "Apply the saved profile (Curve Optimizer, PPT/TDC/EDC, scalar, FMax and Curve Shaper) when you log on and on resume from sleep. Only for your account, with your administrator rights.");
             formToolTip.SetToolTip(checkBoxStartupAllUsers, "Apply the saved profile when any user logs on and on resume from sleep, also when you are not logged on. The task runs as SYSTEM (the most privileged account).");
             formToolTip.SetToolTip(checkBoxAutoUninstallDriver, "Stops and removes the inpoutx64 driver service when the last instance of SMUDebugTool or ZenTimings exits.");
+
+            SelectDefaultTab();
 
             if (isApplyProfile)
             {
@@ -348,13 +354,207 @@ namespace ZenStatesDebugTool
         {
             bool enabled = cpu.GetOcMode();
             checkBoxOcMode.Checked = enabled;
+            UpdateOcControls(enabled);
             return enabled;
+        }
+
+        // Fixed frequencies and voltage only work in manual OC mode
+        private void UpdateOcControls(bool ocMode)
+        {
+            comboBoxACF.Enabled = ocMode;
+            buttonApplyAC.Enabled = ocMode;
+            comboBoxSCF.Enabled = ocMode;
+            comboBoxCore.Enabled = ocMode;
+            buttonApplySC.Enabled = ocMode;
+
+            bool vid = ocMode && IsOcVidSupported && comboBoxVid.Items.Count > 0;
+            comboBoxVid.Enabled = vid;
+            buttonApplyVid.Enabled = vid;
+        }
+
+        // ---- Manual OC voltage (VID) ----
+
+        private const double MinOcVoltage = 0.800;
+
+        private sealed class VidListItem
+        {
+            public uint Vid { get; }
+            public double Voltage { get; }
+
+            // Only shown because the CPU currently uses it: outside the range of the list, can't be applied
+            public bool OutOfRange { get; }
+
+            public VidListItem(uint vid, double voltage, bool outOfRange = false)
+            {
+                Vid = vid;
+                Voltage = voltage;
+                OutOfRange = outOfRange;
+            }
+
+            public override string ToString() => OutOfRange ? $"{Voltage:0.000} V (current)" : $"{Voltage:0.000} V";
+        }
+
+        private bool IsOcVidSupported =>
+            VidEncoding != PstateVidEncoding.Unknown &&
+            (cpu.smu.Rsmu.SMU_MSG_SetOverclockCpuVid != 0 || cpu.smu.Mp1Smu.SMU_MSG_SetOverclockCpuVid != 0);
+
+        private double MaxOcVoltage
+        {
+            get
+            {
+                double limit = AppSettings.Instance.MaxCpuVoltage;
+                if (double.IsNaN(limit) || limit < MinOcVoltage || limit > (double)numericUpDownMaxVoltage.Maximum)
+                    limit = AppSettings.DefaultMaxCpuVoltage;
+                return limit;
+            }
+        }
+
+        private double OcVidToVoltage(uint vid) => VidEncoding == PstateVidEncoding.SVI3
+            ? ZenStates.Core.Utils.VidToVoltageSVI3(vid)
+            : ZenStates.Core.Utils.VidToVoltage(vid);
+
+        // Lists the voltages from the limit down to MinOcVoltage, one VID step apart (SVI2: higher VID = lower
+        // voltage, SVI3: higher VID = higher voltage). No entry is above the limit.
+        private void PopulateVidList()
+        {
+            VidListItem previous = comboBoxVid.SelectedItem as VidListItem;
+            double limit = MaxOcVoltage;
+
+            comboBoxVid.Items.Clear();
+            labelVidLimit.Text = $"Max. {limit:0.000} V";
+
+            if (IsOcVidSupported)
+            {
+                List<VidListItem> items = new List<VidListItem>();
+                for (uint vid = 0; vid <= 0xFF; vid++)
+                {
+                    double voltage = OcVidToVoltage(vid);
+                    if (voltage <= limit + 0.0001 && voltage >= MinOcVoltage - 0.0001)
+                        items.Add(new VidListItem(vid, voltage));
+                }
+
+                // Highest voltage first
+                comboBoxVid.Items.AddRange(items.OrderByDescending(item => item.Voltage).Cast<object>().ToArray());
+                SelectVid(previous != null ? previous.Vid : CurrentCoreVid(cpu.GetOcMode()));
+            }
+            else
+            {
+                labelVidLimit.Text = "Not supported";
+            }
+
+            UpdateOcControls(checkBoxOcMode.Checked);
+        }
+
+        // As in ZenStates: in manual OC mode the VID the SMU currently requests (the one that was set), otherwise
+        // the VID of P0. Null when it can't be read.
+        private uint? CurrentCoreVid(bool ocMode)
+        {
+            if (!IsOcVidSupported)
+                return null;
+
+            if (ocMode)
+            {
+                int vid = cpu.GetCurrentHwVid();
+                return vid < 0 ? (uint?)null : (uint)vid;
+            }
+
+            uint eax = 0, edx = 0;
+            if (!cpu.ReadMsr(PstateMsr(0), ref eax, ref edx))
+                return null;
+
+            return DecodePstateVid(eax, edx);
+        }
+
+        // Selects the entry of this VID. A VID outside the list (above the limit or below the minimum) is still shown,
+        // marked as current, so the list never pretends the CPU uses another voltage.
+        private void SelectVid(uint? vid)
+        {
+            for (int i = comboBoxVid.Items.Count - 1; i >= 0; i--)
+            {
+                if (((VidListItem)comboBoxVid.Items[i]).OutOfRange)
+                    comboBoxVid.Items.RemoveAt(i);
+            }
+
+            if (vid == null || comboBoxVid.Items.Count == 0)
+            {
+                comboBoxVid.SelectedIndex = -1;
+                return;
+            }
+
+            for (int i = 0; i < comboBoxVid.Items.Count; i++)
+            {
+                if (((VidListItem)comboBoxVid.Items[i]).Vid == vid.Value)
+                {
+                    comboBoxVid.SelectedIndex = i;
+                    return;
+                }
+            }
+
+            VidListItem current = new VidListItem(vid.Value, OcVidToVoltage(vid.Value), true);
+            int index = 0;
+            while (index < comboBoxVid.Items.Count && ((VidListItem)comboBoxVid.Items[index]).Voltage > current.Voltage)
+                index++;
+
+            comboBoxVid.Items.Insert(index, current);
+            comboBoxVid.SelectedIndex = index;
+        }
+
+        private void RefreshCurrentVid(bool ocMode)
+        {
+            if (IsOcVidSupported)
+                SelectVid(CurrentCoreVid(ocMode));
+        }
+
+        private void ButtonApplyVid_Click(object sender, EventArgs e)
+        {
+            if (!(comboBoxVid.SelectedItem is VidListItem item))
+            {
+                SetStatusText("Select a voltage first.");
+                return;
+            }
+
+            if (!cpu.GetOcMode())
+            {
+                ReadOcModeState();
+                SetStatusText("Voltage not applied: manual OC mode is off.");
+                return;
+            }
+
+            // The list never goes above the limit, but check again before writing
+            if (item.OutOfRange || item.Voltage > MaxOcVoltage + 0.0001)
+            {
+                HandleError(item.Voltage > MaxOcVoltage
+                    ? $"{item.Voltage:0.000} V is above the voltage limit of {MaxOcVoltage:0.000} V (Settings tab)."
+                    : $"{item.Voltage:0.000} V is below the lowest voltage that can be set ({MinOcVoltage:0.000} V).");
+                return;
+            }
+
+            if (cpu.SetOverclockCpuVid(item.Vid) == SMU.Status.OK)
+                SetStatusText($"Core voltage set to {item.Voltage:0.000} V (VID 0x{item.Vid:X2}).");
+            else
+                HandleError("Error setting the core voltage!");
+        }
+
+        private void InitMaxVoltageSetting()
+        {
+            decimal limit = (decimal)MaxOcVoltage;
+            limit = Math.Max(numericUpDownMaxVoltage.Minimum, Math.Min(numericUpDownMaxVoltage.Maximum, Math.Round(limit, 3)));
+
+            numericUpDownMaxVoltage.ValueChanged -= NumericUpDownMaxVoltage_ValueChanged;
+            numericUpDownMaxVoltage.Value = limit;
+            numericUpDownMaxVoltage.ValueChanged += NumericUpDownMaxVoltage_ValueChanged;
+        }
+
+        private void NumericUpDownMaxVoltage_ValueChanged(object sender, EventArgs e)
+        {
+            SettingsControl_Changed(sender, e);
         }
 
         private void ButtonRefreshCpu_Click(object sender, EventArgs e)
         {
             SelectCurrentFrequency();
             bool ocMode = ReadOcModeState();
+            RefreshCurrentVid(ocMode);
             SetStatusText($"CPU values refreshed. Manual OC mode {(ocMode ? "on" : "off")}.");
         }
 
@@ -747,9 +947,9 @@ namespace ZenStatesDebugTool
             flowLayoutPanelCcdActions.Visible = true;
             flowLayoutPanelCcdActions.FlowDirection = FlowDirection.LeftToRight;
             flowLayoutPanelCcdActions.AutoSize = false;
-            flowLayoutPanelCcdActions.Dock = DockStyle.None;
-            flowLayoutPanelCcdActions.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            flowLayoutPanelCcdActions.Size = new Size(3 * (79 + 2), 27);
+            // Full row width, so "Zero all" can sit at the right edge
+            flowLayoutPanelCcdActions.Dock = DockStyle.Fill;
+            flowLayoutPanelCcdActions.Height = 27;
 
             Button allDecBtn = CreateActionButton("All \u2212", "Decrease the margin of every enabled core by 1.", AllCcdDecrement_Click);
             Button allIncBtn = CreateActionButton("All +", "Increase the margin of every enabled core by 1.", AllCcdIncrement_Click);
@@ -758,6 +958,7 @@ namespace ZenStatesDebugTool
             flowLayoutPanelCcdActions.Controls.Add(allDecBtn);
             flowLayoutPanelCcdActions.Controls.Add(allIncBtn);
             flowLayoutPanelCcdActions.Controls.Add(allZeroBtn);
+            flowLayoutPanelCcdActions.Layout += (_, __) => AlignLastActionRight(flowLayoutPanelCcdActions);
 
             btnResetCO.Text = "Discard";
             formToolTip.SetToolTip(buttonGetCO, "Re-read the current margins, PPT/TDC/EDC limits, PBO scalar and FMax.");
@@ -1011,6 +1212,24 @@ namespace ZenStatesDebugTool
             }
         }
 
+        // Pushes the last control of a left-to-right action bar to its right edge by growing its left margin.
+        // Runs before the flow layout places the controls; the margin only changes when the width does.
+        private static void AlignLastActionRight(FlowLayoutPanel panel)
+        {
+            int count = panel.Controls.Count;
+            if (count < 2)
+                return;
+
+            Control last = panel.Controls[count - 1];
+            int used = 0;
+            for (int i = 0; i < count - 1; i++)
+                used += panel.Controls[i].Width + panel.Controls[i].Margin.Horizontal;
+
+            int left = Math.Max(1, panel.ClientSize.Width - panel.Padding.Horizontal - used - last.Width - last.Margin.Right);
+            if (last.Margin.Left != left)
+                last.Margin = new Padding(left, last.Margin.Top, last.Margin.Right, last.Margin.Bottom);
+        }
+
         private static Button CreateActionButton(string text, string tooltipText, EventHandler onClick)
         {
             Button button = new Button
@@ -1231,25 +1450,49 @@ namespace ZenStatesDebugTool
 
         private void FlowLayoutPanelCOList_ClientSizeChanged(object sender, EventArgs e) => FitCcdBlocks();
 
+        private bool fittingCcdBlocks;
+
+        private int CcdBlockWidthFor(int available) => Math.Max(140, available / 2 - 2);
+
         // Two blocks per row filling the list's width (its client width already excludes a visible scroll bar)
-        private void FitCcdBlocks()
+        private void FitCcdBlocks() => FitCcdBlocks(1);
+
+        private void FitCcdBlocks(int extraPasses)
         {
-            if (ccdArrangers.Count == 0)
+            if (ccdArrangers.Count == 0 || fittingCcdBlocks)
                 return;
 
-            // The block heights do not depend on the width, so a scroll bar that appears (and narrows the client
-            // area) just triggers one more fit
-            int available = flowLayoutPanelCOList.ClientSize.Width;
+            fittingCcdBlocks = true;
+            try
+            {
+                // The blocks always fit the width, so a horizontal scroll bar is left over from a wider layout (the
+                // list was wider for a moment, for example while the Info tab hid the log panel). Such a bar and the
+                // vertical one keep each other visible: reset them, the layout adds back what is really needed.
+                if (flowLayoutPanelCOList.HorizontalScroll.Visible)
+                {
+                    flowLayoutPanelCOList.AutoScroll = false;
+                    flowLayoutPanelCOList.AutoScroll = true;
+                }
 
-            int width = Math.Max(140, available / 2 - 2);
-            if (width == ccdBlockWidth)
-                return;
+                int width = CcdBlockWidthFor(flowLayoutPanelCOList.ClientSize.Width);
+                if (width != ccdBlockWidth)
+                {
+                    ccdBlockWidth = width;
+                    flowLayoutPanelCOList.SuspendLayout();
+                    foreach (Action<int> arrange in ccdArrangers)
+                        arrange(width);
+                    flowLayoutPanelCOList.ResumeLayout();
+                }
+            }
+            finally
+            {
+                fittingCcdBlocks = false;
+            }
 
-            ccdBlockWidth = width;
-            flowLayoutPanelCOList.SuspendLayout();
-            foreach (Action<int> arrange in ccdArrangers)
-                arrange(width);
-            flowLayoutPanelCOList.ResumeLayout();
+            // A vertical scroll bar that appeared or went away during the fit changes the client width: fit once more
+            // (limited, so a bar that comes and goes with the width cannot loop)
+            if (extraPasses > 0 && CcdBlockWidthFor(flowLayoutPanelCOList.ClientSize.Width) != ccdBlockWidth)
+                FitCcdBlocks(extraPasses - 1);
         }
 
         private enum CcdHeaderIcon { Reset, Minus, Plus }
@@ -1410,6 +1653,11 @@ namespace ZenStatesDebugTool
             }
 
             checkBoxOcMode.Checked = enabled;
+            UpdateOcControls(enabled);
+
+            // Show the VID the SMU uses now (OC mode: the VID it was set to, otherwise the P0 VID)
+            Thread.Sleep(100);
+            RefreshCurrentVid(enabled);
             SetStatusText(enabled ? "Manual OC mode enabled." : "Manual OC mode disabled.");
             return true;
         }
@@ -1428,22 +1676,16 @@ namespace ZenStatesDebugTool
             return answer == DialogResult.Yes;
         }
 
-        // Fixed frequencies only work in manual OC mode. It is never turned on without asking.
-        private bool EnsureOcMode()
+        // The frequency controls are disabled while manual OC mode is off. It may have been turned off since
+        // (outside the app or by a restart of the SMU): check again, never turn it on from here.
+        private bool CheckOcMode()
         {
             if (cpu.GetOcMode())
-            {
-                checkBoxOcMode.Checked = true;
                 return true;
-            }
 
-            if (!ConfirmEnableOcMode("Setting a fixed frequency needs manual OC mode, which is currently off.\n\n"))
-            {
-                SetStatusText("Frequency not applied: manual OC mode is off.");
-                return false;
-            }
-
-            return SetOcMode(true);
+            ReadOcModeState();
+            SetStatusText("Frequency not applied: manual OC mode is off.");
+            return false;
         }
 
         private void SetStatusText(string status)
@@ -2379,12 +2621,121 @@ namespace ZenStatesDebugTool
 
         private static string RtfColor(Color c) => $"\\red{c.R}\\green{c.G}\\blue{c.B};";
 
+        // ---- log panel ----
+
+        private bool logPanelVisible = true;
+        private int logPanelWidth;
+
+        private void InitLogPanelToggle()
+        {
+            // The tabs keep their width; the window grows or shrinks by the width of the log panel
+            splitContainer1.FixedPanel = FixedPanel.Panel1;
+            logPanelWidth = splitContainer1.Width - splitContainer1.SplitterDistance;
+
+            AddTitleBarButton(new TitleBarButton(
+                () => logPanelVisible ? Icons.PanelRightClose : Icons.PanelRightOpen,
+                () => SetLogPanelVisible(!logPanelVisible),
+                () => logPanelVisible ? "Hide log panel" : "Show log panel"));
+
+            if (!AppSettings.Instance.ShowLogPanel)
+                SetLogPanelVisible(false, false);
+        }
+
+        private void SetLogPanelVisible(bool visible, bool save = true)
+        {
+            if (visible == logPanelVisible)
+                return;
+
+            logPanelVisible = visible;
+
+            // The tabs (Panel1) have a fixed width while the log panel is shown, and a collapsed log panel gives
+            // Panel1 the whole width. So shrink before collapsing and expand after showing it again: the tabs keep
+            // their width throughout, instead of being stretched to the full window for a moment (which left the
+            // PBO CCD list with scroll bars)
+            if (visible)
+                UpdateLogPanelCollapsed();
+            ClientSize = new Size(ClientSize.Width + (visible ? logPanelWidth : -logPanelWidth), ClientSize.Height);
+            if (!visible)
+                UpdateLogPanelCollapsed();
+
+            RefreshTitleBar();
+
+            if (save)
+            {
+                AppSettings.Instance.ShowLogPanel = visible;
+                AppSettings.Instance.Save();
+            }
+        }
+
+        // The Info tab uses the full width, so it hides the log panel while it is shown
+        private void UpdateLogPanelCollapsed(TabPage page = null)
+        {
+            page = page ?? tabControl1.SelectedTab;
+            bool collapsed = !logPanelVisible || page == tabPageInfo;
+            if (splitContainer1.Panel2Collapsed != collapsed)
+                splitContainer1.Panel2Collapsed = collapsed;
+        }
+
+        // Manual OC (OC mode, fixed frequencies, voltage) bypasses the CPU's own boost control: marked in red.
+        // Core Control is not part of it.
+        private void InitDangerZone()
+        {
+            Theme.SetRole(tableLayoutPanel8, ThemeRole.DangerZone);
+
+            // BCLK info on the PStates tab: notice in a callout, the values in a card
+            Theme.SetRole(tableLayoutPanelBclkNotice, ThemeRole.Callout);
+            Theme.SetRole(tableLayoutPanelBclkDetails, ThemeRole.Card);
+            Theme.SetRole(labelDangerZone, ThemeRole.Danger);
+            formToolTip.SetToolTip(labelDangerZone, "Manual OC mode, fixed frequencies and voltage bypass Precision Boost and PBO. Wrong values can make the system unstable or crash it.");
+        }
+
+        private sealed class TabListItem
+        {
+            public TabPage Page { get; }
+
+            public TabListItem(TabPage page)
+            {
+                Page = page;
+            }
+
+            public override string ToString() => Page.Text;
+        }
+
+        private TabPage FindTabPage(string name) =>
+            tabControl1.TabPages.Cast<TabPage>().FirstOrDefault(page => string.Equals(page.Name, name, StringComparison.OrdinalIgnoreCase));
+
+        // The saved default tab, or PBO when none is saved (or the saved one no longer exists)
+        private TabPage DefaultTabPage =>
+            FindTabPage(AppSettings.Instance.DefaultTab) ?? FindTabPage(AppSettings.DefaultStartTab) ?? tabControl1.TabPages[0];
+
+        private void SelectDefaultTab()
+        {
+            TabPage page = DefaultTabPage;
+            tabControl1.SelectedTab = page;
+
+            // Before the window is shown the TabControl raises no events: keep the list and the log panel in step here
+            syncingTabStrip = true;
+            try { tabStrip.SelectedIndex = tabControl1.SelectedIndex; }
+            finally { syncingTabStrip = false; }
+            UpdateLogPanelCollapsed();
+        }
+
+        private void InitDefaultTabCombo()
+        {
+            comboBoxDefaultTab.Items.Clear();
+            foreach (TabPage page in tabControl1.TabPages)
+                comboBoxDefaultTab.Items.Add(new TabListItem(page));
+
+            TabPage selected = DefaultTabPage;
+            comboBoxDefaultTab.SelectedItem = comboBoxDefaultTab.Items.Cast<TabListItem>().FirstOrDefault(item => item.Page == selected);
+            formToolTip.SetToolTip(comboBoxDefaultTab, "Tab shown when the application starts.");
+        }
+
+        private string SelectedDefaultTab => (comboBoxDefaultTab.SelectedItem as TabListItem)?.Page.Name;
+
         private void TabControl1_Selected(object sender, TabControlEventArgs e)
         {
-            if (e.TabPage == tabPageInfo)
-                splitContainer1.Panel2Collapsed = true;
-            else if (splitContainer1.Panel2Collapsed)
-                splitContainer1.Panel2Collapsed = false;
+            UpdateLogPanelCollapsed(e.TabPage);
         }
 
         public string GenerateReportJson()
@@ -2918,7 +3269,7 @@ namespace ZenStatesDebugTool
 
         private void ButtonApplyAC_Click(object sender, EventArgs e)
         {
-            if (!EnsureOcMode())
+            if (!CheckOcMode())
                 return;
 
             int frequency = (int)(((FrequencyListItem)comboBoxACF.SelectedItem).multi * 100.00);
@@ -2927,7 +3278,7 @@ namespace ZenStatesDebugTool
 
         private void ButtonApplySC_Click(object sender, EventArgs e)
         {
-            if (!EnsureOcMode())
+            if (!CheckOcMode())
                 return;
 
             ApplyFrequencyAllCoreSetting(550);
@@ -2945,7 +3296,7 @@ namespace ZenStatesDebugTool
                 return;
             }
 
-            if (enable && !ConfirmEnableOcMode("Manual OC mode lets you set fixed core frequencies.\n\n"))
+            if (enable && !ConfirmEnableOcMode("Manual OC mode lets you set a fixed core frequency and voltage.\n\n"))
             {
                 ReadOcModeState();
                 return;
@@ -3404,6 +3755,7 @@ namespace ZenStatesDebugTool
             if (bclk == null || !bclk.IsAvailable)
             {
                 labelBclkInfo.Text = "BCLK can't be detected or changed here: the FCH clock registers are not accessible.";
+                formToolTip.SetToolTip(labelBclkInfo, null);
                 foreach (Label value in new[] { labelBclkStrap, labelBclkEclk, labelBclkRefClk, labelBclkCpu, labelBclkMem })
                     value.Text = "n/a";
                 return;
@@ -3413,14 +3765,16 @@ namespace ZenStatesDebugTool
             Bclk.EclkMode eclk = bclk.GetEclkMode();
             Bclk.CpuRefClkSource source = bclk.GetCpuRefClkSource();
 
+            // Kept to about two lines, the callout has little height on the tab
             string reason;
             if (bclk.IsLegacyApuClocking)
                 reason = "the CPU is not clocked from the FCH PLL (CG1_PLL).";
             else if (strap == Bclk.ClkGen.EXTERNAL && eclk == Bclk.EclkMode.ASYNC)
-                reason = "the CPU has its own external reference clock (asynchronous eCLK mode), which the FCH PLL register does not hold.";
+                reason = "the CPU uses its own external reference clock (async eCLK), not the FCH PLL.";
             else
                 reason = "the FCH PLL register does not hold the CPU clock.";
-            labelBclkInfo.Text = "BCLK can't be detected or changed here: " + reason + " The values below are for information only.";
+            labelBclkInfo.Text = "BCLK can't be detected or changed here: " + reason;
+            formToolTip.SetToolTip(labelBclkInfo, "The clock values below are for information only.");
 
             labelBclkStrap.Text = strap == Bclk.ClkGen.INTERNAL ? "Internal (48 MHz crystal)"
                 : strap == Bclk.ClkGen.EXTERNAL ? "External (100 MHz reference)" : "Unknown";
@@ -4179,16 +4533,22 @@ namespace ZenStatesDebugTool
             // Enabling starts with the current user only; all users is an explicit choice
             if (!checkBoxApplyCOStartup.Checked)
                 checkBoxStartupAllUsers.Checked = false;
+            checkBoxStartupAllUsers.Enabled = checkBoxApplyCOStartup.Checked;
 
-            ApplyStartupSelection();
+            SettingsControl_Changed(sender, e);
         }
 
         private void CheckBoxStartupAllUsers_Click(object sender, EventArgs e)
         {
-            ApplyStartupSelection();
+            SettingsControl_Changed(sender, e);
         }
 
-        private void ApplyStartupSelection()
+        private StartupTaskMode SelectedStartupMode =>
+            !checkBoxApplyCOStartup.Checked ? StartupTaskMode.None
+            : checkBoxStartupAllUsers.Checked ? StartupTaskMode.AllUsers : StartupTaskMode.CurrentUser;
+
+        // Creates, changes or removes the startup task to match the checkboxes. Returns the mode that is active after.
+        private StartupTaskMode ApplyStartupSelection()
         {
             bool enabled = checkBoxApplyCOStartup.Checked;
             bool allUsers = enabled && checkBoxStartupAllUsers.Checked;
@@ -4217,6 +4577,91 @@ namespace ZenStatesDebugTool
                 Log("The saved profile will be applied at logon of any user and on resume (task runs as SYSTEM).", LogLevel.Success);
             else
                 Log($"The saved profile will be applied at logon of {Environment.UserName} and on resume.", LogLevel.Success);
+
+            return active;
+        }
+
+        // ---- Settings tab: edits are kept in the controls until Save ----
+
+        private bool loadingSettings;
+        private StartupTaskMode savedStartupMode;
+
+        // Shows the saved settings and the startup task that exists now
+        private void InitSettingsTab()
+        {
+            loadingSettings = true;
+            try
+            {
+                checkBoxAutoUninstallDriver.Checked = AppSettings.Instance.AutoUninstallDriver;
+                InitDriverNotificationCombo();
+                InitMaxVoltageSetting();
+                InitDefaultTabCombo();
+                savedStartupMode = GetStartupTaskMode();
+                UpdateStartupControls(savedStartupMode);
+            }
+            finally
+            {
+                loadingSettings = false;
+            }
+
+            UpdateSettingsButtons();
+        }
+
+        private int? SelectedNotificationLevel =>
+            (comboBoxDriverNotifications.SelectedItem as NotificationLevelItem) is NotificationLevelItem item ? (int)item.Level : (int?)null;
+
+        private bool IsMaxVoltageChanged => Math.Abs((double)numericUpDownMaxVoltage.Value - MaxOcVoltage) > 0.0005;
+
+        private bool SettingsChanged =>
+            checkBoxAutoUninstallDriver.Checked != AppSettings.Instance.AutoUninstallDriver
+            || (SelectedNotificationLevel ?? AppSettings.Instance.AutoUninstallDriverNotificationLevel) != AppSettings.Instance.AutoUninstallDriverNotificationLevel
+            || IsMaxVoltageChanged
+            || (SelectedDefaultTab != null && SelectedDefaultTab != DefaultTabPage.Name)
+            || SelectedStartupMode != savedStartupMode;
+
+        private void UpdateSettingsButtons()
+        {
+            bool changed = SettingsChanged;
+            buttonSaveSettings.Enabled = changed;
+            buttonDiscardSettings.Enabled = changed;
+        }
+
+        private void SettingsControl_Changed(object sender, EventArgs e)
+        {
+            if (loadingSettings)
+                return;
+
+            comboBoxDriverNotifications.Enabled = checkBoxAutoUninstallDriver.Checked;
+            UpdateSettingsButtons();
+        }
+
+        private void ButtonSaveSettings_Click(object sender, EventArgs e)
+        {
+            bool limitChanged = IsMaxVoltageChanged;
+
+            AppSettings.Instance.AutoUninstallDriver = checkBoxAutoUninstallDriver.Checked;
+            if (SelectedNotificationLevel is int level)
+                AppSettings.Instance.AutoUninstallDriverNotificationLevel = level;
+            AppSettings.Instance.MaxCpuVoltage = (double)numericUpDownMaxVoltage.Value;
+            if (SelectedDefaultTab != null)
+                AppSettings.Instance.DefaultTab = SelectedDefaultTab;
+            AppSettings.Instance.Save();
+
+            if (limitChanged)
+                PopulateVidList();
+
+            // The task is only changed when the selection differs; this can ask for confirmation (security warning)
+            if (SelectedStartupMode != savedStartupMode)
+                savedStartupMode = ApplyStartupSelection();
+
+            UpdateSettingsButtons();
+            SetStatusText("Settings saved.");
+        }
+
+        private void ButtonDiscardSettings_Click(object sender, EventArgs e)
+        {
+            InitSettingsTab();
+            SetStatusText("Settings changes discarded.");
         }
 
         private sealed class NotificationLevelItem
@@ -4255,19 +4700,12 @@ namespace ZenStatesDebugTool
 
         private void ComboBoxDriverNotifications_SelectedIndexChanged(object sender, EventArgs e)
         {
-            NotificationLevelItem item = comboBoxDriverNotifications.SelectedItem as NotificationLevelItem;
-            if (item == null || (int)item.Level == AppSettings.Instance.AutoUninstallDriverNotificationLevel)
-                return;
-
-            AppSettings.Instance.AutoUninstallDriverNotificationLevel = (int)item.Level;
-            AppSettings.Instance.Save();
+            SettingsControl_Changed(sender, e);
         }
 
         private void CheckBoxAutoUninstallDriver_CheckedChanged(object sender, EventArgs e)
         {
-            AppSettings.Instance.AutoUninstallDriver = (sender as CheckBox).Checked;
-            AppSettings.Instance.Save();
-            comboBoxDriverNotifications.Enabled = (sender as CheckBox).Checked;
+            SettingsControl_Changed(sender, e);
         }
 
         private void tableLayoutPanel14_Paint(object sender, PaintEventArgs e)

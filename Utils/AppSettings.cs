@@ -26,6 +26,19 @@ namespace ZenStatesDebugTool
         // 0 = follow Windows, 1 = light, 2 = dark (Theming.ThemeMode); light by default, changed by the title bar toggle
         public int ThemeMode { get; set; } = 1;
 
+        // Log panel beside the tabs, toggled from the title bar
+        public bool ShowLogPanel { get; set; } = true;
+
+        public const string DefaultStartTab = "tabPagePbo";
+
+        // Name of the tab page selected when the application starts
+        public string DefaultTab { get; set; } = DefaultStartTab;
+
+        public const double DefaultMaxCpuVoltage = 1.35;
+
+        // Highest voltage the manual OC voltage (VID) control on the CPU tab offers, in volts
+        public double MaxCpuVoltage { get; set; } = DefaultMaxCpuVoltage;
+
         private static AppSettings Load()
         {
             try
