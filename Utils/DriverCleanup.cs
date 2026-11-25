@@ -14,6 +14,7 @@ namespace ZenStatesDebugTool
     {
         internal const string CleanupArgument = "/driver-cleanup";
         private const string NotificationsArgumentPrefix = "/notifications:";
+        private const string ParentArgumentPrefix = "/parent:";
 
         private const string cleanupMutexName = "Local\\ZenTimings.DriverCleanup";
 
@@ -45,7 +46,7 @@ namespace ZenStatesDebugTool
 
                 try
                 {
-                    DriverCleaner.Cleanup(notificationLevel);
+                    DriverCleaner.Cleanup(notificationLevel, GetParentProcessId(args));
                 }
                 finally
                 {
@@ -57,6 +58,23 @@ namespace ZenStatesDebugTool
             DriverCleanerNotification.WaitForPending();
 
             GC.KeepAlive(cleanupProcessMarker);
+        }
+
+        // The process that started the cleanup; it may still be exiting while the cleanup runs, so it
+        // must not count as another program using the driver.
+        private static int GetParentProcessId(string[] args)
+        {
+            foreach (string arg in args)
+            {
+                if (!arg.StartsWith(ParentArgumentPrefix, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                int parentId;
+                if (int.TryParse(arg.Substring(ParentArgumentPrefix.Length), out parentId))
+                    return parentId;
+            }
+
+            return 0;
         }
 
         private static NotificationLevel GetNotificationLevel(string[] args)
@@ -164,6 +182,13 @@ namespace ZenStatesDebugTool
                 return true;
             }
 
+            // The helper showing the profile notification in the user's session is not an instance either.
+            if (Mutex.TryOpenExisting(ProfileNotification.HelperMarkerPrefix + processId, out marker))
+            {
+                marker.Dispose();
+                return true;
+            }
+
             return false;
         }
 
@@ -176,6 +201,9 @@ namespace ZenStatesDebugTool
             {
                 string exePath = Process.GetCurrentProcess().MainModule.FileName;
                 string arguments = CleanupArgument + " " + NotificationsArgumentPrefix + notificationLevel.ToString().ToLowerInvariant();
+
+                using (Process current = Process.GetCurrentProcess())
+                    arguments += " " + ParentArgumentPrefix + current.Id;
 
                 Process.Start(new ProcessStartInfo
                 {

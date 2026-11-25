@@ -103,8 +103,11 @@
     <Compile Include="Utils\DriverCleaner.cs" />
     <Compile Include="Utils\DriverCleanerNotification.cs" />
     <Compile Include="Utils\DriverCleanup.cs" />
+    <Compile Include="Utils\InpOutUsage.cs" />
+    <Compile Include="Utils\ProfileNotification.cs" />
     <Compile Include="Utils\WmiCmdListItem.cs" />
     <Compile Include="Utils\SmuAddressSet.cs" />
+    <Compile Include="Utils\PowerLimitMap.cs" />
     <Compile Include="Utils\CoreListItem.cs" />
     <Compile Include="ResultForm.cs">
       <SubType>Form</SubType>

@@ -17,6 +17,12 @@ namespace ZenStatesDebugTool
                 return;
             }
 
+            if (Array.Exists(args, ProfileNotification.IsNotifyArgument))
+            {
+                ProfileNotification.RunNotifyProcess(args);
+                return;
+            }
+
             DriverCleanup.WaitForDriverCleanup();
 
             Application.EnableVisualStyles();

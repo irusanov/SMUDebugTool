@@ -187,12 +187,12 @@ namespace ZenStatesDebugTool
 
             InitCoreControl();
             InitPboLayout();
-            InitCsLayout();
+            InitCsToolTips();
             InitPBO();
             InitCS();
             PopulateWmiFunctions();
 
-            double? currentBclk = cpu.GetBclk();
+            double? currentBclk = cpu.bclk?.GetBclk();
             labelBCLK.Text = currentBclk + " MHz";
             numericUpDownBclk.Text = $"{currentBclk}";
 
@@ -211,15 +211,20 @@ namespace ZenStatesDebugTool
 
             if (isApplyProfile)
             {
-                ApplyCOProfile();
-                ApplyCSProfile();
+                int coApplied, coFailed, limitsApplied, limitsFailed, csApplied, csFailed;
+                PboProfile profile = LoadPboProfile();
+                ApplyCOProfile(profile, out coApplied, out coFailed);
+                ApplyPboLimitsProfile(profile, out limitsApplied, out limitsFailed);
+                ApplyCSProfile(out csApplied, out csFailed);
                 InitPBO();
                 InitCS();
                 tabControl1.SelectedTab = tabPagePbo;
 
-                // Launched non-interactively (scheduled task as SYSTEM, session 0): nothing to show, exit once the profile is applied
+                // Launched non-interactively (scheduled task as SYSTEM, session 0): no window to show, so notify the
+                // logged-on user and exit once the profile is applied
                 if (!Environment.UserInteractive)
                 {
+                    NotifyProfileApplied(coApplied, coFailed, limitsApplied, limitsFailed, csApplied, csFailed);
                     Load += (_, __) => BeginInvoke(new System.Action(Application.Exit));
                 }
             }
@@ -227,9 +232,12 @@ namespace ZenStatesDebugTool
             SetStatusText($"{cpu.info.codeName}. Ready.");
         }
 
-        private void ApplyCOProfile ()
+        private void ApplyCOProfile(PboProfile profile, out int applied, out int failed)
         {
-            List<Tuple<int, int>> margins = LoadCOProfile();
+            applied = 0;
+            failed = 0;
+
+            List<Tuple<int, int>> margins = profile.Margins;
             if (margins.Count > 0 && IsCurveOptimizerSupported)
             {
                 foreach (var margin in margins)
@@ -238,10 +246,70 @@ namespace ZenStatesDebugTool
                     int value = margin.Item2;
                     if (IsCoreEnabled(index))
                     {
-                        cpu.SetPsmMarginSingleCore(EncodeCoreMarginBitmask(index), Convert.ToInt32(value));
+                        if (cpu.SetPsmMarginSingleCore(EncodeCoreMarginBitmask(index), Convert.ToInt32(value)))
+                            applied++;
+                        else
+                            failed++;
                     }
                 }
             }
+        }
+
+        // FMax and the PPT/TDC/EDC/scalar values of the saved profile
+        private void ApplyPboLimitsProfile(PboProfile profile, out int applied, out int failed)
+        {
+            int ok = 0;
+            int bad = 0;
+
+            Action<bool> count = success =>
+            {
+                if (success)
+                    ok++;
+                else
+                    bad++;
+            };
+
+            if (profile.FMax.HasValue)
+                count(cpu.SetFMax((uint)ClampValue(numericUpDownFmax, profile.FMax.Value)));
+            if (profile.Ppt.HasValue && IsPptSupported)
+                count(cpu.SetPPTLimit((uint)ClampValue(numericUpDownPpt, profile.Ppt.Value)) == SMU.Status.OK);
+            if (profile.Tdc.HasValue && IsTdcSupported)
+                count(cpu.SetTDCVDDLimit((uint)ClampValue(numericUpDownTdc, profile.Tdc.Value)) == SMU.Status.OK);
+            if (profile.Edc.HasValue && IsEdcSupported)
+                count(cpu.SetEDCVDDLimit((uint)ClampValue(numericUpDownEdc, profile.Edc.Value)) == SMU.Status.OK);
+            if (profile.Scalar.HasValue && IsPboScalarSupported)
+                count(cpu.SetPBOScalar((uint)ClampValue(numericUpDownScalar, profile.Scalar.Value)) == SMU.Status.OK);
+
+            applied = ok;
+            failed = bad;
+        }
+
+        private static decimal ClampValue(NumericUpDown control, decimal value)
+        {
+            return Math.Max(control.Minimum, Math.Min(control.Maximum, value));
+        }
+
+        // Tells the logged-on user what the startup/resume run applied. Nothing is shown if there was no saved profile.
+        private static void NotifyProfileApplied(int coApplied, int coFailed, int limitsApplied, int limitsFailed, int csApplied, int csFailed)
+        {
+            List<string> parts = new List<string>();
+
+            if (coApplied > 0)
+                parts.Add($"Curve Optimizer ({coApplied} {(coApplied == 1 ? "core" : "cores")})");
+            if (limitsApplied > 0)
+                parts.Add($"PBO limits ({limitsApplied} {(limitsApplied == 1 ? "value" : "values")})");
+            if (csApplied > 0)
+                parts.Add($"Curve Shaper ({csApplied} {(csApplied == 1 ? "tier" : "tiers")})");
+
+            int failed = coFailed + limitsFailed + csFailed;
+            if (parts.Count == 0 && failed == 0)
+                return;
+
+            string message = parts.Count > 0 ? "Saved profile applied: " + string.Join(", ", parts) + "." : "The saved profile could not be applied.";
+            if (failed > 0 && parts.Count > 0)
+                message += $" {failed} failed.";
+
+            ProfileNotification.ShowInUserSession(message, failed > 0);
         }
 
         // TODO: Detect OC Mode and return PState freq if on auto
@@ -368,80 +436,39 @@ namespace ZenStatesDebugTool
         private bool IsCurveOptimizerSupported =>
             cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0 || cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin != 0;
 
-        private Button buttonSaveCSProfile;
-        private Button buttonLoadCSProfile;
-
-        private void InitCsLayout()
+        // The Curve Shaper layout is in the designer; only the tooltips are set here
+        private void InitCsToolTips()
         {
             NumericUpDown[,] controls = CsControls;
             for (int tier = 0; tier < controls.GetLength(0); tier++)
             {
                 for (int band = 0; band < controls.GetLength(1); band++)
-                {
-                    NumericUpDown nud = controls[tier, band];
-                    nud.TextAlign = HorizontalAlignment.Right;
-                    nud.Margin = new Padding(3, 3, 3, 3);
-                    nud.ValueChanged += MarginControl_ValueChanged;
-                    formToolTip.SetToolTip(nud, $"Frequency tier: {CsTierNames[tier]}, temperature band: {CsBandNames[band]}");
-                }
+                    formToolTip.SetToolTip(controls[tier, band], $"Frequency tier: {CsTierNames[tier]}, temperature band: {CsBandNames[band]}");
             }
 
-            formToolTip.SetToolTip(buttonApplyCS, "Write all Curve Shaper margins to the SMU.");
+            formToolTip.SetToolTip(buttonApplyCS, "Write the changed (highlighted) Curve Shaper margins to the SMU.");
             formToolTip.SetToolTip(buttonRefreshCS, "Re-read the current margins from the SMU.");
             formToolTip.SetToolTip(buttonResetCS, "Discard pending edits and restore the last read values.");
             formToolTip.SetToolTip(buttonZeroCS, "Set all margins to 0 (not applied until you press Apply).");
-
-            // Profile buttons: same profile file as the Curve Optimizer tab, separate section
-            buttonSaveCSProfile = CreateActionButton("Save profile",
-                "Save the Curve Shaper margins shown here to the profile file. Curve Optimizer settings in the file are kept.",
-                BtnSaveCSProfile_Click);
-            buttonLoadCSProfile = CreateActionButton("Load profile",
-                "Load the saved Curve Shaper margins from the profile file (not applied until you press Apply).",
-                BtnLoadCSProfile_Click);
-
-            buttonResetCS.Text = "Discard";
-
-            // Same arrangement as the PBO tab: Zero all / Apply under the grid (Apply last), the info text
-            // at the bottom, and Refresh / Discard / Save profile / Load profile in a row below it.
-            buttonZeroCS.Text = "Zero all";
-
-            TableLayoutPanel topRow = CreateButtonRow(new Padding(0, 8, 0, 0), null, null, buttonZeroCS, buttonApplyCS);
-            TableLayoutPanel bottomRow = CreateButtonRow(new Padding(0), buttonRefreshCS, buttonResetCS, buttonSaveCSProfile, buttonLoadCSProfile);
-
-            tableLayoutPanel16.SuspendLayout();
-            tableLayoutPanel16.Controls.Remove(flowLayoutPanelCsActions);
-
-            tableLayoutPanel16.RowCount = 9;
-            tableLayoutPanel16.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-
-            tableLayoutPanel16.Controls.Add(topRow, 0, 6);
-            tableLayoutPanel16.SetColumnSpan(topRow, 5);
-            tableLayoutPanel16.Controls.Add(bottomRow, 0, 8);
-            tableLayoutPanel16.SetColumnSpan(bottomRow, 5);
-
-            // Info text fills the free space (row 7) and sits right above the bottom buttons
-            labelCsInfo.AutoSize = false;
-            labelCsInfo.Dock = DockStyle.Fill;
-            labelCsInfo.TextAlign = ContentAlignment.BottomLeft;
-            labelCsInfo.Margin = new Padding(0, 8, 0, 6);
-            tableLayoutPanel16.ResumeLayout();
+            formToolTip.SetToolTip(buttonSaveCSProfile, "Save the Curve Shaper margins shown here to the profile file. Curve Optimizer settings in the file are kept.");
+            formToolTip.SetToolTip(buttonLoadCSProfile, "Load the saved Curve Shaper margins from the profile file (not applied until you press Apply).");
         }
 
-        // Four equal columns, like the PBO tab's button rows; null leaves a column empty
-        private static TableLayoutPanel CreateButtonRow(Padding margin, params Button[] buttons)
+        // Equal columns, like the PBO tab's button rows; null leaves a column empty
+        private static TableLayoutPanel CreateButtonRow(int columns, Padding margin, params Button[] buttons)
         {
             TableLayoutPanel row = new TableLayoutPanel
             {
                 AutoSize = false,
-                ColumnCount = 4,
+                ColumnCount = columns,
                 RowCount = 1,
                 Dock = DockStyle.Fill,
                 Margin = margin,
                 Height = 25,
             };
 
-            for (int i = 0; i < 4; i++)
-                row.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            for (int i = 0; i < columns; i++)
+                row.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F / columns));
             row.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 
             for (int i = 0; i < buttons.Length; i++)
@@ -464,11 +491,10 @@ namespace ZenStatesDebugTool
             foreach (NumericUpDown nud in CsControls)
                 nud.Enabled = enabled;
 
-            buttonApplyCS.Enabled = enabled;
             buttonRefreshCS.Enabled = enabled;
             buttonZeroCS.Enabled = enabled;
-            if (buttonSaveCSProfile != null) buttonSaveCSProfile.Enabled = enabled;
-            if (buttonLoadCSProfile != null) buttonLoadCSProfile.Enabled = enabled;
+            buttonSaveCSProfile.Enabled = enabled;
+            buttonLoadCSProfile.Enabled = enabled;
             UpdateDiscardButtons();
         }
 
@@ -504,7 +530,9 @@ namespace ZenStatesDebugTool
                 }
             }
 
-            labelCsInfo.Text = "Rows are frequency tiers, columns are temperature bands. Range -50 to +30. Edited cells are highlighted until applied.";
+            labelCsInfo.Text = "Rows are frequency tiers, columns are temperature bands. Range -50 to +30. Edited cells are highlighted until applied."
+                + Environment.NewLine + Environment.NewLine
+                + "Save and Load use the same profile as the PBO tab. Each tab saves only its own settings and keeps the other's, and the startup/resume task applies both.";
 
             UpdateDiscardButtons();
 
@@ -512,18 +540,33 @@ namespace ZenStatesDebugTool
                 SetStatusText("Curve Shaper margins refreshed.");
         }
 
+        // Controls whose value could not be read from the hardware have no baseline. They count as edited once
+        // their value has been changed (by the user or by loading a profile).
+        private static readonly HashSet<NumericUpDown> editedWithoutBaseline = new HashSet<NumericUpDown>();
+
         // Baseline (last value read from hardware) is kept in Tag so edits can be highlighted and reverted.
         private static void SetBaselineValue(NumericUpDown control, decimal value)
         {
             value = Math.Max(control.Minimum, Math.Min(control.Maximum, value));
+            editedWithoutBaseline.Remove(control);
             control.Tag = value;
             control.Value = value;
             UpdateDirtyState(control);
         }
 
+        private static bool IsEdited(NumericUpDown control)
+        {
+            return control.Tag is decimal baseline ? control.Value != baseline : editedWithoutBaseline.Contains(control);
+        }
+
+        private static bool HasValue(NumericUpDown control)
+        {
+            return control.Tag is decimal || editedWithoutBaseline.Contains(control);
+        }
+
         private static void UpdateDirtyState(NumericUpDown control)
         {
-            bool dirty = control.Tag is decimal baseline && control.Value != baseline;
+            bool dirty = IsEdited(control);
             control.BackColor = dirty ? Color.FromArgb(255, 249, 196) : SystemColors.Window;
             control.Font = dirty ? new Font(control.Font, FontStyle.Bold) : new Font(control.Font, FontStyle.Regular);
         }
@@ -533,6 +576,9 @@ namespace ZenStatesDebugTool
             NumericUpDown control = sender as NumericUpDown;
             if (control != null)
             {
+                if (!(control.Tag is decimal))
+                    editedWithoutBaseline.Add(control);
+
                 UpdateDirtyState(control);
                 UpdateDiscardButtons();
             }
@@ -540,8 +586,12 @@ namespace ZenStatesDebugTool
 
         private static bool HasPendingEdits(IEnumerable<NumericUpDown> controls)
         {
-            return controls.Any(c => c.Enabled && c.Tag is decimal baseline && c.Value != baseline);
+            return controls.Any(c => c.Enabled && IsEdited(c));
         }
+
+        // Every editable value on the PBO tab: Curve Optimizer margins, PPT/TDC/EDC, scalar and FMax
+        private IEnumerable<NumericUpDown> PboControls =>
+            coControls.Values.Concat(new[] { numericUpDownPpt, numericUpDownTdc, numericUpDownEdc, numericUpDownScalar, numericUpDownFmax });
 
         // "Discard" is only useful while there are edits that have not been applied
         private void UpdateDiscardButtons()
@@ -549,11 +599,22 @@ namespace ZenStatesDebugTool
             if (cpu == null)
                 return;
 
-            if (btnResetCO != null)
-                btnResetCO.Enabled = IsCurveOptimizerSupported && HasPendingEdits(coControls.Values);
+            bool pboEdits = HasPendingEdits(PboControls);
 
-            if (buttonResetCS != null && buttonApplyCS != null)
-                buttonResetCS.Enabled = buttonApplyCS.Enabled && HasPendingEdits(CsControls.Cast<NumericUpDown>());
+            if (btnResetCO != null)
+                btnResetCO.Enabled = pboEdits;
+
+            if (buttonApplyPbo != null)
+                buttonApplyPbo.Enabled = pboEdits;
+
+            // Apply and Discard follow the pending edits, like on the PBO tab
+            bool csEdits = HasPendingEdits(CsControls.Cast<NumericUpDown>());
+
+            if (buttonResetCS != null)
+                buttonResetCS.Enabled = csEdits;
+
+            if (buttonApplyCS != null)
+                buttonApplyCS.Enabled = csEdits;
         }
 
         private void ResetToBaseline(IEnumerable<NumericUpDown> controls)
@@ -561,7 +622,15 @@ namespace ZenStatesDebugTool
             foreach (NumericUpDown control in controls)
             {
                 if (control.Tag is decimal baseline)
+                {
                     control.Value = baseline;
+                }
+                else if (editedWithoutBaseline.Remove(control))
+                {
+                    // Nothing to go back to: the value stays, but it is no longer pending
+                    UpdateDirtyState(control);
+                    UpdateDiscardButtons();
+                }
             }
         }
 
@@ -596,9 +665,10 @@ namespace ZenStatesDebugTool
             foreach (Control control in flowLayoutPanelCcdActions.Controls)
                 control.Enabled = supported;
             UpdateDiscardButtons();
-            btnSaveCOProfile.Enabled = supported;
-            btnLoadCOProfile.Enabled = supported;
-            buttonGetCO.Enabled = supported;
+            // The profile also holds FMax and the PPT/TDC/EDC/scalar values
+            btnSaveCOProfile.Enabled = supported || HasLimitControls || numericUpDownFmax.Enabled;
+            btnLoadCOProfile.Enabled = btnSaveCOProfile.Enabled;
+            buttonGetCO.Enabled = supported || HasLimitControls;
 
             if (!supported)
                 SetStatusText($"Curve Optimizer is not supported on {cpu.info.codeName}.");
@@ -613,13 +683,15 @@ namespace ZenStatesDebugTool
             }*/
 
             checkBoxApplyCOStartup.Checked = TaskExists("RyzenSDT");
-            numericUpDownFmax.Value = Math.Max(numericUpDownFmax.Minimum, Math.Min(numericUpDownFmax.Maximum, cpu.GetFMax()));
+            SetBaselineValue(numericUpDownFmax, cpu.GetFMax());
+            UpdateDiscardButtons();
         }
 
         private void InitPboLayout()
         {
             BuildCoActionBar();
             BuildCcdBlocks();
+            InitPowerLimitRow();
         }
 
         private void BuildCoActionBar()
@@ -632,25 +704,267 @@ namespace ZenStatesDebugTool
             flowLayoutPanelCcdActions.AutoSize = false;
             flowLayoutPanelCcdActions.Dock = DockStyle.None;
             flowLayoutPanelCcdActions.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            flowLayoutPanelCcdActions.Size = new Size(2 * (160 + 2), 27);
+            flowLayoutPanelCcdActions.Size = new Size(3 * (79 + 2), 27);
 
             Button allDecBtn = CreateActionButton("All \u2212", "Decrease the margin of every enabled core by 1.", AllCcdDecrement_Click);
             Button allIncBtn = CreateActionButton("All +", "Increase the margin of every enabled core by 1.", AllCcdIncrement_Click);
             Button allZeroBtn = CreateActionButton("Zero all", "Set the margin of every enabled core to 0 (not applied until you press Apply).", AllCcdZero_Click);
-            Button applyBtn = CreateActionButton("Apply", "Write the Curve Optimizer margins of all cores to the SMU.", ButtonApplyCO_Click);
 
             flowLayoutPanelCcdActions.Controls.Add(allDecBtn);
             flowLayoutPanelCcdActions.Controls.Add(allIncBtn);
             flowLayoutPanelCcdActions.Controls.Add(allZeroBtn);
-            flowLayoutPanelCcdActions.Controls.Add(applyBtn);
 
             btnResetCO.Text = "Discard";
-            formToolTip.SetToolTip(buttonGetCO, "Re-read the current margins from the SMU.");
+            formToolTip.SetToolTip(buttonGetCO, "Re-read the current margins, PPT/TDC/EDC limits, PBO scalar and FMax.");
             formToolTip.SetToolTip(btnResetCO, "Discard pending edits and restore the last read values.");
-            formToolTip.SetToolTip(btnSaveCOProfile, "Save the current margins and FMax to the profile file. Curve Shaper settings in the file are kept (save those from the Curve Shaper tab).");
-            formToolTip.SetToolTip(checkBoxApplyCOStartup, "Apply the saved profile (Curve Optimizer, FMax and Curve Shaper) at system startup, user logon and resume from sleep.");
-            formToolTip.SetToolTip(btnLoadCOProfile, "Load margins from the profile file (not applied until you press Apply).");
+            formToolTip.SetToolTip(btnSaveCOProfile, "Save the values shown here (margins, PPT/TDC/EDC, scalar and FMax) to the profile file. Curve Shaper settings in the file are kept (save those from the Curve Shaper tab).");
+            formToolTip.SetToolTip(checkBoxApplyCOStartup, "Apply the saved profile (Curve Optimizer, PPT/TDC/EDC, scalar, FMax and Curve Shaper) at system startup, user logon and resume from sleep.");
+            formToolTip.SetToolTip(btnLoadCOProfile, "Load the values from the profile file (not applied until you press Apply).");
+            formToolTip.SetToolTip(buttonApplyPbo, "Write the highlighted (changed) values to the SMU: Curve Optimizer margins, PPT, TDC, EDC, scalar and FMax.");
             formToolTip.SetToolTip(numericUpDownFmax, "Maximum boost frequency limit in MHz.");
+        }
+
+        // ---- PPT / TDC / EDC / PBO scalar / FMax row (PBO tab) ----
+
+        // The controls are in the designer (tableLayoutPanel12). They use the same edited-value logic as the
+        // Curve Optimizer margins: a changed value is highlighted, and only changed values are written on Apply.
+
+        private bool IsPptSupported => cpu.smu.Rsmu.SMU_MSG_SetFastLimit != 0 || cpu.smu.Mp1Smu.SMU_MSG_SetFastLimit != 0;
+        private bool IsTdcSupported => cpu.smu.Rsmu.SMU_MSG_SetTDCVDDLimit != 0 || cpu.smu.Mp1Smu.SMU_MSG_SetTDCVDDLimit != 0;
+        private bool IsEdcSupported => cpu.smu.Rsmu.SMU_MSG_SetEDCVDDLimit != 0 || cpu.smu.Mp1Smu.SMU_MSG_SetEDCVDDLimit != 0;
+        private bool IsPboScalarSupported => cpu.smu.Rsmu.SMU_MSG_SetPBOScalar != 0 || cpu.smu.Mp1Smu.SMU_MSG_SetPBOScalar != 0;
+
+        private bool HasLimitControls =>
+            (numericUpDownPpt.Enabled || numericUpDownTdc.Enabled || numericUpDownEdc.Enabled || numericUpDownScalar.Enabled);
+
+        // After Apply the PM table is re-read up to this many times, this far apart, until it shows the new value
+        private const int LimitReadbackAttempts = 40;
+        // A limit that still shows its previous value after this many reads is taken as kept by the firmware (clamped to
+        // the value it already had). The PM table normally reflects a new limit by the 2nd read.
+        private const int LimitUnchangedReads = 4;
+        private const int LimitReadbackDelayMs = 25;
+
+        // Highest value that still looks like a real limit when it is read from the PM table
+        private const float MaxPlausibleLimit = 2000f;
+
+        private void InitPowerLimitRow()
+        {
+            formToolTip.SetToolTip(numericUpDownPpt, "PPT (package power tracking) limit in watts.");
+            formToolTip.SetToolTip(numericUpDownTdc, "TDC (thermal design current) limit in amps, VDD rail.");
+            formToolTip.SetToolTip(numericUpDownEdc, "EDC (electrical design current) limit in amps, VDD rail.");
+            formToolTip.SetToolTip(numericUpDownScalar, "PBO scalar, 1x to 10x.");
+
+            numericUpDownPpt.Enabled = IsPptSupported;
+            numericUpDownTdc.Enabled = IsTdcSupported;
+            numericUpDownEdc.Enabled = IsEdcSupported;
+            numericUpDownScalar.Enabled = IsPboScalarSupported;
+
+            if (!HasLimitControls)
+            {
+                foreach (Control c in new Control[] { labelPpt, labelTdc, labelEdc, labelScalar,
+                    numericUpDownPpt, numericUpDownTdc, numericUpDownEdc, numericUpDownScalar })
+                    c.Visible = false;
+                return;
+            }
+
+            RefreshPowerLimits(true);
+        }
+
+        private bool IsLimitEdited(NumericUpDown spinner)
+        {
+            return spinner.Enabled && IsEdited(spinner);
+        }
+
+        private static bool IsPlausibleLimit(float value)
+        {
+            return !float.IsNaN(value) && !float.IsInfinity(value) && value > 0 && value <= MaxPlausibleLimit;
+        }
+
+        private static float ReadCell(float[] table, int index)
+        {
+            return table != null && index >= 0 && index < table.Length ? table[index] : float.NaN;
+        }
+
+        // Reads the configured PPT/TDC/EDC limits from the PM table and the PBO scalar from the SMU and puts them in
+        // the spinners. The PM table layout depends on the table version, see PowerLimitMap.
+        private void RefreshPowerLimits(bool logResult, bool keepEdits = false)
+        {
+            try
+            {
+                uint version = cpu.GetTableVersion().TableVersion;
+                string readout = "";
+
+                if (numericUpDownPpt.Enabled || numericUpDownTdc.Enabled || numericUpDownEdc.Enabled)
+                {
+                    if (cpu.powerTable == null)
+                    {
+                        if (logResult)
+                            Log("Power table is not available, current PPT/TDC/EDC limits can't be read.", LogLevel.Warning);
+                    }
+                    else if (!PowerLimitMap.TryGet(version, out PowerLimitCells cells))
+                    {
+                        if (logResult)
+                            Log($"PM table 0x{version:X6} has no known PPT/TDC/EDC layout, current limits can't be shown. Values you enter are still written as given.", LogLevel.Warning);
+                    }
+                    else if (cpu.RefreshPowerTable() != SMU.Status.OK)
+                    {
+                        if (logResult)
+                            Log("PM table refresh failed, current PPT/TDC/EDC limits can't be read.", LogLevel.Warning);
+                    }
+                    else
+                    {
+                        float[] table = cpu.powerTable.Table;
+                        readout += ReadLimitInto(numericUpDownPpt, table, cells.PptLimit, "PPT", "W", keepEdits);
+                        readout += ReadLimitInto(numericUpDownTdc, table, cells.TdcLimit, "TDC", "A", keepEdits);
+                        readout += ReadLimitInto(numericUpDownEdc, table, cells.EdcLimit, "EDC", "A", keepEdits);
+                    }
+                }
+
+                if (numericUpDownScalar.Enabled && !(keepEdits && IsEdited(numericUpDownScalar))
+                    && cpu.smu.Rsmu.SMU_MSG_GetPBOScalar != 0 && cpu.TryGetPBOScalar(out float scalar))
+                {
+                    decimal rounded = Math.Round((decimal)scalar);
+                    SetBaselineValue(numericUpDownScalar, rounded);
+                    readout += $"Scalar {rounded}x\n";
+                }
+
+                if (logResult && readout.Length > 0)
+                    LogCommand($"Read power limits (PM table 0x{version:X6})", readout.TrimEnd('\n'));
+            }
+            catch (Exception ex)
+            {
+                Log($"Reading the power limits failed: {ex.Message}", LogLevel.Warning);
+            }
+            finally
+            {
+                UpdateDiscardButtons();
+            }
+        }
+
+        private string ReadLimitInto(NumericUpDown spinner, float[] table, int cell, string name, string unit, bool keepEdits)
+        {
+            if (!spinner.Enabled || (keepEdits && IsEdited(spinner)))
+                return "";
+
+            float value = ReadCell(table, cell);
+
+            if (!IsPlausibleLimit(value))
+            {
+                // Say which cell was rejected, so a wrong index for this PM table shows up in the log
+                return cell < 0
+                    ? $"{name}: no limit cell known for this table\n"
+                    : $"{name}: cell {cell} reads {value.ToString("0.##", CultureInfo.InvariantCulture)}, not used\n";
+            }
+
+            decimal rounded = Math.Round((decimal)value);
+            SetBaselineValue(spinner, rounded);
+            return $"{name} {rounded} {unit} (cell {cell})\n";
+        }
+
+        // Writes the PPT/TDC/EDC/scalar values that have been changed
+        // A limit written to the SMU: the value sent and the value the PM table showed before (null if unknown)
+        private sealed class LimitWrite
+        {
+            public decimal Target;
+            public decimal? Previous;
+
+            // The PM table shows the new limit once its value has moved: to the target, or away from the previous value
+            // (the firmware may clamp the limit, so the target itself may never show up)
+            public bool Settled(NumericUpDown spinner) =>
+                spinner.Value == Target || (Previous.HasValue && spinner.Value != Previous.Value);
+
+            // Stop waiting: the value has moved, or it still shows the previous value after a few reads (clamped to it).
+            // Without a previous value only the target itself ends the wait.
+            public bool Done(NumericUpDown spinner, int reads) =>
+                Settled(spinner) || (Previous.HasValue && reads >= LimitUnchangedReads);
+        }
+
+        private void ApplyLimitsEdited(List<string> applied, List<string> failed)
+        {
+            var sent = new Dictionary<NumericUpDown, LimitWrite>();
+
+            ApplyLimit(numericUpDownPpt, "PPT", "W", v => cpu.SetPPTLimit(v), applied, failed, sent);
+            ApplyLimit(numericUpDownTdc, "TDC", "A", v => cpu.SetTDCVDDLimit(v), applied, failed, sent);
+            ApplyLimit(numericUpDownEdc, "EDC", "A", v => cpu.SetEDCVDDLimit(v), applied, failed, sent);
+            ApplyLimit(numericUpDownScalar, "PBO scalar", "x", v => cpu.SetPBOScalar(v), applied, failed, sent);
+
+            if (sent.Count == 0)
+                return;
+
+            // Show what the hardware reports now. The SMU takes a new limit at once, but the PM table only reflects it
+            // after its next update (usually by the 2nd read). Read again a few times (bounded, only after Apply) until
+            // every written limit has moved from its previous value.
+            Cursor previousCursor = Cursor;
+            Cursor = Cursors.WaitCursor;
+            Stopwatch watch = Stopwatch.StartNew();
+            int reads = 0;
+
+            try
+            {
+                do
+                {
+                    if (reads > 0)
+                        Thread.Sleep(LimitReadbackDelayMs);
+
+                    RefreshPowerLimits(false, true);
+                    reads++;
+                }
+                while (reads < LimitReadbackAttempts && sent.Any(pair => !pair.Value.Done(pair.Key, reads)));
+            }
+            finally
+            {
+                Cursor = previousCursor;
+            }
+
+            if (sent.All(pair => pair.Value.Settled(pair.Key)))
+                Log($"PM table reflected the new limits after {watch.ElapsedMilliseconds} ms ({reads} read{(reads == 1 ? "" : "s")}).");
+
+            foreach (KeyValuePair<NumericUpDown, LimitWrite> pair in sent)
+            {
+                NumericUpDown spinner = pair.Key;
+                LimitWrite write = pair.Value;
+
+                if (spinner.Value == write.Target)
+                    continue;
+
+                if (write.Settled(spinner))
+                    Log($"{LimitName(spinner)} reads {spinner.Value} after setting {write.Target}: the firmware clamped the value.", LogLevel.Warning);
+                else if (write.Previous.HasValue)
+                    Log($"{LimitName(spinner)} still reads {spinner.Value} after setting {write.Target} ({reads} reads over {watch.ElapsedMilliseconds} ms): the firmware probably clamped it to the value it already had. Refresh re-reads the PM table.", LogLevel.Warning);
+                else
+                    Log($"{LimitName(spinner)} still reads {spinner.Value} after setting {write.Target}, {reads} reads over {watch.ElapsedMilliseconds} ms. The firmware may have ignored the value, or the PM table has not updated yet (Refresh re-reads it).", LogLevel.Warning);
+            }
+        }
+
+        private string LimitName(NumericUpDown spinner)
+        {
+            if (spinner == numericUpDownPpt) return "PPT";
+            if (spinner == numericUpDownTdc) return "TDC";
+            if (spinner == numericUpDownEdc) return "EDC";
+            return "PBO scalar";
+        }
+
+        private void ApplyLimit(NumericUpDown spinner, string name, string unit, Func<uint, SMU.Status> set, List<string> applied, List<string> failed, Dictionary<NumericUpDown, LimitWrite> sent)
+        {
+            if (!IsLimitEdited(spinner))
+                return;
+
+            uint value = (uint)spinner.Value;
+            SMU.Status status = set(value);
+            string command = $"Set {name} {value}{(unit == "x" ? "x" : " " + unit)}";
+
+            if (status == SMU.Status.OK)
+            {
+                LogCommand(command, "SMU status: OK", LogLevel.Success);
+                applied.Add(name);
+                sent[spinner] = new LimitWrite { Target = spinner.Value, Previous = spinner.Tag as decimal? };
+                SetBaselineValue(spinner, spinner.Value);
+            }
+            else
+            {
+                LogCommand(command, $"SMU status: {status}", LogLevel.Error);
+                failed.Add(name);
+            }
         }
 
         private static Button CreateActionButton(string text, string tooltipText, EventHandler onClick)
@@ -920,8 +1234,8 @@ namespace ZenStatesDebugTool
 
         private void BtnResetCO_Click(object sender, EventArgs e)
         {
-            ResetToBaseline(coControls.Values);
-            SetStatusText("Curve Optimizer edits reverted.");
+            ResetToBaseline(PboControls);
+            SetStatusText("Pending edits reverted.");
         }
 
         private NumericUpDown GetCOControl(int coreIndex)
@@ -1719,7 +2033,7 @@ namespace ZenStatesDebugTool
             foreach (Button button in buttons)
                 button.Enabled = textBoxResult.TextLength > 0;
 
-            TableLayoutPanel row = CreateButtonRow(new Padding(0, 3, 0, 0), clear, copy, save);
+            TableLayoutPanel row = CreateButtonRow(4, new Padding(0, 3, 0, 0), clear, copy, save);
             tableLayoutPanel11.RowStyles[1].SizeType = SizeType.Absolute;
             tableLayoutPanel11.RowStyles[1].Height = 28;
             tableLayoutPanel11.Controls.Add(row, 0, 1);
@@ -2557,6 +2871,12 @@ namespace ZenStatesDebugTool
         private void buttonGetCO_Click(object sender, EventArgs e)
         {
             InitPBO();
+
+            if (HasLimitControls)
+            {
+                // Refresh re-reads the PPT/TDC/EDC/scalar values too, dropping unapplied edits like it does for the margins
+                RefreshPowerLimits(true);
+            }
         }
 
         private uint EncodeCoreMarginBitmask(int coreIndex, int coresPerCCD = 8)
@@ -2583,7 +2903,8 @@ namespace ZenStatesDebugTool
             return (uint)(mask << 20);
         }
 
-        private void ApplyCO()
+        // Writes the Curve Optimizer margins that have been changed
+        private void ApplyCO(List<string> applied, List<string> failed)
         {
             if (!IsCurveOptimizerSupported)
             {
@@ -2591,27 +2912,72 @@ namespace ZenStatesDebugTool
                 return;
             }
 
-            var failed = new List<int>();
+            var failedCores = new List<int>();
             for (var i = 0; i < GetPhysicalCoreCount(); i++)
             {
                 if (!IsCoreEnabled(i))
                     continue;
 
                 NumericUpDown control = GetCOControl(i);
-                if (control != null && !cpu.SetPsmMarginSingleCore(EncodeCoreMarginBitmask(i), Convert.ToInt32(control.Value)))
-                    failed.Add(i);
+                if (control == null || !control.Enabled || !IsEdited(control))
+                    continue;
+
+                if (!cpu.SetPsmMarginSingleCore(EncodeCoreMarginBitmask(i), Convert.ToInt32(control.Value)))
+                    failedCores.Add(i);
             }
 
-            if (failed.Count == 0)
-                SetStatusText("Curve Optimizer margins applied.");
+            if (failedCores.Count == 0)
+                applied.Add("Curve Optimizer");
             else
-                HandleError($"Failed to set Curve Optimizer margin for core(s): {string.Join(", ", failed)}");
+                failed.Add($"Curve Optimizer (core {string.Join(", ", failedCores)})");
         }
 
-        private void ButtonApplyCO_Click(object sender, EventArgs e)
+        // Writes FMax if it has been changed
+        private void ApplyFMax(List<string> applied, List<string> failed)
         {
-            ApplyCO();
-            InitPBO();
+            uint value = (uint)numericUpDownFmax.Value;
+            string command = $"Set FMax {value} MHz";
+
+            if (cpu.SetFMax(value))
+            {
+                LogCommand(command, "OK", LogLevel.Success);
+                applied.Add("FMax");
+            }
+            else
+            {
+                LogCommand(command, "Failed", LogLevel.Error);
+                failed.Add("FMax");
+            }
+        }
+
+        // The single Apply button of the PBO tab: writes everything that has been changed (highlighted) and nothing else
+        private void ButtonApplyPbo_Click(object sender, EventArgs e)
+        {
+            var applied = new List<string>();
+            var failed = new List<string>();
+
+            bool coEdited = coControls.Values.Any(c => c.Enabled && IsEdited(c));
+            bool fmaxEdited = numericUpDownFmax.Enabled && IsEdited(numericUpDownFmax);
+
+            if (coEdited)
+                ApplyCO(applied, failed);
+
+            if (fmaxEdited)
+                ApplyFMax(applied, failed);
+
+            // Show what the hardware reports now (margins and FMax)
+            if (coEdited || fmaxEdited)
+                InitPBO();
+
+            ApplyLimitsEdited(applied, failed);
+            UpdateDiscardButtons();
+
+            if (failed.Count > 0)
+                HandleError($"Failed to set: {string.Join(", ", failed)}");
+            else if (applied.Count > 0)
+                SetStatusText($"Applied: {string.Join(", ", applied)}.");
+            else
+                SetStatusText("Nothing to apply, no values have been changed.");
         }
 
         private string GetWmiInstanceName()
@@ -2667,6 +3033,7 @@ namespace ZenStatesDebugTool
                             comboBoxAvailableCommands.Items.Add("<FAILED>");
                         }
 
+                        FitDropDownWidth(comboBoxAvailableCommands);
                         comboBoxAvailableCommands.SelectedIndex = 0;
                     }
                     catch
@@ -2722,7 +3089,20 @@ namespace ZenStatesDebugTool
                 comboBoxAvailableValues.Items.Add("Get commands don't support values");
             }
 
+            FitDropDownWidth(comboBoxAvailableValues);
             comboBoxAvailableValues.SelectedIndex = 0;
+        }
+
+        // A long item must not make the combo box, and with it the page, wider than the window: the drop-down list
+        // gets the extra width instead
+        private static void FitDropDownWidth(ComboBox combo)
+        {
+            int width = combo.Width;
+
+            foreach (object item in combo.Items)
+                width = Math.Max(width, TextRenderer.MeasureText(combo.GetItemText(item), combo.Font).Width + SystemInformation.VerticalScrollBarWidth + 8);
+
+            combo.DropDownWidth = width;
         }
 
         private void ComboBoxAvailableValues_SelectedIndexChanged(object sender, EventArgs e)
@@ -2765,9 +3145,9 @@ namespace ZenStatesDebugTool
         private void ButtonBCLKApply_Click(object sender, EventArgs e)
         {
             double targetBclk = double.Parse(numericUpDownBclk.Text);
-            cpu.SetBclk(targetBclk);
+            cpu.bclk?.SetBclk(targetBclk);
 
-            double? currentBclk = cpu.GetBclk();
+            double? currentBclk = cpu.bclk?.GetBclk();
             labelBCLK.Text = currentBclk + " MHz";
             numericUpDownBclk.Text = $"{currentBclk}";
         }
@@ -2839,46 +3219,58 @@ namespace ZenStatesDebugTool
 
         private void BtnSaveCOProfile_Click(object sender, EventArgs e)
         {
-            List<Tuple<int, int>> margins = new List<Tuple<int, int>>();
+            List<string> lines = new List<string>();
 
-            if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0)
+            if (IsCurveOptimizerSupported)
             {
                 for (var i = 0; i < GetPhysicalCoreCount(); i++)
                 {
                     NumericUpDown control = GetCOControl(i);
                     if (control != null && control.Enabled)
-                    {
-                        margins.Add(new Tuple<int, int>(i, Convert.ToInt32(control.Value)));
-                    }
+                        lines.Add(string.Format(CultureInfo.InvariantCulture, "[{0},{1}]", i, Convert.ToInt32(control.Value)));
                 }
             }
 
-            if (margins.Count > 0)
+            // FMax and the power limits: only values that are known (read from the CPU, or entered)
+            foreach (KeyValuePair<string, NumericUpDown> entry in PboLimitProfileControls)
             {
-                try
-                {
-                    // Keep the Curve Shaper section of the profile; this button only owns the CO/FMax part
-                    List<string> csLines = ReadProfileLines().Where(l => l.StartsWith(CsProfilePrefix)).ToList();
+                if (entry.Value.Enabled && HasValue(entry.Value))
+                    lines.Add(string.Format(CultureInfo.InvariantCulture, "{0}={1}", entry.Key, entry.Value.Value));
+            }
 
-                    using (StreamWriter file = new StreamWriter(defaultsPath))
-                    {
-                        foreach (var entry in margins)
-                            file.WriteLine("[{0},{1}]", entry.Item1, entry.Item2);
+            if (lines.Count == 0)
+            {
+                SetStatusText("Nothing to save.");
+                return;
+            }
 
-                        file.WriteLine("fmax={0}", numericUpDownFmax.Value);
+            try
+            {
+                // Keep the Curve Shaper section of the profile; this button only owns the PBO part
+                lines.AddRange(ReadProfileLines().Where(l => l.StartsWith(CsProfilePrefix)));
 
-                        foreach (string line in csLines)
-                            file.WriteLine(line);
+                Directory.CreateDirectory(profilesPath);
+                File.WriteAllLines(defaultsPath, lines);
 
-                        Log($"Profile saved in {defaultsPath}", LogLevel.Success);
-                    }
-                }
-                catch (Exception)
-                {
-                    HandleError("Could not save profile to file!");
-                }
+                SetStatusText("PBO profile saved.");
+                Log($"Profile saved in {defaultsPath}", LogLevel.Success);
+            }
+            catch (Exception)
+            {
+                HandleError("Could not save profile to file!");
             }
         }
+
+        // FMax and power limits as they are stored in the profile file: "fmax=<MHz>", "ppt=<W>", "tdc=<A>", "edc=<A>",
+        // "scalar=<x>". Older versions ignore the keys they do not know.
+        private IEnumerable<KeyValuePair<string, NumericUpDown>> PboLimitProfileControls => new[]
+        {
+            new KeyValuePair<string, NumericUpDown>("fmax", numericUpDownFmax),
+            new KeyValuePair<string, NumericUpDown>("ppt", numericUpDownPpt),
+            new KeyValuePair<string, NumericUpDown>("tdc", numericUpDownTdc),
+            new KeyValuePair<string, NumericUpDown>("edc", numericUpDownEdc),
+            new KeyValuePair<string, NumericUpDown>("scalar", numericUpDownScalar),
+        };
 
         // Curve Shaper section of the profile: one line per frequency tier, "cs=<tier>,<low>,<medium>,<high>".
         // Older versions ignore these lines.
@@ -2915,8 +3307,11 @@ namespace ZenStatesDebugTool
             return rows;
         }
 
-        private void ApplyCSProfile()
+        private void ApplyCSProfile(out int applied, out int failed)
         {
+            applied = 0;
+            failed = 0;
+
             if (!IsCurveShaperSupported)
                 return;
 
@@ -2930,8 +3325,15 @@ namespace ZenStatesDebugTool
                     marginLow: ClampMargin(controls[tier, 0], row[1]),
                     frequencyTier: tier);
 
-                if (status != SMU.Status.OK)
+                if (status == SMU.Status.OK)
+                {
+                    applied++;
+                }
+                else
+                {
+                    failed++;
                     Console.WriteLine($"Failed to apply saved Curve Shaper margins for tier {tier}: {status}");
+                }
             }
         }
 
@@ -2998,9 +3400,20 @@ namespace ZenStatesDebugTool
             Log($"Saved Curve Shaper margins loaded from {defaultsPath}", LogLevel.Success);
         }
 
-        private List<Tuple<int, int>> LoadCOProfile()
+        // Everything saved in the profile file except Curve Shaper (see LoadCSProfile)
+        private sealed class PboProfile
         {
-            List<Tuple<int, int>> margins = new List<Tuple<int, int>>();
+            public readonly List<Tuple<int, int>> Margins = new List<Tuple<int, int>>();
+            public decimal? FMax;
+            public decimal? Ppt;
+            public decimal? Tdc;
+            public decimal? Edc;
+            public decimal? Scalar;
+        }
+
+        private PboProfile LoadPboProfile()
+        {
+            PboProfile profile = new PboProfile();
             try
             {
                 if (!Directory.Exists(profilesPath))
@@ -3012,25 +3425,28 @@ namespace ZenStatesDebugTool
                 // load from file if it exists
                 if (File.Exists(defaultsPath))
                 {
-                    var lines = File.ReadAllLines(defaultsPath);
-                    foreach (var line in lines)
+                    foreach (var line in File.ReadAllLines(defaultsPath))
                     {
                         if (line.StartsWith("["))
                         {
                             var values = line.Replace("[", "").Replace("]", "").Replace(" ", "").Split(',');
                             Int32.TryParse(values[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int index);
                             Int32.TryParse(values[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out int margin);
-                            margins.Add(new Tuple<int, int>(index, margin));
+                            profile.Margins.Add(new Tuple<int, int>(index, margin));
+                            continue;
                         }
-                        else if (line.StartsWith("fmax="))
+
+                        int separator = line.IndexOf('=');
+                        if (separator <= 0 || !decimal.TryParse(line.Substring(separator + 1), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal value))
+                            continue;
+
+                        switch (line.Substring(0, separator).Trim().ToLowerInvariant())
                         {
-                            var fmaxStr = line.Substring(5);
-                            if (decimal.TryParse(fmaxStr, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal fmaxVal))
-                                fmaxVal = Math.Max(numericUpDownFmax.Minimum, Math.Min(numericUpDownFmax.Maximum, fmaxVal));
-                            else
-                                fmaxVal = numericUpDownFmax.Value;
-                            // store temporarily in Tag for retrieval in BtnLoadCOProfile_Click
-                            numericUpDownFmax.Tag = fmaxVal;
+                            case "fmax": profile.FMax = value; break;
+                            case "ppt": profile.Ppt = value; break;
+                            case "tdc": profile.Tdc = value; break;
+                            case "edc": profile.Edc = value; break;
+                            case "scalar": profile.Scalar = value; break;
                         }
                     }
                 }
@@ -3039,34 +3455,59 @@ namespace ZenStatesDebugTool
                     HandleError("No CO profile saved.");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 HandleError("Could not load saved profile!");
             }
-            
-            return margins;
+
+            return profile;
+        }
+
+        // Puts a saved value in the control. It counts as an edit (highlighted) until it is applied.
+        private static bool LoadProfileValue(NumericUpDown control, decimal? value)
+        {
+            if (!value.HasValue || !control.Enabled)
+                return false;
+
+            control.Value = ClampValue(control, value.Value);
+            return true;
         }
 
         private void BtnLoadCOProfile_Click(object sender, EventArgs e)
         {
-            numericUpDownFmax.Tag = null;
-            List<Tuple<int, int>> margins = LoadCOProfile();
+            PboProfile profile = LoadPboProfile();
+            int loaded = 0;
 
-            if (margins.Count > 0 && IsCurveOptimizerSupported)
+            if (IsCurveOptimizerSupported)
             {
-                for (var i = 0; i < margins.Count; i++)
+                foreach (Tuple<int, int> margin in profile.Margins)
                 {
-                    NumericUpDown control = GetCOControl(margins[i].Item1);
+                    NumericUpDown control = GetCOControl(margin.Item1);
                     if (control != null && control.Enabled)
                     {
-                        control.Value = margins[i].Item2;
+                        control.Value = margin.Item2;
+                        loaded++;
                     }
                 }
+            }
 
-                if (numericUpDownFmax.Tag is decimal savedFmax)
-                    numericUpDownFmax.Value = savedFmax;
+            foreach (var entry in new[]
+            {
+                Tuple.Create(numericUpDownFmax, profile.FMax),
+                Tuple.Create(numericUpDownPpt, profile.Ppt),
+                Tuple.Create(numericUpDownTdc, profile.Tdc),
+                Tuple.Create(numericUpDownEdc, profile.Edc),
+                Tuple.Create(numericUpDownScalar, profile.Scalar),
+            })
+            {
+                if (LoadProfileValue(entry.Item1, entry.Item2))
+                    loaded++;
+            }
 
-                Log($"Saved CO profile loaded from {defaultsPath}", LogLevel.Success);
+            if (loaded > 0)
+            {
+                SetStatusText("Profile loaded. Press Apply to write the changed values to the SMU.");
+                Log($"Saved PBO profile loaded from {defaultsPath}", LogLevel.Success);
             }
         }
 
@@ -3477,13 +3918,6 @@ namespace ZenStatesDebugTool
             panelX3D.Enabled = !manual;
         }
 
-        private void ButtonApplyFMax_Click(object sender, EventArgs e)
-        {
-            if (cpu.SetFMax((uint)numericUpDownFmax.Value)) {
-                numericUpDownFmax.Value = cpu.GetFMax();
-            }
-        }
-
         private void ButtonPCIRangeMonitor_Click(object sender, EventArgs e)
         {
             TryConvertToUint(textBoxPciStartReg.Text, out uint startAddress);
@@ -3561,6 +3995,10 @@ namespace ZenStatesDebugTool
 
             for (int tier = 0; tier < controls.GetLength(0); tier++)
             {
+                // Only the tiers with a changed value are written
+                if (!HasPendingEdits(new[] { controls[tier, 0], controls[tier, 1], controls[tier, 2] }))
+                    continue;
+
                 SMU.Status status = cpu.SetCurveShaperMargin(
                     marginHigh: (int)controls[tier, 2].Value,
                     marginMedium: (int)controls[tier, 1].Value,
