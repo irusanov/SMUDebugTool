@@ -7,9 +7,10 @@ using System.Threading;
 namespace ZenStatesDebugTool
 {
     /// <summary>
-    /// Shows a notification when the saved profile has been applied. The startup/resume task runs as
-    /// SYSTEM in session 0, which has no desktop, so the notification is shown by a short-lived helper
-    /// process started in the session of the logged-on user.
+    /// Shows a notification when the saved profile has been applied, from a short-lived helper process,
+    /// so the process that applied the profile can exit (and release the driver) right away. The all-users
+    /// task runs as SYSTEM in session 0, which has no desktop: there the helper is started in the session
+    /// of the logged-on user. The per-user task starts it in its own session.
     /// </summary>
     internal static class ProfileNotification
     {
@@ -199,16 +200,10 @@ namespace ZenStatesDebugTool
                 if (!CreateEnvironmentBlock(out environment, token, false))
                     environment = IntPtr.Zero;
 
-                string exePath;
-                using (Process current = Process.GetCurrentProcess())
-                    exePath = current.MainModule.FileName;
+                string exePath = GetExecutablePath();
 
                 StringBuilder commandLine = new StringBuilder();
-                commandLine.Append('"').Append(exePath).Append("\" ").Append(NotifyArgumentPrefix)
-                    .Append(Convert.ToBase64String(Encoding.UTF8.GetBytes(message)));
-
-                if (warning)
-                    commandLine.Append(' ').Append(WarningArgument);
+                commandLine.Append('"').Append(exePath).Append("\" ").Append(BuildArguments(message, warning));
 
                 STARTUPINFO startupInfo = new STARTUPINFO();
                 startupInfo.cb = Marshal.SizeOf(typeof(STARTUPINFO));
@@ -235,6 +230,41 @@ namespace ZenStatesDebugTool
                 if (userToken != IntPtr.Zero)
                     CloseHandle(userToken);
             }
+        }
+
+        /// <summary>
+        /// Shows the notification in the session of this process (the per-user task). Failure to notify
+        /// must never affect applying the profile.
+        /// </summary>
+        internal static void ShowInCurrentSession(string message, bool warning = false)
+        {
+            try
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo(GetExecutablePath(), BuildArguments(message, warning))
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using (Process.Start(startInfo))
+                {
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        private static string GetExecutablePath()
+        {
+            using (Process current = Process.GetCurrentProcess())
+                return current.MainModule.FileName;
+        }
+
+        private static string BuildArguments(string message, bool warning)
+        {
+            string arguments = NotifyArgumentPrefix + Convert.ToBase64String(Encoding.UTF8.GetBytes(message));
+            return warning ? arguments + " " + WarningArgument : arguments;
         }
 
         // Returns a primary token for the user: the elevated one of an administrator running with UAC,

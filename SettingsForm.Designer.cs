@@ -183,6 +183,7 @@ namespace ZenStatesDebugTool
             this.numericUpDownScalar = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownFmax = new System.Windows.Forms.NumericUpDown();
             this.checkBoxApplyCOStartup = new System.Windows.Forms.CheckBox();
+            this.checkBoxStartupAllUsers = new System.Windows.Forms.CheckBox();
             this.flowLayoutPanelPboActions = new System.Windows.Forms.TableLayoutPanel();
             this.buttonGetCO = new System.Windows.Forms.Button();
             this.btnResetCO = new System.Windows.Forms.Button();
@@ -2107,15 +2108,17 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel12.Controls.Add(this.numericUpDownScalar, 3, 3);
             this.tableLayoutPanel12.Controls.Add(this.numericUpDownFmax, 4, 3);
             this.tableLayoutPanel12.Controls.Add(this.checkBoxApplyCOStartup, 0, 4);
-            this.tableLayoutPanel12.Controls.Add(this.flowLayoutPanelPboActions, 0, 5);
+            this.tableLayoutPanel12.Controls.Add(this.checkBoxStartupAllUsers, 0, 5);
+            this.tableLayoutPanel12.Controls.Add(this.flowLayoutPanelPboActions, 0, 6);
             this.tableLayoutPanel12.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel12.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel12.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel12.Name = "tableLayoutPanel12";
             this.tableLayoutPanel12.Padding = new System.Windows.Forms.Padding(3);
-            this.tableLayoutPanel12.RowCount = 6;
+            this.tableLayoutPanel12.RowCount = 7;
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -2144,14 +2147,14 @@ namespace ZenStatesDebugTool
             this.flowLayoutPanelCOList.Location = new System.Drawing.Point(6, 8);
             this.flowLayoutPanelCOList.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
             this.flowLayoutPanelCOList.Name = "flowLayoutPanelCOList";
-            this.flowLayoutPanelCOList.Size = new System.Drawing.Size(439, 256);
+            this.flowLayoutPanelCOList.Size = new System.Drawing.Size(439, 236);
             this.flowLayoutPanelCOList.TabIndex = 2;
             // 
             // labelPpt
             // 
             this.labelPpt.AutoSize = true;
             this.labelPpt.Dock = System.Windows.Forms.DockStyle.Left;
-            this.labelPpt.Location = new System.Drawing.Point(6, 270);
+            this.labelPpt.Location = new System.Drawing.Point(6, 250);
             this.labelPpt.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.labelPpt.Name = "labelPpt";
             this.labelPpt.Size = new System.Drawing.Size(48, 13);
@@ -2162,7 +2165,7 @@ namespace ZenStatesDebugTool
             // 
             this.labelTdc.AutoSize = true;
             this.labelTdc.Dock = System.Windows.Forms.DockStyle.Left;
-            this.labelTdc.Location = new System.Drawing.Point(95, 270);
+            this.labelTdc.Location = new System.Drawing.Point(95, 250);
             this.labelTdc.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.labelTdc.Name = "labelTdc";
             this.labelTdc.Size = new System.Drawing.Size(45, 13);
@@ -2173,7 +2176,7 @@ namespace ZenStatesDebugTool
             // 
             this.labelEdc.AutoSize = true;
             this.labelEdc.Dock = System.Windows.Forms.DockStyle.Left;
-            this.labelEdc.Location = new System.Drawing.Point(184, 270);
+            this.labelEdc.Location = new System.Drawing.Point(184, 250);
             this.labelEdc.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.labelEdc.Name = "labelEdc";
             this.labelEdc.Size = new System.Drawing.Size(45, 13);
@@ -2184,7 +2187,7 @@ namespace ZenStatesDebugTool
             // 
             this.labelScalar.AutoSize = true;
             this.labelScalar.Dock = System.Windows.Forms.DockStyle.Left;
-            this.labelScalar.Location = new System.Drawing.Point(273, 270);
+            this.labelScalar.Location = new System.Drawing.Point(273, 250);
             this.labelScalar.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.labelScalar.Name = "labelScalar";
             this.labelScalar.Size = new System.Drawing.Size(51, 13);
@@ -2195,7 +2198,7 @@ namespace ZenStatesDebugTool
             // 
             this.label51.AutoSize = true;
             this.label51.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label51.Location = new System.Drawing.Point(362, 270);
+            this.label51.Location = new System.Drawing.Point(362, 250);
             this.label51.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.label51.Name = "label51";
             this.label51.Size = new System.Drawing.Size(64, 13);
@@ -2205,7 +2208,7 @@ namespace ZenStatesDebugTool
             // numericUpDownPpt
             // 
             this.numericUpDownPpt.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.numericUpDownPpt.Location = new System.Drawing.Point(6, 283);
+            this.numericUpDownPpt.Location = new System.Drawing.Point(6, 263);
             this.numericUpDownPpt.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.numericUpDownPpt.Maximum = new decimal(new int[] {
             1000,
@@ -2230,7 +2233,7 @@ namespace ZenStatesDebugTool
             // numericUpDownTdc
             // 
             this.numericUpDownTdc.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.numericUpDownTdc.Location = new System.Drawing.Point(95, 283);
+            this.numericUpDownTdc.Location = new System.Drawing.Point(95, 263);
             this.numericUpDownTdc.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.numericUpDownTdc.Maximum = new decimal(new int[] {
             1000,
@@ -2255,7 +2258,7 @@ namespace ZenStatesDebugTool
             // numericUpDownEdc
             // 
             this.numericUpDownEdc.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.numericUpDownEdc.Location = new System.Drawing.Point(184, 283);
+            this.numericUpDownEdc.Location = new System.Drawing.Point(184, 263);
             this.numericUpDownEdc.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.numericUpDownEdc.Maximum = new decimal(new int[] {
             1000,
@@ -2280,7 +2283,7 @@ namespace ZenStatesDebugTool
             // numericUpDownScalar
             // 
             this.numericUpDownScalar.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.numericUpDownScalar.Location = new System.Drawing.Point(273, 283);
+            this.numericUpDownScalar.Location = new System.Drawing.Point(273, 263);
             this.numericUpDownScalar.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.numericUpDownScalar.Maximum = new decimal(new int[] {
             10,
@@ -2310,7 +2313,7 @@ namespace ZenStatesDebugTool
             0,
             0,
             0});
-            this.numericUpDownFmax.Location = new System.Drawing.Point(362, 283);
+            this.numericUpDownFmax.Location = new System.Drawing.Point(362, 263);
             this.numericUpDownFmax.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.numericUpDownFmax.Maximum = new decimal(new int[] {
             9000,
@@ -2327,14 +2330,29 @@ namespace ZenStatesDebugTool
             this.checkBoxApplyCOStartup.AutoSize = true;
             this.tableLayoutPanel12.SetColumnSpan(this.checkBoxApplyCOStartup, 5);
             this.checkBoxApplyCOStartup.Dock = System.Windows.Forms.DockStyle.Left;
-            this.checkBoxApplyCOStartup.Location = new System.Drawing.Point(6, 308);
+            this.checkBoxApplyCOStartup.Location = new System.Drawing.Point(6, 288);
             this.checkBoxApplyCOStartup.Margin = new System.Windows.Forms.Padding(3, 2, 3, 3);
             this.checkBoxApplyCOStartup.Name = "checkBoxApplyCOStartup";
-            this.checkBoxApplyCOStartup.Size = new System.Drawing.Size(165, 17);
+            this.checkBoxApplyCOStartup.Size = new System.Drawing.Size(214, 17);
             this.checkBoxApplyCOStartup.TabIndex = 55;
-            this.checkBoxApplyCOStartup.Text = "Apply saved profile on startup";
+            this.checkBoxApplyCOStartup.Text = "Apply saved profile at logon and resume";
             this.checkBoxApplyCOStartup.UseVisualStyleBackColor = true;
             this.checkBoxApplyCOStartup.Click += new System.EventHandler(this.CheckBoxApplyCOStartup_CheckedChanged);
+            // 
+            // checkBoxStartupAllUsers
+            // 
+            this.checkBoxStartupAllUsers.AutoSize = true;
+            this.tableLayoutPanel12.SetColumnSpan(this.checkBoxStartupAllUsers, 5);
+            this.checkBoxStartupAllUsers.Dock = System.Windows.Forms.DockStyle.Left;
+            this.checkBoxStartupAllUsers.Enabled = false;
+            this.checkBoxStartupAllUsers.Location = new System.Drawing.Point(23, 308);
+            this.checkBoxStartupAllUsers.Margin = new System.Windows.Forms.Padding(20, 0, 3, 3);
+            this.checkBoxStartupAllUsers.Name = "checkBoxStartupAllUsers";
+            this.checkBoxStartupAllUsers.Size = new System.Drawing.Size(172, 17);
+            this.checkBoxStartupAllUsers.TabIndex = 56;
+            this.checkBoxStartupAllUsers.Text = "For all users (runs as SYSTEM)";
+            this.checkBoxStartupAllUsers.UseVisualStyleBackColor = true;
+            this.checkBoxStartupAllUsers.Click += new System.EventHandler(this.CheckBoxStartupAllUsers_Click);
             // 
             // flowLayoutPanelPboActions
             // 
@@ -4104,6 +4122,7 @@ namespace ZenStatesDebugTool
         private Button btnSaveCOProfile;
         private Button btnLoadCOProfile;
         private CheckBox checkBoxApplyCOStartup;
+        private CheckBox checkBoxStartupAllUsers;
         private GroupBox groupBoxCoreControl;
         private TableLayoutPanel tableLayoutPanel15;
         private CheckBox checkBox7;

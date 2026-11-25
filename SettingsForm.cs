@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using ZenStates.Core;
@@ -47,6 +48,8 @@ namespace ZenStatesDebugTool
         private const string filename = "co_profile.txt";
         private readonly string[] args;
         private readonly bool isApplyProfile;
+        // Started by the startup task (--task): apply the profile, notify and exit without showing the window
+        private readonly bool isTaskRun;
         private readonly Dictionary<int, NumericUpDown> coControls = new Dictionary<int, NumericUpDown>();
         private static readonly ToolTip formToolTip = new ToolTip { AutoPopDelay = 10000, InitialDelay = 400, ReshowDelay = 100 };
 
@@ -67,6 +70,7 @@ namespace ZenStatesDebugTool
                 foreach (string arg in args)
                 {
                     isApplyProfile |= (arg.ToLower() == "--applyprofile");
+                    isTaskRun |= (arg.ToLower() == StartupTaskRunArgument);
                 }
 
                 cpu = new Cpu();
@@ -234,10 +238,12 @@ namespace ZenStatesDebugTool
                 InitCS();
                 tabControl1.SelectedTab = tabPagePbo;
 
-                // Launched non-interactively (scheduled task as SYSTEM, session 0): no window to show, so notify the
-                // logged-on user and exit once the profile is applied
-                if (!Environment.UserInteractive)
+                // Started by the startup task (per-user, or as SYSTEM in session 0 without a desktop): do not show
+                // the window, notify the user and exit once the profile is applied
+                if (isTaskRun || !Environment.UserInteractive)
                 {
+                    Opacity = 0;
+                    ShowInTaskbar = false;
                     NotifyProfileApplied(coApplied, coFailed, limitsApplied, limitsFailed, csApplied, csFailed);
                     Load += (_, __) => BeginInvoke(new System.Action(Application.Exit));
                 }
@@ -323,7 +329,12 @@ namespace ZenStatesDebugTool
             if (failed > 0 && parts.Count > 0)
                 message += $" {failed} failed.";
 
-            ProfileNotification.ShowInUserSession(message, failed > 0);
+            // The SYSTEM task has no desktop: show it in the session of the logged-on user. The per-user task
+            // already runs in the session of its user.
+            if (Environment.UserInteractive)
+                ProfileNotification.ShowInCurrentSession(message, failed > 0);
+            else
+                ProfileNotification.ShowInUserSession(message, failed > 0);
         }
 
         // TODO: Detect OC Mode and return PState freq if on auto
@@ -696,7 +707,7 @@ namespace ZenStatesDebugTool
                 }
             }*/
 
-            checkBoxApplyCOStartup.Checked = TaskExists("RyzenSDT");
+            UpdateStartupControls(GetStartupTaskMode());
             SetBaselineValue(numericUpDownFmax, cpu.GetFMax());
             UpdateDiscardButtons();
         }
@@ -732,7 +743,8 @@ namespace ZenStatesDebugTool
             formToolTip.SetToolTip(buttonGetCO, "Re-read the current margins, PPT/TDC/EDC limits, PBO scalar and FMax.");
             formToolTip.SetToolTip(btnResetCO, "Discard pending edits and restore the last read values.");
             formToolTip.SetToolTip(btnSaveCOProfile, "Save the values shown here (margins, PPT/TDC/EDC, scalar and FMax) to the profile file. Curve Shaper settings in the file are kept (save those from the Curve Shaper tab).");
-            formToolTip.SetToolTip(checkBoxApplyCOStartup, "Apply the saved profile (Curve Optimizer, PPT/TDC/EDC, scalar, FMax and Curve Shaper) at system startup, user logon and resume from sleep.");
+            formToolTip.SetToolTip(checkBoxApplyCOStartup, "Apply the saved profile (Curve Optimizer, PPT/TDC/EDC, scalar, FMax and Curve Shaper) when you log on and on resume from sleep. Only for your account, with your administrator rights.");
+            formToolTip.SetToolTip(checkBoxStartupAllUsers, "Apply the saved profile when any user logs on and on resume from sleep, also when you are not logged on. The task runs as SYSTEM (the most privileged account).");
             formToolTip.SetToolTip(btnLoadCOProfile, "Load the values from the profile file (not applied until you press Apply).");
             formToolTip.SetToolTip(buttonApplyPbo, "Write the highlighted (changed) values to the SMU: Curve Optimizer margins, PPT, TDC, EDC, scalar and FMax.");
             formToolTip.SetToolTip(numericUpDownFmax, "Maximum boost frequency limit in MHz.");
@@ -3783,19 +3795,79 @@ namespace ZenStatesDebugTool
             }
         }
 
-        static bool TaskExists(string taskName)
+        private enum StartupTaskMode { None, CurrentUser, AllUsers }
+
+        // SYSTEM task, applies the profile for every user. Older versions used this name for a task of the
+        // interactive user, before the per-user task existed.
+        private const string AllUsersTaskName = "RyzenSDT";
+        private const string StartupTaskRunArgument = "--task";
+        private const string StartupTaskArguments = "--applyprofile " + StartupTaskRunArgument;
+
+        private static string CurrentUserAccount
         {
-            // Open the task service
-            using (TaskService taskService = new TaskService())
+            get
             {
-                // Attempt to retrieve the task
-                Task task = taskService.GetTask(taskName);
-                return task != null;
+                using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
+                    return identity.Name;
             }
         }
 
-        // Number of triggers a current-version task must have: startup, logon, resume from sleep
-        private const int StartupTaskTriggerCount = 3;
+        // One task per user, so every user can enable it for their own account
+        private static string CurrentUserTaskName
+        {
+            get
+            {
+                StringBuilder name = new StringBuilder(Environment.UserName);
+                foreach (char c in "\\/:*?\"<>|")
+                    name.Replace(c, '_');
+                return $"RyzenSDT ({name})";
+            }
+        }
+
+        // True when the task runs as the current user (matched by SID, the task may store the name in another form)
+        private static bool IsTaskOfCurrentUser(Task task)
+        {
+            string userId = task.Definition.Principal.UserId;
+            if (string.IsNullOrEmpty(userId))
+                return false;
+
+            try
+            {
+                using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
+                {
+                    SecurityIdentifier sid = userId.StartsWith("S-1-", StringComparison.OrdinalIgnoreCase)
+                        ? new SecurityIdentifier(userId)
+                        : (SecurityIdentifier)new NTAccount(userId).Translate(typeof(SecurityIdentifier));
+                    return sid == identity.User;
+                }
+            }
+            catch (Exception)
+            {
+                return string.Equals(userId, CurrentUserAccount, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(userId, Environment.UserName, StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
+        private static bool IsSystemTask(Task task) =>
+            task.Definition.Principal.LogonType == TaskLogonType.ServiceAccount;
+
+        private static StartupTaskMode GetStartupTaskMode()
+        {
+            using (TaskService taskService = new TaskService())
+            {
+                if (taskService.GetTask(CurrentUserTaskName) != null)
+                    return StartupTaskMode.CurrentUser;
+
+                Task task = taskService.GetTask(AllUsersTaskName);
+                if (task == null)
+                    return StartupTaskMode.None;
+                if (IsSystemTask(task))
+                    return StartupTaskMode.AllUsers;
+
+                // Task of an older version, made for the interactive user
+                return IsTaskOfCurrentUser(task) ? StartupTaskMode.CurrentUser : StartupTaskMode.None;
+            }
+        }
 
         // Rights that let an account modify, replace or take over a file or folder
         private const FileSystemRights ModifyRights =
@@ -3866,19 +3938,50 @@ namespace ZenStatesDebugTool
             }
         }
 
-        static bool TaskIsUpToDate(string taskName)
+        // Longest a startup run may take; it applies the profile and exits within seconds
+        private static readonly TimeSpan StartupTaskTimeLimit = TimeSpan.FromMinutes(5);
+
+        // The task is current when it has exactly the logon and resume triggers (older versions also ran at boot),
+        // runs as the account of its mode, has a time limit, and starts this executable with the task arguments
+        // (after the program was moved or updated to another folder, the task still pointed to the old one)
+        static bool TaskIsUpToDate(string taskName, string executablePath, bool allUsers)
         {
             using (TaskService taskService = new TaskService())
             {
                 Task task = taskService.GetTask(taskName);
-                return task != null
-                    && task.Definition.Triggers.Count >= StartupTaskTriggerCount
-                    && task.Definition.Principal.LogonType == TaskLogonType.ServiceAccount;
+                if (task == null
+                    || task.Definition.Triggers.Count != 2
+                    || !task.Definition.Triggers.Any(trigger => trigger is LogonTrigger)
+                    || !task.Definition.Triggers.Any(trigger => trigger is EventTrigger)
+                    || task.Definition.Principal.RunLevel != TaskRunLevel.Highest
+                    || task.Definition.Settings.ExecutionTimeLimit == TimeSpan.Zero)
+                    return false;
+
+                if (allUsers ? !IsSystemTask(task)
+                    : task.Definition.Principal.LogonType != TaskLogonType.InteractiveToken || !IsTaskOfCurrentUser(task))
+                    return false;
+
+                ExecAction action = task.Definition.Actions.Count == 1 ? task.Definition.Actions[0] as ExecAction : null;
+                if (action == null || !string.Equals(action.Arguments, StartupTaskArguments, StringComparison.OrdinalIgnoreCase))
+                    return false;
+
+                try
+                {
+                    return string.Equals(Path.GetFullPath(Environment.ExpandEnvironmentVariables(action.Path.Trim('"'))),
+                        Path.GetFullPath(executablePath), StringComparison.OrdinalIgnoreCase);
+                }
+                catch (Exception)
+                {
+                    return false; // a path that cannot be parsed is not this executable
+                }
             }
         }
 
-        static void AddTaskToScheduler(string taskName, string executablePath, int delaySeconds = 0)
+        static void AddTaskToScheduler(string taskName, string executablePath, bool allUsers, int delaySeconds = 0)
         {
+            string user = allUsers ? "SYSTEM" : CurrentUserAccount;
+            TaskLogonType logonType = allUsers ? TaskLogonType.ServiceAccount : TaskLogonType.InteractiveToken;
+
             // Create a new task service
             using (TaskService taskService = new TaskService())
             {
@@ -3886,33 +3989,38 @@ namespace ZenStatesDebugTool
                 TaskDefinition taskDefinition = taskService.NewTask();
 
                 // Set the task properties
-                taskDefinition.RegistrationInfo.Description = "Run Ryzen SMU Debug Tool on system startup, user logon and resume from sleep to apply CO profile. Automatically created by RyzenSDT. Remove manually or from the checkbox in PBO tab.";
-                taskDefinition.Principal.UserId = "SYSTEM";
+                taskDefinition.RegistrationInfo.Description = allUsers
+                    ? "Run Ryzen SMU Debug Tool at logon of any user and on resume from sleep to apply the saved profile. Runs as SYSTEM. Automatically created by RyzenSDT. Remove manually or from the checkbox in PBO tab."
+                    : $"Run Ryzen SMU Debug Tool at logon of {user} and on resume from sleep to apply the saved profile. Automatically created by RyzenSDT. Remove manually or from the checkbox in PBO tab.";
+                taskDefinition.Principal.UserId = user;
                 taskDefinition.Principal.RunLevel = TaskRunLevel.Highest;
-                taskDefinition.Principal.LogonType = TaskLogonType.ServiceAccount;
+                taskDefinition.Principal.LogonType = logonType;
 
-                // Do not skip or kill the task on battery power (laptops), and do not time it out
+                // Do not skip or kill the task on battery power (laptops)
                 taskDefinition.Settings.DisallowStartIfOnBatteries = false;
                 taskDefinition.Settings.StopIfGoingOnBatteries = false;
-                taskDefinition.Settings.ExecutionTimeLimit = TimeSpan.Zero;
 
-                // Trigger 1: system startup
-                BootTrigger bootTrigger = new BootTrigger();
-                bootTrigger.Delay = TimeSpan.FromSeconds(delaySeconds);
-                taskDefinition.Triggers.Add(bootTrigger);
+                // A run that starts while another is still applying is skipped, not allowed to stop the running one in
+                // the middle of its SMU writes. The time limit ends a run that hangs, so it cannot block every later trigger.
+                taskDefinition.Settings.MultipleInstances = TaskInstancesPolicy.IgnoreNew;
+                taskDefinition.Settings.ExecutionTimeLimit = StartupTaskTimeLimit;
 
-                // Trigger 2: user logon
+                // Trigger 1: user logon (any user for the SYSTEM task, otherwise only this user). No boot trigger:
+                // the logon follows every boot, and nothing needs the profile before someone logs on.
                 LogonTrigger logonTrigger = new LogonTrigger();
+                if (!allUsers)
+                    logonTrigger.UserId = user;
                 logonTrigger.Delay = TimeSpan.FromSeconds(delaySeconds);
                 taskDefinition.Triggers.Add(logonTrigger);
 
-                // Trigger 3: resume from sleep/hibernate (System log, Power-Troubleshooter, event ID 1)
+                // Trigger 2: resume from sleep/hibernate (System log, Power-Troubleshooter, event ID 1). The per-user
+                // task only runs while its user is logged on.
                 EventTrigger resumeTrigger = new EventTrigger("System", "Microsoft-Windows-Power-Troubleshooter", 1);
                 resumeTrigger.Delay = TimeSpan.FromSeconds(delaySeconds);
                 taskDefinition.Triggers.Add(resumeTrigger);
 
                 // Create an action that runs the specified executable
-                ExecAction execAction = new ExecAction(executablePath, "--applyprofile");
+                ExecAction execAction = new ExecAction(executablePath, StartupTaskArguments);
                 taskDefinition.Actions.Add(execAction);
 
                 // Register the task in the root folder of the Task Scheduler (replaces an existing one)
@@ -3920,9 +4028,9 @@ namespace ZenStatesDebugTool
                     taskName,
                     taskDefinition,
                     TaskCreation.CreateOrUpdate,
-                    "SYSTEM",
+                    user,
                     null,
-                    TaskLogonType.ServiceAccount);
+                    logonType);
             }
         }
 
@@ -3936,69 +4044,124 @@ namespace ZenStatesDebugTool
             }
         }
 
-        private bool SetStartup(bool isChecked = false)
+        // Removes this user's startup tasks, except the one named keep. A task left by an older version under the
+        // all-users name is removed only when it is the SYSTEM task or belongs to this user.
+        static void RemoveStartupTasks(string keep = null)
         {
-            /*using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
+            using (TaskService taskService = new TaskService())
             {
-                if (isChecked && key.GetValue("RyzenSDT") == null)
-                {
-                    key.SetValue("RyzenSDT", Application.ExecutablePath + " --applyprofile");
-                }
-                else if (!isChecked && key.GetValue("RyzenSDT") != null)
-                {
-                    key.DeleteValue("RyzenSDT", false);
-                }
-            }*/
+                string userTaskName = CurrentUserTaskName;
+                if (userTaskName != keep && taskService.GetTask(userTaskName) != null)
+                    taskService.RootFolder.DeleteTask(userTaskName, false);
 
-            if (isChecked)
+                Task task = taskService.GetTask(AllUsersTaskName);
+                if (AllUsersTaskName != keep && task != null && (IsSystemTask(task) || IsTaskOfCurrentUser(task)))
+                    taskService.RootFolder.DeleteTask(AllUsersTaskName, false);
+            }
+        }
+
+        private StartupTaskMode SetStartup(bool enabled, bool allUsers)
+        {
+            StartupTaskMode current = GetStartupTaskMode();
+
+            // A run started by the task never changes it: a prompt there could wait forever
+            if (isTaskRun || !Environment.UserInteractive)
+                return current;
+
+            if (!enabled)
             {
-                bool exists = TaskExists("RyzenSDT");
-                if (exists && TaskIsUpToDate("RyzenSDT"))
-                    return true;
-
-                if (!IsExecutableLocationSecure(Application.ExecutablePath, out string reason))
-                {
-                    DialogResult answer = ThemedMessageBox.Show(
-                        "The startup task runs as SYSTEM (the most privileged account) at every boot, logon and resume from sleep.\n\n" +
-                        reason + "\n\n" +
-                        "Any non-administrator that can modify these files could make Windows run its own code as SYSTEM.\n\n" +
-                        "To be safe, move SMU Debug Tool to a folder only administrators can write to (for example under C:\\Program Files) and enable this option again.\n\n" +
-                        "Create the startup task anyway?",
-                        "Security warning",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Warning,
-                        MessageBoxDefaultButton.Button2);
-
-                    if (answer != DialogResult.Yes)
-                    {
-                        // Leave an existing (older) task as it is; do not create a new one
-                        return exists;
-                    }
-                }
-
-                // Create the task, or upgrade one made by an older version (logon-only, interactive user)
-                AddTaskToScheduler("RyzenSDT", Application.ExecutablePath, 0);
-                return true;
+                RemoveStartupTasks();
+                return StartupTaskMode.None;
             }
 
-            if (TaskExists("RyzenSDT"))
+            StartupTaskMode requested = allUsers ? StartupTaskMode.AllUsers : StartupTaskMode.CurrentUser;
+            string taskName = allUsers ? AllUsersTaskName : CurrentUserTaskName;
+            string executablePath = Application.ExecutablePath;
+
+            if (current == requested && TaskIsUpToDate(taskName, executablePath, allUsers))
+                return requested;
+
+            if (!IsExecutableLocationSecure(executablePath, out string reason))
             {
-                RemoveTaskFromScheduler("RyzenSDT");
+                string runsAs = allUsers
+                    ? "as SYSTEM (the most privileged account) when any user logs on and on resume from sleep"
+                    : "with your administrator rights, without a UAC prompt, when you log on and on resume from sleep";
+
+                DialogResult answer = ThemedMessageBox.Show(
+                    $"The startup task runs SMU Debug Tool {runsAs}.\n\n" +
+                    reason + "\n\n" +
+                    $"Any non-administrator that can modify these files could make Windows run its own code {(allUsers ? "as SYSTEM" : "with your administrator rights")}.\n\n" +
+                    "To be safe, move SMU Debug Tool to a folder only administrators can write to (for example under C:\\Program Files) and enable this option again.\n\n" +
+                    "Create the startup task anyway?",
+                    "Security warning",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning,
+                    MessageBoxDefaultButton.Button2);
+
+                if (answer != DialogResult.Yes)
+                {
+                    // Leave the current task as it is
+                    return current;
+                }
             }
-            return false;
+
+            // Create the task, or upgrade one made by an older version, then remove the task of the other mode:
+            // only one of them applies the profile
+            AddTaskToScheduler(taskName, executablePath, allUsers);
+            RemoveStartupTasks(taskName);
+            return requested;
+        }
+
+        private void UpdateStartupControls(StartupTaskMode mode)
+        {
+            checkBoxApplyCOStartup.Checked = mode != StartupTaskMode.None;
+            checkBoxStartupAllUsers.Checked = mode == StartupTaskMode.AllUsers;
+            checkBoxStartupAllUsers.Enabled = mode != StartupTaskMode.None;
         }
 
         private void CheckBoxApplyCOStartup_CheckedChanged(object sender, EventArgs e)
         {
-            CheckBox box = (CheckBox)sender;
-            bool requested = box.Checked;
-            bool active = SetStartup(requested);
-            box.Checked = active;
+            // Enabling starts with the current user only; all users is an explicit choice
+            if (!checkBoxApplyCOStartup.Checked)
+                checkBoxStartupAllUsers.Checked = false;
 
-            if (requested && !active)
-                Log("Startup task was not created.", LogLevel.Warning);
+            ApplyStartupSelection();
+        }
+
+        private void CheckBoxStartupAllUsers_Click(object sender, EventArgs e)
+        {
+            ApplyStartupSelection();
+        }
+
+        private void ApplyStartupSelection()
+        {
+            bool enabled = checkBoxApplyCOStartup.Checked;
+            bool allUsers = enabled && checkBoxStartupAllUsers.Checked;
+            StartupTaskMode requested = !enabled ? StartupTaskMode.None
+                : allUsers ? StartupTaskMode.AllUsers : StartupTaskMode.CurrentUser;
+            StartupTaskMode active;
+
+            try
+            {
+                active = SetStartup(enabled, allUsers);
+            }
+            catch (Exception ex)
+            {
+                Log($"Startup task could not be updated: {ex.Message}", LogLevel.Error);
+                try { active = GetStartupTaskMode(); }
+                catch (Exception) { active = StartupTaskMode.None; }
+            }
+
+            UpdateStartupControls(active);
+
+            if (active != requested)
+                Log("Startup task was not changed.", LogLevel.Warning);
+            else if (active == StartupTaskMode.None)
+                Log("Startup task removed.", LogLevel.Success);
+            else if (active == StartupTaskMode.AllUsers)
+                Log("The saved profile will be applied at logon of any user and on resume (task runs as SYSTEM).", LogLevel.Success);
             else
-                Log("Startup settings saved.", LogLevel.Success);
+                Log($"The saved profile will be applied at logon of {Environment.UserName} and on resume.", LogLevel.Success);
         }
 
         private sealed class NotificationLevelItem
