@@ -7,7 +7,7 @@ using ZenStates.Core;
 
 namespace ZenStatesDebugTool
 {
-    public partial class PCIRangeMonitor : Form
+    public partial class PCIRangeMonitor : Theming.ThemedForm
     {
         private readonly Cpu CPU;
         readonly System.Windows.Forms.Timer RefreshTimer = new System.Windows.Forms.Timer();

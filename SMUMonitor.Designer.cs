@@ -39,6 +39,8 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonStartStop = new System.Windows.Forms.Button();
             this.ButtonClear = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.labelMailbox = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -69,7 +71,7 @@
             this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView2.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.dataGridView2.GridColor = System.Drawing.SystemColors.ControlLight;
-            this.dataGridView2.Location = new System.Drawing.Point(3, 65);
+            this.dataGridView2.Location = new System.Drawing.Point(3, 84);
             this.dataGridView2.Name = "dataGridView2";
             this.dataGridView2.ReadOnly = true;
             this.dataGridView2.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
@@ -82,7 +84,7 @@
             this.dataGridView2.ShowCellToolTips = false;
             this.dataGridView2.ShowEditingIcon = false;
             this.dataGridView2.ShowRowErrors = false;
-            this.dataGridView2.Size = new System.Drawing.Size(336, 417);
+            this.dataGridView2.Size = new System.Drawing.Size(336, 398);
             this.dataGridView2.TabIndex = 0;
             // 
             // Cmd
@@ -126,24 +128,27 @@
             // 
             this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.ColumnCount = 4;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 90F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 90F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.dataGridView2, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.buttonStartStop, 0, 5);
-            this.tableLayoutPanel1.Controls.Add(this.ButtonClear, 1, 5);
-            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label2, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.label3, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.labelCmdAddr, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.labelRspAddr, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.labelArgAddr, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.labelMailbox, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.labelCmdAddr, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.label2, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.labelRspAddr, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.label3, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.labelArgAddr, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.dataGridView2, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.buttonStartStop, 0, 6);
+            this.tableLayoutPanel1.Controls.Add(this.ButtonClear, 1, 6);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 6;
+            this.tableLayoutPanel1.RowCount = 7;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 5F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -174,14 +179,40 @@
             this.ButtonClear.UseVisualStyleBackColor = true;
             this.ButtonClear.Click += new System.EventHandler(this.ButtonClear_Click);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label4.Location = new System.Drawing.Point(3, 5);
+            this.label4.Name = "label4";
+            this.label4.Padding = new System.Windows.Forms.Padding(5, 3, 8, 3);
+            this.label4.Size = new System.Drawing.Size(87, 19);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "Mailbox";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // labelMailbox
+            // 
+            this.labelMailbox.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.labelMailbox, 3);
+            this.labelMailbox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelMailbox.Font = new System.Drawing.Font("Segoe UI Semibold", 8.25F);
+            this.labelMailbox.Location = new System.Drawing.Point(93, 5);
+            this.labelMailbox.Name = "labelMailbox";
+            this.labelMailbox.Padding = new System.Windows.Forms.Padding(0, 3, 5, 3);
+            this.labelMailbox.Size = new System.Drawing.Size(246, 19);
+            this.labelMailbox.TabIndex = 2;
+            this.labelMailbox.Text = "-";
+            this.labelMailbox.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Location = new System.Drawing.Point(3, 5);
+            this.label1.Location = new System.Drawing.Point(3, 24);
             this.label1.Name = "label1";
-            this.label1.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            this.label1.Size = new System.Drawing.Size(84, 19);
+            this.label1.Padding = new System.Windows.Forms.Padding(5, 3, 8, 3);
+            this.label1.Size = new System.Drawing.Size(87, 19);
             this.label1.TabIndex = 3;
             this.label1.Text = "CMD Address";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -190,10 +221,10 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label2.Location = new System.Drawing.Point(3, 24);
+            this.label2.Location = new System.Drawing.Point(3, 43);
             this.label2.Name = "label2";
-            this.label2.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            this.label2.Size = new System.Drawing.Size(84, 19);
+            this.label2.Padding = new System.Windows.Forms.Padding(5, 3, 8, 3);
+            this.label2.Size = new System.Drawing.Size(87, 19);
             this.label2.TabIndex = 4;
             this.label2.Text = "RSP Address";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -202,10 +233,10 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label3.Location = new System.Drawing.Point(3, 43);
+            this.label3.Location = new System.Drawing.Point(3, 62);
             this.label3.Name = "label3";
-            this.label3.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            this.label3.Size = new System.Drawing.Size(84, 19);
+            this.label3.Padding = new System.Windows.Forms.Padding(5, 3, 8, 3);
+            this.label3.Size = new System.Drawing.Size(87, 19);
             this.label3.TabIndex = 5;
             this.label3.Text = "ARG Address";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -215,7 +246,7 @@
             this.labelCmdAddr.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.labelCmdAddr, 3);
             this.labelCmdAddr.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCmdAddr.Location = new System.Drawing.Point(93, 5);
+            this.labelCmdAddr.Location = new System.Drawing.Point(93, 24);
             this.labelCmdAddr.Name = "labelCmdAddr";
             this.labelCmdAddr.Padding = new System.Windows.Forms.Padding(0, 3, 5, 3);
             this.labelCmdAddr.Size = new System.Drawing.Size(246, 19);
@@ -228,7 +259,7 @@
             this.labelRspAddr.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.labelRspAddr, 3);
             this.labelRspAddr.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelRspAddr.Location = new System.Drawing.Point(93, 24);
+            this.labelRspAddr.Location = new System.Drawing.Point(93, 43);
             this.labelRspAddr.Name = "labelRspAddr";
             this.labelRspAddr.Padding = new System.Windows.Forms.Padding(0, 3, 5, 3);
             this.labelRspAddr.Size = new System.Drawing.Size(246, 19);
@@ -241,7 +272,7 @@
             this.labelArgAddr.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.labelArgAddr, 3);
             this.labelArgAddr.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelArgAddr.Location = new System.Drawing.Point(93, 43);
+            this.labelArgAddr.Location = new System.Drawing.Point(93, 62);
             this.labelArgAddr.Name = "labelArgAddr";
             this.labelArgAddr.Padding = new System.Windows.Forms.Padding(0, 3, 5, 3);
             this.labelArgAddr.Size = new System.Drawing.Size(246, 19);
@@ -278,6 +309,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Cmd;
         private System.Windows.Forms.DataGridViewTextBoxColumn Arg;
         private System.Windows.Forms.DataGridViewTextBoxColumn Rsp;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label labelMailbox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;

@@ -105,6 +105,13 @@
     <Compile Include="Utils\DriverCleanup.cs" />
     <Compile Include="Utils\InpOutUsage.cs" />
     <Compile Include="Utils\ProfileNotification.cs" />
+    <Compile Include="Theming\ControlStyler.cs" />
+    <Compile Include="Theming\LucideIcon.cs" />
+    <Compile Include="Theming\Theme.cs" />
+    <Compile Include="Theming\ThemedForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Theming\ThemedMessageBox.cs" />
     <Compile Include="Utils\WmiCmdListItem.cs" />
     <Compile Include="Utils\SmuAddressSet.cs" />
     <Compile Include="Utils\PowerLimitMap.cs" />

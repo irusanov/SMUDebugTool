@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using ZenStatesDebugTool.Theming;
 
 namespace ZenStatesDebugTool
 {
@@ -27,6 +28,7 @@ namespace ZenStatesDebugTool
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Theme.Initialize((ThemeMode)AppSettings.Instance.ThemeMode);
             Application.ThreadException += ApplicationThreadException;
             try
             {
@@ -48,7 +50,7 @@ namespace ZenStatesDebugTool
         static void ApplicationThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
         {
             // Handle your exception here...
-            MessageBox.Show(e.Exception.Message, Properties.Resources.Error);
+            ThemedMessageBox.Show(e.Exception.Message, Properties.Resources.Error);
         }
     }
 }

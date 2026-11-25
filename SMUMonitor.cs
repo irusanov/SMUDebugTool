@@ -6,7 +6,7 @@ using ZenStates.Core;
 
 namespace ZenStatesDebugTool
 {
-    public partial class SMUMonitor : Form
+    public partial class SMUMonitor : Theming.ThemedForm
     {
         private readonly Cpu CPU;
         readonly System.Windows.Forms.Timer MonitorTimer = new System.Windows.Forms.Timer();
@@ -24,7 +24,7 @@ namespace ZenStatesDebugTool
             public string Rsp { get; set; }
         }
 
-        public SMUMonitor(Cpu cpu, uint addrMsg, uint addrArg, uint addrRsp)
+        public SMUMonitor(Cpu cpu, uint addrMsg, uint addrArg, uint addrRsp, string mailboxName = null)
         {
             CPU = cpu;
             SMU_ADDR_MSG = addrMsg;
@@ -38,6 +38,11 @@ namespace ZenStatesDebugTool
             labelCmdAddr.Text = $"0x{addrMsg:X8}";
             labelRspAddr.Text = $"0x{addrRsp:X8}";
             labelArgAddr.Text = $"0x{addrArg:X8}";
+
+            // Which mailbox is monitored: in the header row and the window title
+            string mailbox = string.IsNullOrEmpty(mailboxName) ? "Custom" : mailboxName;
+            labelMailbox.Text = mailbox;
+            Text = $"SMU Monitor - {mailbox}";
 
             dataGridView2.DataSource = list;
         }

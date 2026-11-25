@@ -23,6 +23,9 @@ namespace ZenStatesDebugTool
 
         public int AutoUninstallDriverNotificationLevel { get; set; } = (int)DriverCleaner.NotificationLevel.All;
 
+        // 0 = follow Windows, 1 = light, 2 = dark (Theming.ThemeMode); light by default, changed by the title bar toggle
+        public int ThemeMode { get; set; } = 1;
+
         private static AppSettings Load()
         {
             try

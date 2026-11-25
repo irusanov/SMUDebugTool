@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace ZenStatesDebugTool
 {
-    public partial class ResultForm : Form
+    public partial class ResultForm : Theming.ThemedForm
     {
         public ResultForm()
         {
@@ -31,7 +31,7 @@ namespace ZenStatesDebugTool
                 sw.WriteLine(textBoxFormResult.Text);
             }
 
-            MessageBox.Show($"File saved as {fileName}");
+            Theming.ThemedMessageBox.Show($"File saved as {fileName}");
         }
 
         private void buttonSaveResult_Click(object sender, EventArgs e)

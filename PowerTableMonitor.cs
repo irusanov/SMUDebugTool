@@ -6,7 +6,7 @@ using ZenStates.Core;
 
 namespace ZenStatesDebugTool
 {
-    public partial class PowerTableMonitor : Form
+    public partial class PowerTableMonitor : Theming.ThemedForm
     {
         private readonly Cpu CPU;
         readonly Timer PowerCfgTimer = new Timer();

@@ -2882,8 +2882,8 @@ namespace ZenStatesDebugTool
             this.labelCsInfo.Name = "labelCsInfo";
             this.labelCsInfo.Size = new System.Drawing.Size(445, 157);
             this.labelCsInfo.TabIndex = 28;
-            this.labelCsInfo.Text = "Rows are frequency tiers, columns are temperature bands. Range -50 to +30.\r\n\r\nSave and Load use " +
-    "the same profile as the PBO tab.";
+            this.labelCsInfo.Text = "Rows are frequency tiers, columns are temperature bands. Range -50 to +30.\r\n\r\nSav" +
+    "e and Load use the same profile as the PBO tab.";
             this.labelCsInfo.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
             // 
             // tableLayoutPanelCsActions

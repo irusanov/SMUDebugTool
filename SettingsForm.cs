@@ -24,10 +24,11 @@ using ZenStates.Core.Drivers;
 using ZenStates.Core.Hardware.Smu;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.Apob;
+using ZenStatesDebugTool.Theming;
 
 namespace ZenStatesDebugTool
 {
-    public partial class SettingsForm : Form
+    public partial class SettingsForm : ThemedForm
     {
         //private static readonly int Threads = Convert.ToInt32(Environment.GetEnvironmentVariable("NUMBER_OF_PROCESSORS"));
         private BackgroundWorker backgroundWorker1;
@@ -74,7 +75,7 @@ namespace ZenStatesDebugTool
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, Resources.Error);
+                ThemedMessageBox.Show(ex.Message, Resources.Error);
                 Dispose();
                 ExitApplication();
             }
@@ -146,12 +147,12 @@ namespace ZenStatesDebugTool
             /*if (cpu.Status == Utils.LibStatus.PARTIALLY_OK)
             {
                 if (cpu.LastError != null)
-                    MessageBox.Show(cpu.LastError.Message, Resources.Error);
+                    ThemedMessageBox.Show(cpu.LastError.Message, Resources.Error);
             }*/
 
             if (cpu.smu.Version == 0)
             {
-                MessageBox.Show("Error getting SMU version!\n" +
+                ThemedMessageBox.Show("Error getting SMU version!\n" +
                     "Default SMU addresses are not responding to commands.",
                     "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -159,7 +160,7 @@ namespace ZenStatesDebugTool
 
             if (!Directory.Exists(profilesPath))
             {
-                MessageBox.Show("Profiles directory does not exist, created one for you.");
+                ThemedMessageBox.Show("Profiles directory does not exist, created one for you.");
                 Directory.CreateDirectory(profilesPath);
             }
 
@@ -567,7 +568,7 @@ namespace ZenStatesDebugTool
         private static void UpdateDirtyState(NumericUpDown control)
         {
             bool dirty = IsEdited(control);
-            control.BackColor = dirty ? Color.FromArgb(255, 249, 196) : SystemColors.Window;
+            control.BackColor = dirty ? Theme.Current.DirtyField : Theme.Current.Field;
             control.Font = dirty ? new Font(control.Font, FontStyle.Bold) : new Font(control.Font, FontStyle.Regular);
         }
 
@@ -1019,22 +1020,28 @@ namespace ZenStatesDebugTool
 
             int ccdCount = GetCcdCount();
             const int coresPerCcd = 8;
-            const int panelWidth = 160;
-            const int headerHeight = 20;
-            const int headerButtonWidth = 16;
-            const int headerButtonSpacing = 2;
-            const int rowHeight = 21;
             const int coresPerRow = 2;
-            // label width wide enough for "C127"
-            const int labelWidth = 30;
-            const int nudWidth = 44;
-            const int colSpacing = 6;
-            // left column x-offsets
-            const int col0LabelX = 2;
-            const int col0NudX = col0LabelX + labelWidth;
-            // right column x-offsets
-            const int col1LabelX = col0NudX + nudWidth + colSpacing;
-            const int col1NudX = col1LabelX + labelWidth;
+
+            // Sizes follow the font (the blocks are built after the designer layout was scaled to it): the spinner
+            // height is measured, the rest scales from the 8.25pt MS Sans Serif layout this was designed for
+            float scale = Font.Height / 13f;
+            int nudHeight;
+            using (var probe = new NumericUpDown { Font = Font })
+                nudHeight = probe.PreferredHeight;
+            int labelHeight = Font.Height;
+
+            int headerHeight = (int)Math.Round(22 * scale);
+            int headerButtonWidth = (int)Math.Round(16 * scale);
+            int headerButtonSpacing = (int)Math.Round(3 * scale);
+            int rowGap = (int)Math.Round(4 * scale);
+            int rowHeight = nudHeight + rowGap;
+
+            // Built at a provisional width; FitCcdBlocks sizes the blocks to the list's real width (two per row)
+            // and places the labels and spinners. The label column fits "C127", the spinners take the rest.
+            const int panelWidth = 160;
+            int labelWidth = TextRenderer.MeasureText("C127", Font).Width + 2;
+            ccdArrangers.Clear();
+            ccdBlockWidth = -1;
 
             for (int ccd = 0; ccd < ccdCount; ccd++)
             {
@@ -1044,31 +1051,32 @@ namespace ZenStatesDebugTool
                 if (coresInCcd <= 0) break;
 
                 int coreRows = (int)Math.Ceiling(coresInCcd / (double)coresPerRow);
-                int panelHeight = headerHeight + coreRows * rowHeight + 4;
+                int panelHeight = headerHeight + rowGap + coreRows * rowHeight + (int)Math.Round(2 * scale);
 
                 Panel ccdPanel = new Panel
                 {
-                    BorderStyle = BorderStyle.FixedSingle,
+                    BorderStyle = BorderStyle.None,
                     Margin = new Padding(1),
                     Name = $"panelCCD_{ccd}",
                     Size = new Size(panelWidth, panelHeight)
                 };
 
-                // Header: dark strip containing the label and the icon buttons
+                Theme.SetRole(ccdPanel, ThemeRole.Card);
+
+                // Header: strip containing the label and the icon buttons
                 Panel header = new Panel
                 {
-                    BackColor = SystemColors.ControlDark,
-                    Location = new Point(0, 0),
+                    Location = new Point(1, 1),
                     Margin = new Padding(0),
-                    Size = new Size(panelWidth, headerHeight)
+                    Size = new Size(panelWidth - 2, headerHeight - 1)
                 };
+                Theme.SetRole(header, ThemeRole.Header);
 
                 Label ccdLabel = new Label
                 {
                     AutoSize = false,
                     BackColor = Color.Transparent,
-                    ForeColor = SystemColors.ControlLightLight,
-                    Font = new Font("Microsoft Sans Serif", 7.5f, FontStyle.Bold),
+                    Font = new Font("Segoe UI Semibold", 7.5f),
                     Location = new Point(0, 0),
                     Padding = new Padding(3, 0, 0, 0),
                     // leave room for the three icon buttons on the right
@@ -1076,11 +1084,12 @@ namespace ZenStatesDebugTool
                     Text = $"CCD {ccd}",
                     TextAlign = ContentAlignment.MiddleLeft
                 };
+                Theme.SetRole(ccdLabel, ThemeRole.Header);
 
                 int buttonY = (headerHeight - headerButtonWidth) / 2;
-                Button resetBtn = CreateCcdHeaderButton(CcdHeaderIcon.Reset, panelWidth - 3 * (headerButtonWidth + headerButtonSpacing) - 2, buttonY, headerButtonWidth, Tuple.Create(ccd, 0), $"Reset CCD {ccd} to the last read values");
-                Button decBtn = CreateCcdHeaderButton(CcdHeaderIcon.Minus, panelWidth - 2 * (headerButtonWidth + headerButtonSpacing) - 2, buttonY, headerButtonWidth, Tuple.Create(ccd, -1), $"Decrease all cores of CCD {ccd} by 1");
-                Button incBtn = CreateCcdHeaderButton(CcdHeaderIcon.Plus, panelWidth - (headerButtonWidth + headerButtonSpacing) - 2, buttonY, headerButtonWidth, Tuple.Create(ccd, 1), $"Increase all cores of CCD {ccd} by 1");
+                Button resetBtn = CreateCcdHeaderButton(CcdHeaderIcon.Reset, 0, buttonY, headerButtonWidth, Tuple.Create(ccd, 0), $"Reset CCD {ccd} to the last read values");
+                Button decBtn = CreateCcdHeaderButton(CcdHeaderIcon.Minus, 0, buttonY, headerButtonWidth, Tuple.Create(ccd, -1), $"Decrease all cores of CCD {ccd} by 1");
+                Button incBtn = CreateCcdHeaderButton(CcdHeaderIcon.Plus, 0, buttonY, headerButtonWidth, Tuple.Create(ccd, 1), $"Increase all cores of CCD {ccd} by 1");
                 resetBtn.Click += CcdBulkButton_Click;
                 decBtn.Click += CcdBulkButton_Click;
                 incBtn.Click += CcdBulkButton_Click;
@@ -1092,7 +1101,9 @@ namespace ZenStatesDebugTool
                 ccdPanel.Controls.Add(header);
 
                 // Core grid: column-major (top-to-bottom, then next column)
-                int yOffset = headerHeight + 1;
+                var columnLabels = new[] { new List<Label>(), new List<Label>() };
+                var columnSpinners = new[] { new List<NumericUpDown>(), new List<NumericUpDown>() };
+                int yOffset = headerHeight + rowGap;
                 for (int row = 0; row < coreRows; row++)
                 {
                     for (int col = 0; col < coresPerRow; col++)
@@ -1102,14 +1113,12 @@ namespace ZenStatesDebugTool
                         if (localIndex >= coresInCcd) continue;
 
                         int coreIndex = startCore + localIndex;
-                        int labelX = col == 0 ? col0LabelX : col1LabelX;
-                        int nudX = col == 0 ? col0NudX : col1NudX;
 
                         Label lbl = new Label
                         {
-                            Location = new Point(labelX, yOffset + 3),
+                            Location = new Point(0, yOffset + (nudHeight - labelHeight) / 2),
                             Name = $"labelCO_{coreIndex}",
-                            Size = new Size(labelWidth, 14),
+                            Size = new Size(labelWidth, labelHeight),
                             Text = $"C{coreIndex}",
                             TextAlign = ContentAlignment.MiddleLeft
                         };
@@ -1117,12 +1126,12 @@ namespace ZenStatesDebugTool
                         NumericUpDown nud = new NumericUpDown
                         {
                             Enabled = false,
-                            Location = new Point(nudX, yOffset),
+                            Location = new Point(0, yOffset),
                             Margin = new Padding(0),
                             Maximum = 999,
                             Minimum = -999,
                             Name = $"numericUpDownCO_{coreIndex}",
-                            Size = new Size(nudWidth, 20),
+                            Size = new Size(40, nudHeight),
                             TextAlign = HorizontalAlignment.Right,
                             Tag = coreIndex
                         };
@@ -1132,14 +1141,71 @@ namespace ZenStatesDebugTool
                         ccdPanel.Controls.Add(lbl);
                         ccdPanel.Controls.Add(nud);
                         coControls[coreIndex] = nud;
+                        columnLabels[col].Add(lbl);
+                        columnSpinners[col].Add(nud);
                     }
 
                     yOffset += rowHeight;
                 }
 
+                // Places everything in the block for a given block width
+                ccdArrangers.Add(width =>
+                {
+                    int sidePadding = (int)Math.Round(5 * scale);
+                    int colSpacing = (int)Math.Round(8 * scale);
+                    int nudWidth = Math.Max(36, (width - 2 * sidePadding - colSpacing) / 2 - labelWidth);
+                    int[] labelX = { sidePadding, sidePadding + labelWidth + nudWidth + colSpacing };
+
+                    ccdPanel.Width = width;
+                    header.Width = width - 2;
+                    ccdLabel.Width = width - 3 * (headerButtonWidth + headerButtonSpacing) - 2;
+                    resetBtn.Left = width - 3 * (headerButtonWidth + headerButtonSpacing) - 2;
+                    decBtn.Left = width - 2 * (headerButtonWidth + headerButtonSpacing) - 2;
+                    incBtn.Left = width - (headerButtonWidth + headerButtonSpacing) - 2;
+
+                    for (int col = 0; col < coresPerRow; col++)
+                    {
+                        foreach (Label label in columnLabels[col])
+                            label.Left = labelX[col];
+                        foreach (NumericUpDown spinner in columnSpinners[col])
+                            spinner.SetBounds(labelX[col] + labelWidth, spinner.Top, nudWidth, spinner.Height);
+                    }
+                });
+
                 flowLayoutPanelCOList.Controls.Add(ccdPanel);
             }
 
+            flowLayoutPanelCOList.ResumeLayout();
+
+            flowLayoutPanelCOList.ClientSizeChanged -= FlowLayoutPanelCOList_ClientSizeChanged;
+            flowLayoutPanelCOList.ClientSizeChanged += FlowLayoutPanelCOList_ClientSizeChanged;
+            FitCcdBlocks();
+        }
+
+        // Per CCD block: places its contents for a block width
+        private readonly List<Action<int>> ccdArrangers = new List<Action<int>>();
+        private int ccdBlockWidth = -1;
+
+        private void FlowLayoutPanelCOList_ClientSizeChanged(object sender, EventArgs e) => FitCcdBlocks();
+
+        // Two blocks per row filling the list's width (its client width already excludes a visible scroll bar)
+        private void FitCcdBlocks()
+        {
+            if (ccdArrangers.Count == 0)
+                return;
+
+            // The block heights do not depend on the width, so a scroll bar that appears (and narrows the client
+            // area) just triggers one more fit
+            int available = flowLayoutPanelCOList.ClientSize.Width;
+
+            int width = Math.Max(140, available / 2 - 2);
+            if (width == ccdBlockWidth)
+                return;
+
+            ccdBlockWidth = width;
+            flowLayoutPanelCOList.SuspendLayout();
+            foreach (Action<int> arrange in ccdArrangers)
+                arrange(width);
             flowLayoutPanelCOList.ResumeLayout();
         }
 
@@ -1149,62 +1215,18 @@ namespace ZenStatesDebugTool
         {
             Button button = new Button
             {
-                BackColor = SystemColors.ControlDark,
-                FlatStyle = FlatStyle.Flat,
-                ForeColor = SystemColors.ControlLightLight,
                 Location = new Point(x, y),
                 Margin = new Padding(0),
                 Size = new Size(size, size),
                 Tag = action,
                 TabStop = false,
-                UseVisualStyleBackColor = false
             };
-            button.FlatAppearance.BorderSize = 0;
-            button.FlatAppearance.MouseOverBackColor = SystemColors.ControlDarkDark;
-            button.FlatAppearance.MouseDownBackColor = SystemColors.Highlight;
-            button.FlatAppearance.BorderColor = SystemColors.ControlDark;
-            button.Paint += (s, e) => DrawCcdHeaderIcon(e.Graphics, button.ClientRectangle, icon, button.Enabled ? button.ForeColor : SystemColors.ControlLight);
+
+            // Lucide icons, drawn by the theme as a flat icon button
+            Theme.SetRole(button, ThemeRole.IconButton);
+            Theme.SetIcon(button, icon == CcdHeaderIcon.Plus ? Icons.Plus : icon == CcdHeaderIcon.Minus ? Icons.Minus : Icons.RotateCcw);
             formToolTip.SetToolTip(button, tooltipText);
             return button;
-        }
-
-        // Icons are drawn as vector paths so they stay crisp at any DPI (no SVG support in WinForms on .NET Framework).
-        private static void DrawCcdHeaderIcon(Graphics g, Rectangle bounds, CcdHeaderIcon icon, Color color)
-        {
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-            float cx = bounds.Left + bounds.Width / 2f;
-            float cy = bounds.Top + bounds.Height / 2f;
-            // 10px glyph inside a 16px button
-            float half = Math.Min(bounds.Width, bounds.Height) * 0.3f;
-
-            using (Pen pen = new Pen(color, 1.6f) { StartCap = System.Drawing.Drawing2D.LineCap.Round, EndCap = System.Drawing.Drawing2D.LineCap.Round })
-            {
-                switch (icon)
-                {
-                    case CcdHeaderIcon.Plus:
-                        g.DrawLine(pen, cx, cy - half, cx, cy + half);
-                        goto case CcdHeaderIcon.Minus;
-
-                    case CcdHeaderIcon.Minus:
-                        g.DrawLine(pen, cx - half, cy, cx + half, cy);
-                        break;
-
-                    case CcdHeaderIcon.Reset:
-                        // "Undo" arrow: a curved stroke sweeping left into an arrowhead.
-                        float x0 = cx - half, x1 = cx + half;
-                        float yTop = cy - half * 0.45f, yBottom = cy + half * 0.75f;
-                        using (var path = new System.Drawing.Drawing2D.GraphicsPath())
-                        {
-                            path.AddBezier(x0, yTop, cx - half * 0.2f, yTop - half * 0.9f, x1 + half * 0.1f, yTop - half * 0.3f, x1 - half * 0.15f, yBottom);
-                            g.DrawPath(pen, path);
-                        }
-                        float headLen = half * 0.8f;
-                        g.DrawLine(pen, x0, yTop, x0 + headLen, yTop - headLen * 0.9f);
-                        g.DrawLine(pen, x0, yTop, x0 + headLen, yTop + headLen * 0.9f);
-                        break;
-                }
-            }
         }
 
         private void CcdBulkButton_Click(object sender, EventArgs e)
@@ -1404,7 +1426,7 @@ namespace ZenStatesDebugTool
         {
             SetStatusText(Resources.Error);
             Log(message, LogLevel.Error);
-            MessageBox.Show(message, title);
+            ThemedMessageBox.Show(message, title);
         }
 
         private void ShowResultMessageBox(uint[] data, string title = "SMU response", string context = null)
@@ -1867,7 +1889,7 @@ namespace ZenStatesDebugTool
 
         private void ButtonScan_Click(object sender, EventArgs e)
         {
-            var confirmResult = MessageBox.Show(
+            var confirmResult = ThemedMessageBox.Show(
                 "The scan process might crash your system or have other unexpected results. " +
                 Environment.NewLine +
                 "It could take up to 1 minute, depending on the system and current workload." +
@@ -1883,10 +1905,8 @@ namespace ZenStatesDebugTool
 
         private enum LogLevel { Info, Success, Warning, Error }
 
-        private static readonly Color LogTimeColor = SystemColors.GrayText;
-        private static readonly Color LogSuccessColor = Color.FromArgb(0, 128, 0);
-        private static readonly Color LogWarningColor = Color.FromArgb(176, 112, 0);
-        private static readonly Color LogErrorColor = Color.FromArgb(192, 0, 0);
+        private static Color LogTimeColor => Theme.Current.Muted;
+        private static Color LogTextColor => Theme.Current.Text;
 
         // Messages logged before the log control has a window handle (during form construction).
         // Writing formatted text would force the handle, and the form's, to be created too early.
@@ -1917,10 +1937,10 @@ namespace ZenStatesDebugTool
         {
             switch (level)
             {
-                case LogLevel.Success: return LogSuccessColor;
-                case LogLevel.Warning: return LogWarningColor;
-                case LogLevel.Error: return LogErrorColor;
-                default: return SystemColors.WindowText;
+                case LogLevel.Success: return Theme.Current.Success;
+                case LogLevel.Warning: return Theme.Current.Warning;
+                case LogLevel.Error: return Theme.Current.Danger;
+                default: return LogTextColor;
             }
         }
 
@@ -1965,7 +1985,7 @@ namespace ZenStatesDebugTool
             if (hasOutput)
             {
                 textBoxResult.SelectionFont = textBoxResult.Font;
-                textBoxResult.SelectionColor = SystemColors.WindowText;
+                textBoxResult.SelectionColor = LogTextColor;
                 textBoxResult.SelectedText = Indent(output) + "\n\n";
             }
 
@@ -1998,7 +2018,7 @@ namespace ZenStatesDebugTool
 
                 textBoxResult.Select(position, 0);
                 textBoxResult.SelectionFont = textBoxResult.Font;
-                textBoxResult.SelectionColor = SystemColors.WindowText;
+                textBoxResult.SelectionColor = LogTextColor;
                 textBoxResult.SelectedText = "\n" + Indent(text) + "\n";
 
                 if (logAppendAnchor >= 0)
@@ -2071,15 +2091,14 @@ namespace ZenStatesDebugTool
 
         private void InitTabStrip()
         {
-            tabStrip = new ListBox
+            tabStrip = new TabListBox
             {
                 Name = "listBoxTabs",
                 BorderStyle = BorderStyle.None,
-                BackColor = SystemColors.Control,
                 DrawMode = DrawMode.OwnerDrawFixed,
                 IntegralHeight = false,
-                ItemHeight = 28,
-                Width = 90,
+                ItemHeight = ControlStyler.Px(32),
+                Width = TabStripWidth,
                 Dock = DockStyle.Left,
                 TabStop = false,
             };
@@ -2094,6 +2113,53 @@ namespace ZenStatesDebugTool
 
             splitContainer1.Panel1.Controls.Add(tabStrip);
             tabControl1.BringToFront(); // keeps the TabControl as the Fill control next to the docked list
+
+            // The list is wider than the designer's 90 px to make room for the icons; the window grows with it
+            ClientSize = new Size(ClientSize.Width + TabStripWidth - 90, ClientSize.Height);
+
+            tabStrip.MouseMove += (s, e) => SetTabHover(tabStrip.IndexFromPoint(e.Location));
+            tabStrip.MouseLeave += (s, e) => SetTabHover(-1);
+        }
+
+        private int TabStripWidth => ControlStyler.Px(124);
+        private int tabHover = -1;
+
+        // Only the two items whose hover state changed are redrawn
+        private void SetTabHover(int index)
+        {
+            if (index == tabHover)
+                return;
+
+            int previous = tabHover;
+            tabHover = index;
+            InvalidateTab(previous);
+            InvalidateTab(index);
+        }
+
+        private void InvalidateTab(int index)
+        {
+            if (index >= 0 && index < tabStrip.Items.Count)
+                tabStrip.Invalidate(tabStrip.GetItemRectangle(index));
+        }
+
+        // Lucide icon of each page, by its tab text
+        private static LucideIcon TabIcon(string text)
+        {
+            switch (text)
+            {
+                case "CPU": return Icons.Cpu;
+                case "SMU": return Icons.Microchip;
+                case "PCI": return Icons.CircuitBoard;
+                case "MSR": return Icons.Binary;
+                case "CPUID": return Icons.Fingerprint;
+                case "PBO": return Icons.Gauge;
+                case "Curve Shaper": return Icons.ChartSpline;
+                case "AMD ACPI": return Icons.Terminal;
+                case "PStates": return Icons.Layers;
+                case "Info": return Icons.Info;
+                case "Settings": return Icons.Settings;
+                default: return null;
+            }
         }
 
         private void TabStrip_SelectedIndexChanged(object sender, EventArgs e)
@@ -2122,23 +2188,120 @@ namespace ZenStatesDebugTool
             if (e.Index < 0 || e.Index >= tabStrip.Items.Count)
                 return;
 
+            Palette p = Theme.Current;
             bool selected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
-            Rectangle bounds = e.Bounds;
+            bool hover = e.Index == tabHover && !selected;
 
-            using (Brush background = new SolidBrush(selected ? SystemColors.Window : SystemColors.Control))
-                e.Graphics.FillRectangle(background, bounds);
+            // Drawn straight onto the list: the item paints its whole area, and only changed items are redrawn
+            DrawTabItem(e.Graphics, e.Bounds, e.Index, selected, hover, p);
+        }
+
+        private void DrawTabItem(Graphics g, Rectangle bounds, int index, bool selected, bool hover, Palette p)
+        {
+
+            using (Brush background = new SolidBrush(p.Bg))
+                g.FillRectangle(background, bounds);
+
+            // Rounded pill for the selected and the hovered page, accent bar on the selected one
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            RectangleF pill = new RectangleF(bounds.Left + ControlStyler.Px(6), bounds.Top + ControlStyler.Px(2),
+                bounds.Width - ControlStyler.Px(10), bounds.Height - ControlStyler.Px(4));
+            if (selected || hover)
+            {
+                Color fill = selected ? Palette.Blend(p.Bg, p.Accent, p.IsDark ? 0.32f : 0.12f) : p.Hover;
+                using (var path = ControlStyler.RoundedRect(pill, ControlStyler.Px(6)))
+                using (Brush brush = new SolidBrush(fill))
+                    g.FillPath(brush, path);
+            }
 
             if (selected)
             {
-                using (Brush accent = new SolidBrush(TabAccentColor))
-                    e.Graphics.FillRectangle(accent, new Rectangle(bounds.Left, bounds.Top, 3, bounds.Height));
+                using (var path = ControlStyler.RoundedRect(new RectangleF(pill.Left, pill.Top + ControlStyler.Px(6), ControlStyler.Px(3), pill.Height - ControlStyler.Px(12)), ControlStyler.Px(1.5f)))
+                using (Brush accent = new SolidBrush(p.AccentFg))
+                    g.FillPath(accent, path);
             }
 
-            Rectangle textBounds = new Rectangle(bounds.Left + 10, bounds.Top, bounds.Width - 12, bounds.Height);
-            TextRenderer.DrawText(e.Graphics, tabStrip.Items[e.Index].ToString(), tabStrip.Font, textBounds,
-                SystemColors.ControlText,
-                TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis);
+            string text = tabStrip.Items[index].ToString();
+            Color color = selected ? p.Text : p.Muted;
+            int x = (int)pill.Left + ControlStyler.Px(10);
+            int iconSize = ControlStyler.Px(15);
+
+            LucideIcon icon = TabIcon(text);
+            if (icon != null)
+            {
+                icon.Draw(g, new RectangleF(x, bounds.Top, iconSize, bounds.Height), selected ? p.AccentFg : p.Muted, iconSize);
+                x += iconSize + ControlStyler.Px(8);
+            }
+
+            Rectangle textBounds = new Rectangle(x, bounds.Top, (int)pill.Right - x - ControlStyler.Px(2), bounds.Height);
+            TextRenderer.DrawText(g, text, selected ? tabFontSelected : tabStrip.Font, textBounds, color,
+                TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis | TextFormatFlags.NoPadding);
         }
+
+        private static readonly Font tabFontSelected = new Font("Segoe UI Semibold", 8.25f);
+
+        // ---- theme ----
+
+        protected override void OnThemeApplied(Palette previous)
+        {
+            base.OnThemeApplied(previous);
+
+            // Edited values keep their highlight
+            foreach (NumericUpDown control in AllControls(this).OfType<NumericUpDown>())
+                UpdateDirtyState(control);
+
+            if (previous != null)
+                RecolorLog(previous);
+
+            tabStrip?.Invalidate();
+        }
+
+        private static IEnumerable<Control> AllControls(Control root)
+        {
+            foreach (Control child in root.Controls)
+            {
+                yield return child;
+                foreach (Control nested in AllControls(child))
+                    yield return nested;
+            }
+        }
+
+        // The log keeps its text when the theme changes: its colors are swapped for the new palette's
+        private void RecolorLog(Palette previous)
+        {
+            if (!textBoxResult.IsHandleCreated || textBoxResult.TextLength == 0)
+                return;
+
+            Palette now = Theme.Current;
+            var map = new[]
+            {
+                Tuple.Create(previous.Muted, now.Muted),
+                Tuple.Create(previous.Text, now.Text),
+                Tuple.Create(previous.Success, now.Success),
+                Tuple.Create(previous.Warning, now.Warning),
+                Tuple.Create(previous.Danger, now.Danger),
+            };
+
+            string rtf = textBoxResult.Rtf;
+            int colorTable = rtf.IndexOf("{\\colortbl", StringComparison.Ordinal);
+            if (colorTable < 0)
+                return;
+            int end = rtf.IndexOf('}', colorTable);
+            if (end < 0)
+                return;
+
+            string table = rtf.Substring(colorTable, end - colorTable);
+            string recolored = table;
+            foreach (var pair in map)
+                recolored = recolored.Replace(RtfColor(pair.Item1), "\\0" + RtfColor(pair.Item2).Substring(1));
+            recolored = recolored.Replace("\\0red", "\\red");
+
+            textBoxResult.Rtf = rtf.Substring(0, colorTable) + recolored + rtf.Substring(end);
+            textBoxResult.Select(0, 0);
+            textBoxResult.ScrollToCaret();
+        }
+
+        private static string RtfColor(Color c) => $"\\red{c.R}\\green{c.G}\\blue{c.B};";
 
         private void TabControl1_Selected(object sender, TabControlEventArgs e)
         {
@@ -2219,7 +2382,7 @@ namespace ZenStatesDebugTool
             //ResetSmuAddresses();
             SetButtonsState();
             SetStatusText("Report Complete.");
-            MessageBox.Show($"Report saved as {fileName}");
+            ThemedMessageBox.Show($"Report saved as {fileName}");
         }
 
         // MSRC001_006[4..B] P-state definition (P0..P7).
@@ -2522,13 +2685,13 @@ namespace ZenStatesDebugTool
             string validationError = ValidatePstate(fid, did);
             if (validationError != null)
             {
-                MessageBox.Show(validationError, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ThemedMessageBox.Show(validationError, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             var pstateId = int.Parse((string)pstateIdBox.SelectedItem);
 
-            var confirmResult = MessageBox.Show(
+            var confirmResult = ThemedMessageBox.Show(
                 $@"This will change PState {pstateId} to {FormatPstateFrequency(fid, did)} and your CPU frequency." +
                 Environment.NewLine +
                 @"Setting a high frequency could crash/damage your system." +
@@ -2854,7 +3017,11 @@ namespace ZenStatesDebugTool
             TryConvertToUint(textBoxRSPAddress.Text, out uint addrRsp);
             TryConvertToUint(textBoxARGAddress.Text, out uint addrArg);
 
-            new Thread(() => new SMUMonitor(cpu, addrMsg, addrArg, addrRsp).ShowDialog()).Start();
+            // Name of the mailbox whose addresses are entered (none of them: custom addresses)
+            string mailboxName = comboBoxMailboxSelect.Items.OfType<MailboxListItem>()
+                .FirstOrDefault(m => m.msgAddr == addrMsg && m.rspAddr == addrRsp && m.argAddr == addrArg)?.label;
+
+            new Thread(() => new SMUMonitor(cpu, addrMsg, addrArg, addrRsp, mailboxName).ShowDialog()).Start();
         }
 
         private void ComboBoxMailboxSelect_SelectedIndexChanged(object sender, EventArgs e)
@@ -3418,7 +3585,7 @@ namespace ZenStatesDebugTool
             {
                 if (!Directory.Exists(profilesPath))
                 {
-                    MessageBox.Show("Profiles directory does not exist, created one for you.");
+                    ThemedMessageBox.Show("Profiles directory does not exist, created one for you.");
                     Directory.CreateDirectory(profilesPath);
                 }
 
@@ -3686,7 +3853,7 @@ namespace ZenStatesDebugTool
 
                 if (!IsExecutableLocationSecure(Application.ExecutablePath, out string reason))
                 {
-                    DialogResult answer = MessageBox.Show(
+                    DialogResult answer = ThemedMessageBox.Show(
                         "The startup task runs as SYSTEM (the most privileged account) at every boot, logon and resume from sleep.\n\n" +
                         reason + "\n\n" +
                         "Any non-administrator that can modify these files could make Windows run its own code as SYSTEM.\n\n" +
@@ -3887,7 +4054,7 @@ namespace ZenStatesDebugTool
 
         private void ConfirmWindowsRestart()
         {
-            var result = MessageBox.Show(
+            var result = ThemedMessageBox.Show(
                 "A restart is required to apply the changes. Would you like to restart now?",
                 "Confirm Restart",
                 MessageBoxButtons.YesNo,
@@ -3938,7 +4105,7 @@ namespace ZenStatesDebugTool
 
             if (File.Exists(name))
             {
-                var result = MessageBox.Show(
+                var result = ThemedMessageBox.Show(
                     $"File {name} already exists. Overwrite?",
                     "Confirm Overwrite",
                     MessageBoxButtons.YesNo,
@@ -3962,7 +4129,7 @@ namespace ZenStatesDebugTool
                 
                 string elapsedTime = $"{stopwatch.Elapsed.TotalSeconds:F2}";
                 SetStatusText(name + $": Dump complete. ({elapsedTime}s)");
-                MessageBox.Show($"Memory dump completed successfully to file: {name}\n\nTime elapsed: {elapsedTime}s", "Dump Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ThemedMessageBox.Show($"Memory dump completed successfully to file: {name}\n\nTime elapsed: {elapsedTime}s", "Dump Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception)
             {
@@ -4021,6 +4188,34 @@ namespace ZenStatesDebugTool
             }
 
             InitCS();
+        }
+    }
+
+    /// <summary>
+    /// The tab list. Items paint their whole area themselves, so the background is only erased below the last
+    /// item; erasing behind the items made them flicker on every hover change.
+    /// </summary>
+    internal class TabListBox : ListBox
+    {
+        private const int WM_ERASEBKGND = 0x0014;
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_ERASEBKGND)
+            {
+                int itemsBottom = Items.Count > 0 ? GetItemRectangle(Items.Count - 1).Bottom : 0;
+                if (itemsBottom < ClientSize.Height)
+                {
+                    using (Graphics g = Graphics.FromHdc(m.WParam))
+                    using (var brush = new SolidBrush(BackColor))
+                        g.FillRectangle(brush, 0, itemsBottom, ClientSize.Width, ClientSize.Height - itemsBottom);
+                }
+
+                m.Result = (IntPtr)1;
+                return;
+            }
+
+            base.WndProc(ref m);
         }
     }
 
