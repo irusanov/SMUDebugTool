@@ -272,6 +272,7 @@ namespace ZenStatesDebugTool
             this.tabPageInfo = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonExport = new System.Windows.Forms.Button();
+            this.checkBoxReportScan = new System.Windows.Forms.CheckBox();
             this.smuInfoLabel = new System.Windows.Forms.Label();
             this.biosInfoLabel = new System.Windows.Forms.Label();
             this.mbVendorInfoLabel = new System.Windows.Forms.Label();
@@ -3631,6 +3632,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.Controls.Add(this.buttonExport, 0, 11);
+            this.tableLayoutPanel3.Controls.Add(this.checkBoxReportScan, 0, 12);
             this.tableLayoutPanel3.Controls.Add(this.smuInfoLabel, 1, 9);
             this.tableLayoutPanel3.Controls.Add(this.biosInfoLabel, 1, 7);
             this.tableLayoutPanel3.Controls.Add(this.mbVendorInfoLabel, 1, 5);
@@ -3655,7 +3657,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.tableLayoutPanel3.RowCount = 12;
+            this.tableLayoutPanel3.RowCount = 13;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -3667,6 +3669,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.Size = new System.Drawing.Size(445, 328);
             this.tableLayoutPanel3.TabIndex = 0;
@@ -3683,6 +3686,21 @@ namespace ZenStatesDebugTool
             this.buttonExport.Text = "Debug Report";
             this.buttonExport.UseVisualStyleBackColor = true;
             this.buttonExport.Click += new System.EventHandler(this.ButtonExport_Click);
+            // 
+            // checkBoxReportScan
+            // 
+            this.checkBoxReportScan.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.checkBoxReportScan.AutoSize = true;
+            this.tableLayoutPanel3.SetColumnSpan(this.checkBoxReportScan, 2);
+            this.checkBoxReportScan.Checked = true;
+            this.checkBoxReportScan.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxReportScan.Location = new System.Drawing.Point(3, 306);
+            this.checkBoxReportScan.Margin = new System.Windows.Forms.Padding(3, 2, 3, 3);
+            this.checkBoxReportScan.Name = "checkBoxReportScan";
+            this.checkBoxReportScan.Size = new System.Drawing.Size(220, 17);
+            this.checkBoxReportScan.TabIndex = 2;
+            this.checkBoxReportScan.Text = "Include SMU mailbox scan (can hang the system)";
+            this.checkBoxReportScan.UseVisualStyleBackColor = true;
             // 
             // smuInfoLabel
             // 
@@ -4254,6 +4272,7 @@ namespace ZenStatesDebugTool
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textBoxPciValue;
         private System.Windows.Forms.Button buttonExport;
+        private System.Windows.Forms.CheckBox checkBoxReportScan;
         private ZenStatesDebugTool.HiddenHeaderTabControl tabControl1;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;

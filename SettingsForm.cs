@@ -220,6 +220,7 @@ namespace ZenStatesDebugTool
             formToolTip.SetToolTip(numericUpDownMaxVoltage, "Highest voltage offered by the manual OC voltage (VID) control on the CPU tab. Default 1.350 V.");
             formToolTip.SetToolTip(checkBoxApplyCOStartup, "Apply the saved profile (Curve Optimizer, PPT/TDC/EDC, scalar, FMax and Curve Shaper) when you log on and on resume from sleep. Only for your account, with your administrator rights.");
             formToolTip.SetToolTip(checkBoxStartupAllUsers, "Apply the saved profile when any user logs on and on resume from sleep, also when you are not logged on. The task runs as SYSTEM (the most privileged account).");
+            formToolTip.SetToolTip(checkBoxReportScan, "Ends the debug report with an SMU mailbox scan, to find mailboxes the core does not know. The scan writes to the SMU and can hang the system; the rest of the report is saved before it starts.");
             formToolTip.SetToolTip(checkBoxProfileLimits, "Save, load and apply at startup the PPT, TDC, EDC, scalar and FMax values with the profile. Unchecked, the profile only holds the Curve Optimizer (and Curve Shaper) margins. The choice is saved in the profile.");
             InitProfileLimitsOption();
             formToolTip.SetToolTip(checkBoxAutoUninstallDriver, "Stops and removes the inpoutx64 driver service when the last instance of SMUDebugTool or ZenTimings exits.");
@@ -1978,6 +1979,7 @@ namespace ZenStatesDebugTool
 
         private int smuScanProbes;
         private bool smuScanAborted;
+        private string smuScanAbortDetail;
 
         // Reads the registers once, without writing anything
         private Dictionary<uint, uint> ReadSmuRegion(uint start, uint end)
@@ -1991,30 +1993,49 @@ namespace ZenStatesDebugTool
         // Sends a message without arguments the way the firmware expects it: only when the mailbox is idle (response
         // not 0), clear the response, write the message, wait for the response. Returns the response, 0 if none came
         // (then the response register gets its old value back, in case it was not a mailbox).
+        //
+        // The whole exchange holds the PCI bus lock once (the same named mutex the core and ZenTimings use), with
+        // the no-lock register access inside, so a command the core sends in the meantime (power table refresh,
+        // monitoring) can't run into it. Without the lock, a probe could write a message to the RSMU while the core's
+        // own command was still running, which can hang the mailbox.
         private uint ProbeSmuMailbox(uint msgAddress, uint rspAddress, uint msg)
         {
-            uint previous = cpu.ReadDword(rspAddress);
-            if (previous == 0)
+            if (!Mutexes.WaitPciBus(5000))
                 return 0;
 
-            if (!cpu.WriteDwordEx(rspAddress, 0))
-                return 0;
-
-            if (cpu.WriteDwordEx(msgAddress, msg))
+            try
             {
-                Stopwatch watch = Stopwatch.StartNew();
-                do
-                {
-                    uint response = cpu.ReadDword(rspAddress);
-                    if (response != 0)
-                        return response;
+                // Wait until the mailbox is idle (a command still running has response 0)
+                uint previous = 0;
+                Stopwatch idle = Stopwatch.StartNew();
+                while ((previous = cpu.ReadDwordNoLock(rspAddress)) == 0 && idle.ElapsedMilliseconds < 200)
                     Thread.Sleep(1);
-                }
-                while (watch.ElapsedMilliseconds < 50);
-            }
+                if (previous == 0)
+                    return 0;
 
-            cpu.WriteDwordEx(rspAddress, previous);
-            return 0;
+                if (!cpu.WriteDwordExNoLock(rspAddress, 0))
+                    return 0;
+
+                if (cpu.WriteDwordExNoLock(msgAddress, msg))
+                {
+                    Stopwatch watch = Stopwatch.StartNew();
+                    do
+                    {
+                        uint response = cpu.ReadDwordNoLock(rspAddress);
+                        if (response != 0)
+                            return response;
+                        Thread.Sleep(1);
+                    }
+                    while (watch.ElapsedMilliseconds < 50);
+                }
+
+                cpu.WriteDwordExNoLock(rspAddress, previous);
+                return 0;
+            }
+            finally
+            {
+                Mutexes.ReleasePciBus();
+            }
         }
 
         // The known RSMU must keep answering while the scan runs; if it stops, the scan stops writing
@@ -2024,11 +2045,12 @@ namespace ZenStatesDebugTool
             if (rsmu == null || rsmu.SMU_ADDR_MSG == 0 || rsmu.SMU_ADDR_RSP == 0)
                 return true;
 
-            for (int attempt = 0; attempt < 3; attempt++)
+            // Up to about a second: the SMU can be slow to answer while it is busy
+            for (int attempt = 0; attempt < 5; attempt++)
             {
                 if (ProbeSmuMailbox(rsmu.SMU_ADDR_MSG, rsmu.SMU_ADDR_RSP, SmuScanGetVersion) == 0x01)
                     return true;
-                Thread.Sleep(20);
+                Thread.Sleep(100);
             }
             return false;
         }
@@ -2098,6 +2120,7 @@ namespace ZenStatesDebugTool
                 if (!IsRsmuResponding())
                 {
                     smuScanAborted = true;
+                    smuScanAbortDetail = $"0x{candidate.Key:X8} / 0x{candidate.Value:X8} (probe {smuScanProbes})";
                     Console.WriteLine($"SMU scan stopped: RSMU no longer answers after probing 0x{candidate.Key:X8} / 0x{candidate.Value:X8}");
                     Invoke(new MethodInvoker(() => Log(
                         $"SMU scan stopped: the RSMU stopped answering after probing 0x{candidate.Key:X8} / 0x{candidate.Value:X8}. A restart may be needed.",
@@ -2264,6 +2287,7 @@ namespace ZenStatesDebugTool
                 matches = new List<SmuAddressSet>();
                 smuScanProbes = 0;
                 smuScanAborted = false;
+                smuScanAbortDetail = null;
 
                 switch (cpu.info.codeName)
                 {
@@ -2871,78 +2895,80 @@ namespace ZenStatesDebugTool
             UpdateLogPanelCollapsed(e.TabPage);
         }
 
-        public string GenerateReportJson()
+        private string debugReportPath;
+        private bool debugReportScan;
+
+        // The report is written to the file first, then the scan (if chosen) runs and its result is appended: when the
+        // scan hangs the system, the file still holds everything else.
+        private void DebugReport_DoWork(object sender, DoWorkEventArgs e)
         {
-            StringWriter sw = new StringWriter();
-            JsonTextWriter writer = new JsonTextWriter(sw)
-            {
-                Formatting = Formatting.Indented
-            };
+            Invoke(new MethodInvoker(() => SetStatusText("Collecting debug report, please wait...")));
+            string report = new DebugReportGenerator(cpu, matches).Generate();
+            WriteReportToDisk(debugReportPath, report, false);
 
-            // {
-            writer.WriteStartObject();
+            if (!debugReportScan)
+                return;
 
-            writer.WritePropertyName("AppVersion");
-            writer.WriteValue(Application.ProductVersion);
+            WriteReportToDisk(debugReportPath,
+                ZenStates.Core.Common.ReportBuilder.Heading("SMU: Mailbox Scan") +
+                "Scan started. If the report ends here, the scan hung the system." + Environment.NewLine, true);
 
-            writer.WritePropertyName("OSVersion");
-            writer.WriteValue(new ComputerInfo().OSFullName);
+            // Let what the report started settle (PM table transfer, BCLK measurement) before writing to the SMU
+            Thread.Sleep(500);
+            BackgroundWorkerTrySettings_DoWork(sender, e);
 
-            Type type = cpu.systemInfo.GetType();
-            PropertyInfo[] properties = type.GetProperties();
-
-            foreach (PropertyInfo property in properties)
-            {
-                writer.WritePropertyName(property.Name);
-                if (property.Name == "CpuId" || property.Name == "PatchLevel")
-                    writer.WriteValue($"{property.GetValue(cpu.systemInfo, null):X8}");
-                else if (property.Name == "SmuVersion")
-                    writer.WriteValue(cpu.systemInfo.SmuVersion.ToString());
-                else
-                    writer.WriteValue(property.GetValue(cpu.systemInfo, null));
-            }
-
-            // "SmuAddresses:"
-            writer.WritePropertyName("Mailboxes");
-            writer.WriteStartArray();
-            foreach (SmuAddressSet set in matches)
-            {
-                writer.WriteStartObject();
-                writer.WritePropertyName("MsgAddress");
-                writer.WriteValue($"0x{set.MsgAddress:X8}");
-                writer.WritePropertyName("RspAddress");
-                writer.WriteValue($"0x{set.RspAddress:X8}");
-                writer.WritePropertyName("ArgAddress");
-                writer.WriteValue($"0x{set.ArgAddress:X8}");
-                writer.WriteEndObject();
-            }
-            writer.WriteEndArray();
-
-            // }
-            writer.WriteEndObject();
-
-            sw.Close();
-
-            return sw.ToString();
+            StringBuilder scan = new StringBuilder();
+            scan.AppendLine($"Candidate pairs probed: {smuScanProbes}");
+            if (smuScanAborted)
+                scan.AppendLine($"Stopped: the RSMU stopped answering after probing {smuScanAbortDetail}.");
+            if (matches.Count == 0)
+                scan.AppendLine("No mailbox found.");
+            for (int i = 0; i < matches.Count; i++)
+                scan.AppendLine($"Mailbox {i + 1}: MSG 0x{matches[i].MsgAddress:X8}, RSP 0x{matches[i].RspAddress:X8}, ARG 0x{matches[i].ArgAddress:X8}");
+            WriteReportToDisk(debugReportPath, scan.ToString(), true);
         }
 
-        private void BackgroundWorkerReport_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        // Written through to the disk, not only to the cache: a hang during the scan would lose cached data
+        private static void WriteReportToDisk(string path, string text, bool append)
         {
-            string unixTimestamp = Convert.ToString((DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMinutes);
-            string fileName = $@"SMUDebug_{unixTimestamp}.json";
-
-            if (File.Exists(fileName))
-                File.Delete(fileName);
-
-            using (var sw = new StreamWriter(fileName, true))
+            using (var stream = new FileStream(path, append ? FileMode.Append : FileMode.Create, FileAccess.Write,
+                FileShare.Read, 4096, FileOptions.WriteThrough))
             {
-                sw.WriteLine(GenerateReportJson());
+                byte[] bytes = new UTF8Encoding(false).GetBytes(text);
+                stream.Write(bytes, 0, bytes.Length);
+                stream.Flush(true);
+            }
+        }
+
+        private void DebugReport_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (debugReportScan && e.Error == null)
+                SmuScan_WorkerCompleted(sender, e); // updates the mailbox list with what the scan found
+
+            SetButtonsState();
+
+            if (e.Error != null)
+            {
+                SetStatusText(Resources.Error);
+                HandleError($"Could not create the report: {e.Error.Message}");
+                return;
             }
 
-            //ResetSmuAddresses();
-            SetButtonsState();
-            SetStatusText("Report Complete.");
-            ThemedMessageBox.Show($"Report saved as {fileName}");
+            SetStatusText("Debug report saved.");
+            Log($"Debug report saved in {debugReportPath}", LogLevel.Success);
+
+            if (ThemedMessageBox.Show($"Report saved as {debugReportPath}{Environment.NewLine}{Environment.NewLine}Open it now?",
+                    "Debug report", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+            {
+                try
+                {
+                    Process.Start(new ProcessStartInfo(debugReportPath) { UseShellExecute = true });
+                }
+                catch (Exception ex)
+                {
+                    Log($"Could not open the report: {ex.Message}", LogLevel.Warning);
+                }
+            }
         }
 
         // MSRC001_006[4..B] P-state definition (P0..P7).
@@ -3183,7 +3209,42 @@ namespace ZenStatesDebugTool
 
         private void ButtonExport_Click(object sender, EventArgs e)
         {
-            RunBackgroundTask(BackgroundWorkerTrySettings_DoWork, BackgroundWorkerReport_RunWorkerCompleted, "SMU report");
+            bool scan = checkBoxReportScan.Checked;
+            if (scan)
+            {
+                DialogResult answer = ThemedMessageBox.Show(
+                    "The report ends with an SMU mailbox scan. It writes to the SMU and can hang the system, " +
+                    "so save your work first. The report is saved before the scan starts, so it is kept if that happens." +
+                    Environment.NewLine + Environment.NewLine +
+                    "Yes: report with the scan" + Environment.NewLine +
+                    "No: report without the scan",
+                    "Debug report",
+                    MessageBoxButtons.YesNoCancel,
+                    MessageBoxIcon.Warning);
+
+                if (answer == DialogResult.Cancel)
+                    return;
+                scan = answer == DialogResult.Yes;
+            }
+
+            using (var dialog = new SaveFileDialog
+            {
+                Title = "Save debug report",
+                Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",
+                FileName = $"SMUDebugTool_Report_{DateTime.Now:yyyyMMdd_HHmmss}.txt",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            })
+            {
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                    return;
+                debugReportPath = dialog.FileName;
+            }
+
+            debugReportScan = scan;
+            if (scan)
+                SetLogPanelVisible(true, false); // the scan writes what it finds to the log
+
+            RunBackgroundTask(DebugReport_DoWork, DebugReport_RunWorkerCompleted, scan ? "Debug report with SMU scan" : "Debug report");
         }
 
         private void PstateFidDid_ValueChanged(object sender, EventArgs e)

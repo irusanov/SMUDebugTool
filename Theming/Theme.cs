@@ -436,6 +436,15 @@ namespace ZenStatesDebugTool.Theming
         [DllImport("dwmapi.dll")]
         private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
 
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MARGINS
+        {
+            public int Left, Right, Top, Bottom;
+        }
+
+        [DllImport("dwmapi.dll")]
+        private static extern int DwmExtendFrameIntoClientArea(IntPtr hwnd, ref MARGINS margins);
+
         /// <summary>Rounded corners, border color and dark mode of the window frame. Ignored where not supported.</summary>
         public static void ApplyWindowFrame(IntPtr handle)
         {
@@ -449,6 +458,11 @@ namespace ZenStatesDebugTool.Theming
 
                 int border = ColorTranslator.ToWin32(current.Border);
                 DwmSetWindowAttribute(handle, DWMWA_BORDER_COLOR, ref border, sizeof(int));
+
+                // With the whole frame removed (WM_NCCALCSIZE) DWM draws no shadow; a 1 px frame extended into the
+                // client area brings the system's soft drop shadow back. The content paints over that pixel.
+                var margins = new MARGINS { Left = 0, Right = 0, Top = 0, Bottom = 1 };
+                DwmExtendFrameIntoClientArea(handle, ref margins);
             }
             catch (DllNotFoundException)
             {

@@ -100,6 +100,7 @@
       <DependentUpon>PowerTableMonitor.cs</DependentUpon>
     </Compile>
     <Compile Include="Utils\AppSettings.cs" />
+    <Compile Include="Utils\DebugReportGenerator.cs" />
     <Compile Include="Utils\DriverCleaner.cs" />
     <Compile Include="Utils\DriverCleanerNotification.cs" />
     <Compile Include="Utils\DriverCleanup.cs" />
