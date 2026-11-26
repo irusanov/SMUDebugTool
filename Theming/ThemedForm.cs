@@ -36,7 +36,25 @@ namespace ZenStatesDebugTool.Theming
         // Buttons a form adds to its title bar (left of the theme toggle) are CaptionButton values from this one up
         private const int CustomButtonBase = 100;
         private readonly System.Collections.Generic.List<TitleBarButton> titleBarButtons = new System.Collections.Generic.List<TitleBarButton>();
-        private static readonly Font TitleFont = new Font("Segoe UI Semibold", 9f);
+        private Font titleFont;
+        private float titleFontScale;
+
+        // 9 pt on this window's monitor. GDI turns points into pixels with the system DPI, so the size is corrected
+        // for a monitor with another DPI.
+        private Font TitleFont
+        {
+            get
+            {
+                float scale = ControlStyler.DpiScale * 96f / ControlStyler.SystemDpi;
+                if (titleFont == null || Math.Abs(scale - titleFontScale) > 0.001f)
+                {
+                    titleFont?.Dispose();
+                    titleFont = new Font("Segoe UI Semibold", 9f * scale);
+                    titleFontScale = scale;
+                }
+                return titleFont;
+            }
+        }
 
         public ThemedForm()
         {
@@ -108,6 +126,10 @@ namespace ZenStatesDebugTool.Theming
             if (designTime || chrome)
                 return;
 
+            // Px() sizes follow the DPI of the monitor this window opens on
+            if (ControlStyler.IsWindows)
+                ControlStyler.SetDpi(DeviceDpi);
+
             // The designer's client size is the content; the title bar is added on top of it
             Size content = ClientSize;
             Padding padding = Padding;
@@ -127,6 +149,32 @@ namespace ZenStatesDebugTool.Theming
         protected override Size SizeFromClientSize(Size clientSize)
         {
             return chrome && ControlStyler.IsWindows ? clientSize : base.SizeFromClientSize(clientSize);
+        }
+
+        // Moved to a monitor with another DPI (per-monitor DPI awareness in app.config). WinForms rescales the
+        // controls and fonts; the theme's own sizes (title bar, insets, corner radius, icons) follow the new scale.
+        protected override void OnDpiChanged(DpiChangedEventArgs e)
+        {
+            int oldTitle = TitleBarHeight;
+            int oldTop = Padding.Top;
+
+            ControlStyler.SetDpi(e.DeviceDpiNew);
+            base.OnDpiChanged(e);
+
+            if (!chrome || e.DeviceDpiOld <= 0)
+                return;
+
+            // The title bar is reserved in Padding.Top. Replace its old height (scaled with the padding when
+            // WinForms scaled it) by the height for the new DPI.
+            int scaledOldTitle = Padding.Top != oldTop
+                ? (int)Math.Round(oldTitle * (double)e.DeviceDpiNew / e.DeviceDpiOld)
+                : oldTitle;
+            int contentTop = Math.Max(0, Padding.Top - scaledOldTitle);
+            Padding = new Padding(Padding.Left, contentTop + TitleBarHeight, Padding.Right, Padding.Bottom);
+
+            Theme.Apply(this);
+            OnThemeApplied(null);
+            Invalidate(true);
         }
 
         // Setting ClientSize at runtime (after the handle exists) does not go through SizeFromClientSize(Size):
@@ -204,6 +252,7 @@ namespace ZenStatesDebugTool.Theming
             {
                 Theme.Changed -= OnThemeChanged;
                 smallIcon?.Dispose();
+                titleFont?.Dispose();
                 titleToolTip?.Dispose();
             }
 

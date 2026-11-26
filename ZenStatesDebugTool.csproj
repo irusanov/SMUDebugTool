@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>ZenStatesDebugTool</RootNamespace>
     <AssemblyName>SMUDebugTool</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -110,6 +110,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Theming\LucideIcon.cs" />
+    <Compile Include="Theming\SplashScreen.cs" />
     <Compile Include="Theming\Theme.cs" />
     <Compile Include="Theming\ThemedForm.cs">
       <SubType>Form</SubType>

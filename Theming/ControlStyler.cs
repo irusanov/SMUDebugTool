@@ -21,18 +21,41 @@ namespace ZenStatesDebugTool.Theming
         public static readonly bool IsWindows = Environment.OSVersion.Platform == PlatformID.Win32NT;
 
         private static float dpiScale = -1;
+        private static float systemDpi = -1;
 
+        /// <summary>
+        /// Scale of the window being laid out or drawn, against 96 DPI. Starts at the system DPI; a ThemedForm sets
+        /// it to the DPI of its monitor when it is created and when it moves to a monitor with another DPI. It is
+        /// shared by all windows, so two windows on monitors with different DPIs use the scale of the last one.
+        /// </summary>
         public static float DpiScale
         {
             get
             {
                 if (dpiScale < 0)
-                {
-                    using (Graphics g = Graphics.FromHwnd(IntPtr.Zero))
-                        dpiScale = g.DpiX / 96f;
-                }
+                    dpiScale = SystemDpi / 96f;
                 return dpiScale;
             }
+        }
+
+        /// <summary>DPI that fonts are converted with (GDI uses the system DPI, not the one of the monitor).</summary>
+        public static float SystemDpi
+        {
+            get
+            {
+                if (systemDpi < 0)
+                {
+                    using (Graphics g = Graphics.FromHwnd(IntPtr.Zero))
+                        systemDpi = g.DpiX;
+                }
+                return systemDpi;
+            }
+        }
+
+        public static void SetDpi(int dpi)
+        {
+            if (dpi > 0)
+                dpiScale = dpi / 96f;
         }
 
         public static int Px(float value) => (int)Math.Round(value * DpiScale);

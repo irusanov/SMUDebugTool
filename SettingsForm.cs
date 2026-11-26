@@ -220,6 +220,8 @@ namespace ZenStatesDebugTool
             formToolTip.SetToolTip(numericUpDownMaxVoltage, "Highest voltage offered by the manual OC voltage (VID) control on the CPU tab. Default 1.350 V.");
             formToolTip.SetToolTip(checkBoxApplyCOStartup, "Apply the saved profile (Curve Optimizer, PPT/TDC/EDC, scalar, FMax and Curve Shaper) when you log on and on resume from sleep. Only for your account, with your administrator rights.");
             formToolTip.SetToolTip(checkBoxStartupAllUsers, "Apply the saved profile when any user logs on and on resume from sleep, also when you are not logged on. The task runs as SYSTEM (the most privileged account).");
+            formToolTip.SetToolTip(checkBoxProfileLimits, "Save, load and apply at startup the PPT, TDC, EDC, scalar and FMax values with the profile. Unchecked, the profile only holds the Curve Optimizer (and Curve Shaper) margins. The choice is saved in the profile.");
+            InitProfileLimitsOption();
             formToolTip.SetToolTip(checkBoxAutoUninstallDriver, "Stops and removes the inpoutx64 driver service when the last instance of SMUDebugTool or ZenTimings exits.");
 
             SelectDefaultTab();
@@ -229,7 +231,10 @@ namespace ZenStatesDebugTool
                 int coApplied, coFailed, limitsApplied, limitsFailed, csApplied, csFailed;
                 PboProfile profile = LoadPboProfile();
                 ApplyCOProfile(profile, out coApplied, out coFailed);
-                ApplyPboLimitsProfile(profile, out limitsApplied, out limitsFailed);
+                if (profile.LimitsIncluded)
+                    ApplyPboLimitsProfile(profile, out limitsApplied, out limitsFailed);
+                else
+                    limitsApplied = limitsFailed = 0;
                 ApplyCSProfile(out csApplied, out csFailed);
                 InitPBO();
                 InitCS();
@@ -1954,107 +1959,206 @@ namespace ZenStatesDebugTool
             return cpu.smu.SendSmuCommand(testMailbox, cmd, ref args);
         }
 
+        // The PawnIO RyzenSMU module only reads and writes SMN addresses of the SMU mailbox region
+        // (0x3B10000 - 0x3B10FFF); the scan stays inside it
+        private const uint SmuMailboxRegionStart = 0x03B10000;
+        private const uint SmuMailboxRegionEnd = 0x03B10FFC;
+
+        // Highest argument address that leaves room for the 6 argument registers inside the region
+        private const uint SmuScanLastArgAddress = SmuMailboxRegionEnd - 5 * 4;
+
+        // Farthest response register from its message register (0x3C Zen 1, 0x4C Zen 2+, 0x60 older APUs)
+        private const uint SmuScanMaxRspDistance = 0x60;
+
+        private const uint SmuScanGetVersion = 0x02;   // Get SMU version: answers OK (0x01), version in argument 0
+        private const uint SmuScanTestMessage = 0x01;  // Test message: answers OK, argument 0 + 1
+
+        // A response register holds the status of the last message: OK or one of the error codes
+        private static bool IsSmuStatus(uint value) => value == 0x01 || (value >= 0xFC && value <= 0xFF);
+
+        private int smuScanProbes;
+        private bool smuScanAborted;
+
+        // Reads the registers once, without writing anything
+        private Dictionary<uint, uint> ReadSmuRegion(uint start, uint end)
+        {
+            var values = new Dictionary<uint, uint>();
+            for (uint address = start; address <= end && address <= SmuMailboxRegionEnd; address += 4)
+                values[address] = cpu.ReadDword(address);
+            return values;
+        }
+
+        // Sends a message without arguments the way the firmware expects it: only when the mailbox is idle (response
+        // not 0), clear the response, write the message, wait for the response. Returns the response, 0 if none came
+        // (then the response register gets its old value back, in case it was not a mailbox).
+        private uint ProbeSmuMailbox(uint msgAddress, uint rspAddress, uint msg)
+        {
+            uint previous = cpu.ReadDword(rspAddress);
+            if (previous == 0)
+                return 0;
+
+            if (!cpu.WriteDwordEx(rspAddress, 0))
+                return 0;
+
+            if (cpu.WriteDwordEx(msgAddress, msg))
+            {
+                Stopwatch watch = Stopwatch.StartNew();
+                do
+                {
+                    uint response = cpu.ReadDword(rspAddress);
+                    if (response != 0)
+                        return response;
+                    Thread.Sleep(1);
+                }
+                while (watch.ElapsedMilliseconds < 50);
+            }
+
+            cpu.WriteDwordEx(rspAddress, previous);
+            return 0;
+        }
+
+        // The known RSMU must keep answering while the scan runs; if it stops, the scan stops writing
+        private bool IsRsmuResponding()
+        {
+            Mailbox rsmu = cpu.smu.Rsmu;
+            if (rsmu == null || rsmu.SMU_ADDR_MSG == 0 || rsmu.SMU_ADDR_RSP == 0)
+                return true;
+
+            for (int attempt = 0; attempt < 3; attempt++)
+            {
+                if (ProbeSmuMailbox(rsmu.SMU_ADDR_MSG, rsmu.SMU_ADDR_RSP, SmuScanGetVersion) == 0x01)
+                    return true;
+                Thread.Sleep(20);
+            }
+            return false;
+        }
+
+        // Finds mailboxes with the message register in [start, end] and the response register offset to 0x60 bytes
+        // after it.
+        //
+        // The previous scan wrote an unknown command to every register of the range, and with every dword tried
+        // that hung the SMU. Now nothing is written blindly:
+        // 1. The range is read once. A pair can only be a mailbox when the message register holds a message ID
+        //    (0 - 0xFF) and the response register a status (OK or an error code). That leaves few candidates.
+        // 2. Each candidate gets one harmless message, Get SMU version, with the normal mailbox protocol (only when
+        //    idle, response cleared first). A mailbox answers OK. A register that does not answer gets its old value back.
+        // 3. The argument register is the one after the response register that then holds the SMU version; it is
+        //    verified with three test messages (argument + 1 must come back).
+        // After every write the known RSMU must still answer, otherwise the scan stops.
         private void ScanSmuRange(uint start, uint end, uint step, uint offset)
         {
-            matches = new List<SmuAddressSet>();
+            if (smuScanAborted)
+                return;
 
-            List<KeyValuePair<uint, uint>> temp = new List<KeyValuePair<uint, uint>>();
+            Dictionary<uint, uint> values = ReadSmuRegion(start, end + SmuScanMaxRspDistance);
+            var candidates = new List<KeyValuePair<uint, uint>>();
 
-            while (start <= end)
+            // Registers of the known mailboxes are never probed in the wrong role (a response or argument register
+            // written as a message register, or the other way round)
+            var notMessage = new HashSet<uint>();
+            var notResponse = new HashSet<uint>();
+            foreach (Mailbox known in new Mailbox[] { cpu.smu.Rsmu, cpu.smu.Mp1Smu, cpu.smu.Hsmp })
             {
-                uint smuRspAddress = start + offset;
- 
-                if (cpu.ReadDword(start) != 0xFFFFFFFF)
+                if (known == null || known.SMU_ADDR_MSG == 0)
+                    continue;
+                notMessage.Add(known.SMU_ADDR_RSP);
+                notResponse.Add(known.SMU_ADDR_MSG);
+                for (uint i = 0; i < 6; i++)
                 {
-                    // Send unknown command 0xFF to each pair of this start and possible response addresses
-                    if (cpu.WriteDwordEx(start, 0xFF))
-                    {
-                        Thread.Sleep(10);
-
-                        while (smuRspAddress <= end)
-                        {
-                            // Expect UNKNOWN_CMD status to be returned if the mailbox works
-                            if (cpu.ReadDword(smuRspAddress) == 0xFE)
-                            {
-                                // Send Get_SMU_Version command
-                                if (cpu.WriteDwordEx(start, 0x2))
-                                {
-                                    Thread.Sleep(10);
-                                    if (cpu.ReadDword(smuRspAddress) == 0x1)
-                                        temp.Add(new KeyValuePair<uint, uint>(start, smuRspAddress));
-                                }
-                            }
-                            smuRspAddress += step;
-                        }
-                    }
+                    notMessage.Add(known.SMU_ADDR_ARG + i * 4);
+                    notResponse.Add(known.SMU_ADDR_ARG + i * 4);
                 }
-
-                start += step;
             }
 
-            if (temp.Count > 0)
+            for (uint msgAddress = start; msgAddress <= end; msgAddress += 4)
             {
-                for (var i = 0; i < temp.Count; i++)
-                {
-                    Console.WriteLine($"{temp[i].Key:X8}: {temp[i].Value:X8}");
-                }
+                if (notMessage.Contains(msgAddress) || !values.TryGetValue(msgAddress, out uint msgValue) || msgValue > 0xFF)
+                    continue;
 
-                Console.WriteLine();
+                for (uint rspAddress = msgAddress + offset; rspAddress <= msgAddress + SmuScanMaxRspDistance; rspAddress += 4)
+                {
+                    if (!notResponse.Contains(rspAddress) && values.TryGetValue(rspAddress, out uint rspValue) && IsSmuStatus(rspValue))
+                        candidates.Add(new KeyValuePair<uint, uint>(msgAddress, rspAddress));
+                }
             }
 
-            List<uint> possibleArgAddresses = new List<uint>();
+            Console.WriteLine($"SMU scan 0x{start:X8}-0x{end:X8}: {candidates.Count} candidate pair(s)");
 
-            foreach (var pair in temp)
+            var pairs = new List<KeyValuePair<uint, uint>>();
+            var usedRegisters = new HashSet<uint>();
+
+            foreach (KeyValuePair<uint, uint> candidate in candidates)
             {
-                Console.WriteLine($"Testing {pair.Key:X8}: {pair.Value:X8}");
+                if (usedRegisters.Contains(candidate.Key) || usedRegisters.Contains(candidate.Value))
+                    continue;
 
-                if (TrySettings(pair.Key, pair.Value, 0xFFFFFFFF, 0x2, 0xFF) == SMU.Status.OK)
+                smuScanProbes++;
+                bool isMailbox = ProbeSmuMailbox(candidate.Key, candidate.Value, SmuScanGetVersion) == 0x01;
+
+                if (!IsRsmuResponding())
                 {
-                    var smuArgAddress = pair.Value + 4;
-                    while (smuArgAddress <= end)
-                    {
-                        if (cpu.ReadDword(smuArgAddress) == cpu.smu.Version)
-                        {
-                            possibleArgAddresses.Add(smuArgAddress);
-                        }
-                        smuArgAddress += step;
-                    }
+                    smuScanAborted = true;
+                    Console.WriteLine($"SMU scan stopped: RSMU no longer answers after probing 0x{candidate.Key:X8} / 0x{candidate.Value:X8}");
+                    Invoke(new MethodInvoker(() => Log(
+                        $"SMU scan stopped: the RSMU stopped answering after probing 0x{candidate.Key:X8} / 0x{candidate.Value:X8}. A restart may be needed.",
+                        LogLevel.Error)));
+                    return;
                 }
 
-                // Verify the arg address returns correct value (should be test argument + 1)
-                foreach (var address in possibleArgAddresses)
+                if (!isMailbox)
+                    continue;
+
+                pairs.Add(candidate);
+                usedRegisters.Add(candidate.Key);
+                usedRegisters.Add(candidate.Value);
+                Console.WriteLine($"SMU scan: command 0x{candidate.Key:X8}, response 0x{candidate.Value:X8}");
+            }
+
+            foreach (KeyValuePair<uint, uint> pair in pairs)
+            {
+                // Skip mailboxes already found by an earlier range
+                if (matches.Any(m => m.MsgAddress == pair.Key && m.RspAddress == pair.Value))
+                    continue;
+
+                if (ProbeSmuMailbox(pair.Key, pair.Value, SmuScanGetVersion) != 0x01)
+                    continue;
+
+                uint version = cpu.smu.Version;
+                foreach (uint argAddress in ReadSmuRegion(pair.Value + 4, SmuScanLastArgAddress)
+                    .Where(entry => entry.Value == version)
+                    .Select(entry => entry.Key))
                 {
-                    uint testArg = 0xFAFAFAFA;
-                    var retries = 3;
+                    if (!VerifySmuArgAddress(pair.Key, pair.Value, argAddress))
+                        continue;
 
-                    while (retries > 0)
-                    {
-                        testArg++;
-                        retries--;
-
-                        // Send test command
-                        if (TrySettings(pair.Key, pair.Value, address, 0x1, testArg) == SMU.Status.OK)
-                            if (cpu.ReadDword(address) != testArg + 1)
-                                retries = -1;
-                    }
-
-                    if (retries == 0)
-                    {
-                        matches.Add(new SmuAddressSet(pair.Key, pair.Value, address));
-
-                        string responseString =
-                                $"CMD:  0x{pair.Key:X8}" +
-                                Environment.NewLine +
-                                $"RSP:  0x{pair.Value:X8}" +
-                                Environment.NewLine +
-                                $"ARG:  0x{address:X8}";
-
-                        LogScanOutput(responseString);
-
-                        break;
-                    }
+                    matches.Add(new SmuAddressSet(pair.Key, pair.Value, argAddress));
+                    LogScanOutput(
+                        $"CMD:  0x{pair.Key:X8}" + Environment.NewLine +
+                        $"RSP:  0x{pair.Value:X8}" + Environment.NewLine +
+                        $"ARG:  0x{argAddress:X8}");
+                    break;
                 }
             }
+        }
+
+        // The test message must return every one of three different arguments + 1
+        private bool VerifySmuArgAddress(uint msgAddress, uint rspAddress, uint argAddress)
+        {
+            uint testArg = 0xFAFAFAFA;
+            for (int i = 0; i < 3; i++)
+            {
+                testArg++;
+                uint[] args = new uint[6];
+                args[0] = testArg;
+
+                testMailbox.SMU_ADDR_MSG = msgAddress;
+                testMailbox.SMU_ADDR_RSP = rspAddress;
+                testMailbox.SMU_ADDR_ARG = argAddress;
+
+                if (cpu.smu.SendSmuCommand(testMailbox, SmuScanTestMessage, ref args) != SMU.Status.OK || args[0] != testArg + 1)
+                    return false;
+            }
+            return true;
         }
 
         /*private void ScanSmuRange_old(uint start, uint end, int step, byte offset)
@@ -2157,6 +2261,10 @@ namespace ZenStatesDebugTool
                     SetStatusText("Scanning SMU addresses, please wait...");
                 }));
 
+                matches = new List<SmuAddressSet>();
+                smuScanProbes = 0;
+                smuScanAborted = false;
+
                 switch (cpu.info.codeName)
                 {
                     case Cpu.CodeName.BristolRidge:
@@ -2181,17 +2289,29 @@ namespace ZenStatesDebugTool
                         ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
                         ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
                         break;
-                    case Cpu.CodeName.Raphael:
-                    case Cpu.CodeName.GraniteRidge:
-                        ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
-                        // ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
-                        break;
                     case Cpu.CodeName.Rome:
                         ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
                         break;
                     default:
+                        // Zen 3 APUs and newer (Raphael, Granite Ridge, Phoenix, Strix...): the RSMU message register is
+                        // not 8-byte aligned (0x3B10524). Only registers that look like a mailbox are probed.
+                        ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x3C);
                         break;
                 }
+
+                int found = matches.Count;
+                int probes = smuScanProbes;
+                bool aborted = smuScanAborted;
+                Invoke(new MethodInvoker(delegate
+                {
+                    Log($"SMU scan probed {probes} candidate register pair{(probes == 1 ? "" : "s")}.");
+                    if (aborted)
+                        return;
+                    if (found == 0)
+                        Log("SMU scan found no mailbox.", LogLevel.Warning);
+                    else
+                        Log($"SMU scan found {found} mailbox{(found == 1 ? "" : "es")}.", LogLevel.Success);
+                }));
             }
             catch (ApplicationException)
             {
@@ -2216,7 +2336,11 @@ namespace ZenStatesDebugTool
             );
 
             if (confirmResult == DialogResult.OK)
+            {
+                // The results are written to the log: show it for this session (the saved choice stays as it is)
+                SetLogPanelVisible(true, false);
                 RunBackgroundTask(BackgroundWorkerTrySettings_DoWork, SmuScan_WorkerCompleted, "SMU address scan");
+            }
         }
 
         private enum LogLevel { Info, Success, Warning, Error }
@@ -2431,7 +2555,7 @@ namespace ZenStatesDebugTool
             tabControl1.BringToFront(); // keeps the TabControl as the Fill control next to the docked list
 
             // The list is wider than the designer's 90 px to make room for the icons; the window grows with it
-            ClientSize = new Size(ClientSize.Width + TabStripWidth - 90, ClientSize.Height);
+            ClientSize = new Size(ClientSize.Width + TabStripWidth - ControlStyler.Px(90), ClientSize.Height);
 
             tabStrip.MouseMove += (s, e) => SetTabHover(tabStrip.IndexFromPoint(e.Location));
             tabStrip.MouseLeave += (s, e) => SetTabHover(-1);
@@ -2639,6 +2763,15 @@ namespace ZenStatesDebugTool
 
             if (!AppSettings.Instance.ShowLogPanel)
                 SetLogPanelVisible(false, false);
+
+            // On a monitor with another DPI WinForms rescales the controls, but not these sizes kept by the form
+            DpiChanged += (_, e) =>
+            {
+                if (e.DeviceDpiOld > 0)
+                    logPanelWidth = (int)Math.Round(logPanelWidth * (double)e.DeviceDpiNew / e.DeviceDpiOld);
+                tabStrip.ItemHeight = ControlStyler.Px(32);
+                tabStrip.Width = TabStripWidth;
+            };
         }
 
         private void SetLogPanelVisible(bool visible, bool save = true)
@@ -3924,11 +4057,15 @@ namespace ZenStatesDebugTool
                 }
             }
 
-            // FMax and the power limits: only values that are known (read from the CPU, or entered)
-            foreach (KeyValuePair<string, NumericUpDown> entry in PboLimitProfileControls)
+            // FMax and the power limits, when included: only values that are known (read from the CPU, or entered)
+            bool includeLimits = checkBoxProfileLimits.Checked;
+            if (includeLimits)
             {
-                if (entry.Value.Enabled && HasValue(entry.Value))
-                    lines.Add(string.Format(CultureInfo.InvariantCulture, "{0}={1}", entry.Key, entry.Value.Value));
+                foreach (KeyValuePair<string, NumericUpDown> entry in PboLimitProfileControls)
+                {
+                    if (entry.Value.Enabled && HasValue(entry.Value))
+                        lines.Add(string.Format(CultureInfo.InvariantCulture, "{0}={1}", entry.Key, entry.Value.Value));
+                }
             }
 
             if (lines.Count == 0)
@@ -3936,6 +4073,9 @@ namespace ZenStatesDebugTool
                 SetStatusText("Nothing to save.");
                 return;
             }
+
+            // The choice is part of the profile: it decides whether Load and the startup task use the limits
+            lines.Insert(0, string.Format(CultureInfo.InvariantCulture, "{0}={1}", LimitsProfileKey, includeLimits ? 1 : 0));
 
             try
             {
@@ -3964,6 +4104,22 @@ namespace ZenStatesDebugTool
             new KeyValuePair<string, NumericUpDown>("edc", numericUpDownEdc),
             new KeyValuePair<string, NumericUpDown>("scalar", numericUpDownScalar),
         };
+
+        // "limits=1" / "limits=0": whether the profile includes the values above (checkbox on the PBO tab)
+        private const string LimitsProfileKey = "limits";
+
+        // Shows the choice stored in the profile; unchecked when there is no profile yet
+        private void InitProfileLimitsOption()
+        {
+            try
+            {
+                checkBoxProfileLimits.Checked = ParsePboProfile(ReadProfileLines()).LimitsIncluded;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Profile could not be read: {ex.Message}");
+            }
+        }
 
         // Curve Shaper section of the profile: one line per frequency tier, "cs=<tier>,<low>,<medium>,<high>".
         // Older versions ignore these lines.
@@ -4102,6 +4258,47 @@ namespace ZenStatesDebugTool
             public decimal? Tdc;
             public decimal? Edc;
             public decimal? Scalar;
+
+            // "limits=" line; null in profiles saved before the option existed
+            public bool? IncludeLimits;
+
+            // Without the line, the limits count as included when the profile has any (as those versions applied them)
+            public bool LimitsIncluded => IncludeLimits ?? (FMax.HasValue || Ppt.HasValue || Tdc.HasValue || Edc.HasValue || Scalar.HasValue);
+        }
+
+        private static PboProfile ParsePboProfile(IEnumerable<string> lines)
+        {
+            PboProfile profile = new PboProfile();
+            foreach (var line in lines)
+            {
+                if (line.StartsWith("["))
+                {
+                    var values = line.Replace("[", "").Replace("]", "").Replace(" ", "").Split(',');
+                    if (values.Length < 2)
+                        continue;
+                    Int32.TryParse(values[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int index);
+                    Int32.TryParse(values[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out int margin);
+                    profile.Margins.Add(new Tuple<int, int>(index, margin));
+                    continue;
+                }
+
+                int separator = line.IndexOf('=');
+                if (separator <= 0 || line.StartsWith(CsProfilePrefix)
+                    || !decimal.TryParse(line.Substring(separator + 1), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal value))
+                    continue;
+
+                switch (line.Substring(0, separator).Trim().ToLowerInvariant())
+                {
+                    case "fmax": profile.FMax = value; break;
+                    case "ppt": profile.Ppt = value; break;
+                    case "tdc": profile.Tdc = value; break;
+                    case "edc": profile.Edc = value; break;
+                    case "scalar": profile.Scalar = value; break;
+                    case LimitsProfileKey: profile.IncludeLimits = value != 0; break;
+                }
+            }
+
+            return profile;
         }
 
         private PboProfile LoadPboProfile()
@@ -4118,30 +4315,7 @@ namespace ZenStatesDebugTool
                 // load from file if it exists
                 if (File.Exists(defaultsPath))
                 {
-                    foreach (var line in File.ReadAllLines(defaultsPath))
-                    {
-                        if (line.StartsWith("["))
-                        {
-                            var values = line.Replace("[", "").Replace("]", "").Replace(" ", "").Split(',');
-                            Int32.TryParse(values[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int index);
-                            Int32.TryParse(values[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out int margin);
-                            profile.Margins.Add(new Tuple<int, int>(index, margin));
-                            continue;
-                        }
-
-                        int separator = line.IndexOf('=');
-                        if (separator <= 0 || !decimal.TryParse(line.Substring(separator + 1), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal value))
-                            continue;
-
-                        switch (line.Substring(0, separator).Trim().ToLowerInvariant())
-                        {
-                            case "fmax": profile.FMax = value; break;
-                            case "ppt": profile.Ppt = value; break;
-                            case "tdc": profile.Tdc = value; break;
-                            case "edc": profile.Edc = value; break;
-                            case "scalar": profile.Scalar = value; break;
-                        }
-                    }
+                    profile = ParsePboProfile(File.ReadAllLines(defaultsPath));
                 }
                 else
                 {
@@ -4184,17 +4358,24 @@ namespace ZenStatesDebugTool
                 }
             }
 
-            foreach (var entry in new[]
+            // The profile decides whether its limits are used; the checkbox shows that choice
+            if (File.Exists(defaultsPath))
+                checkBoxProfileLimits.Checked = profile.LimitsIncluded;
+
+            if (profile.LimitsIncluded)
             {
-                Tuple.Create(numericUpDownFmax, profile.FMax),
-                Tuple.Create(numericUpDownPpt, profile.Ppt),
-                Tuple.Create(numericUpDownTdc, profile.Tdc),
-                Tuple.Create(numericUpDownEdc, profile.Edc),
-                Tuple.Create(numericUpDownScalar, profile.Scalar),
-            })
-            {
-                if (LoadProfileValue(entry.Item1, entry.Item2))
-                    loaded++;
+                foreach (var entry in new[]
+                {
+                    Tuple.Create(numericUpDownFmax, profile.FMax),
+                    Tuple.Create(numericUpDownPpt, profile.Ppt),
+                    Tuple.Create(numericUpDownTdc, profile.Tdc),
+                    Tuple.Create(numericUpDownEdc, profile.Edc),
+                    Tuple.Create(numericUpDownScalar, profile.Scalar),
+                })
+                {
+                    if (LoadProfileValue(entry.Item1, entry.Item2))
+                        loaded++;
+                }
             }
 
             if (loaded > 0)
