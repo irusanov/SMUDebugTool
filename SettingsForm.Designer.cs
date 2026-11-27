@@ -293,6 +293,8 @@ namespace ZenStatesDebugTool
             this.packageTypeInfoLabel = new System.Windows.Forms.Label();
             this.label29 = new System.Windows.Forms.Label();
             this.configInfoLabel = new System.Windows.Forms.Label();
+            this.labelAgesa = new System.Windows.Forms.Label();
+            this.agesaInfoLabel = new System.Windows.Forms.Label();
             this.tabPageSettings = new System.Windows.Forms.TabPage();
             this.comboBoxDefaultTab = new System.Windows.Forms.ComboBox();
             this.labelDefaultTab = new System.Windows.Forms.Label();
@@ -461,10 +463,10 @@ namespace ZenStatesDebugTool
             // 
             this.tabPageCPU.Controls.Add(this.groupBoxCoreControl);
             this.tabPageCPU.Controls.Add(this.tableLayoutPanel8);
-            this.tabPageCPU.Location = new System.Drawing.Point(4, 40);
+            this.tabPageCPU.Location = new System.Drawing.Point(4, 46);
             this.tabPageCPU.Name = "tabPageCPU";
             this.tabPageCPU.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageCPU.Size = new System.Drawing.Size(451, 334);
+            this.tabPageCPU.Size = new System.Drawing.Size(451, 328);
             this.tabPageCPU.TabIndex = 4;
             this.tabPageCPU.Text = "CPU";
             this.tabPageCPU.UseVisualStyleBackColor = true;
@@ -476,7 +478,7 @@ namespace ZenStatesDebugTool
             this.groupBoxCoreControl.Controls.Add(this.panelManualCoreControl);
             this.groupBoxCoreControl.Controls.Add(this.radioButtonX3D);
             this.groupBoxCoreControl.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBoxCoreControl.Location = new System.Drawing.Point(3, 140);
+            this.groupBoxCoreControl.Location = new System.Drawing.Point(3, 134);
             this.groupBoxCoreControl.Name = "groupBoxCoreControl";
             this.groupBoxCoreControl.Size = new System.Drawing.Size(445, 191);
             this.groupBoxCoreControl.TabIndex = 2;
@@ -517,7 +519,7 @@ namespace ZenStatesDebugTool
             this.radioButtonManualCoreControl.AutoSize = true;
             this.radioButtonManualCoreControl.Location = new System.Drawing.Point(12, 41);
             this.radioButtonManualCoreControl.Name = "radioButtonManualCoreControl";
-            this.radioButtonManualCoreControl.Size = new System.Drawing.Size(60, 17);
+            this.radioButtonManualCoreControl.Size = new System.Drawing.Size(69, 20);
             this.radioButtonManualCoreControl.TabIndex = 4;
             this.radioButtonManualCoreControl.Text = "Manual";
             this.radioButtonManualCoreControl.UseVisualStyleBackColor = true;
@@ -542,7 +544,7 @@ namespace ZenStatesDebugTool
             this.label67.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.label67.Location = new System.Drawing.Point(0, 102);
             this.label67.Name = "label67";
-            this.label67.Size = new System.Drawing.Size(265, 13);
+            this.label67.Size = new System.Drawing.Size(330, 16);
             this.label67.TabIndex = 2;
             this.label67.Text = "Deselect the cores you want to disable and click Apply";
             // 
@@ -971,7 +973,7 @@ namespace ZenStatesDebugTool
             this.checkBoxSMT.AutoSize = true;
             this.checkBoxSMT.Location = new System.Drawing.Point(241, 2);
             this.checkBoxSMT.Name = "checkBoxSMT";
-            this.checkBoxSMT.Size = new System.Drawing.Size(49, 17);
+            this.checkBoxSMT.Size = new System.Drawing.Size(55, 20);
             this.checkBoxSMT.TabIndex = 3;
             this.checkBoxSMT.Text = "SMT";
             this.checkBoxSMT.UseVisualStyleBackColor = true;
@@ -982,7 +984,7 @@ namespace ZenStatesDebugTool
             this.radioButtonX3D.Checked = true;
             this.radioButtonX3D.Location = new System.Drawing.Point(12, 18);
             this.radioButtonX3D.Name = "radioButtonX3D";
-            this.radioButtonX3D.Size = new System.Drawing.Size(107, 17);
+            this.radioButtonX3D.Size = new System.Drawing.Size(127, 20);
             this.radioButtonX3D.TabIndex = 7;
             this.radioButtonX3D.TabStop = true;
             this.radioButtonX3D.Text = "X3D Turbo Mode";
@@ -1021,7 +1023,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel8.Size = new System.Drawing.Size(445, 136);
+            this.tableLayoutPanel8.Size = new System.Drawing.Size(445, 150);
             this.tableLayoutPanel8.TabIndex = 1;
             // 
             // checkBoxOcMode
@@ -1055,7 +1057,7 @@ namespace ZenStatesDebugTool
             this.label14.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label14.Location = new System.Drawing.Point(7, 29);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(74, 26);
+            this.label14.Size = new System.Drawing.Size(74, 28);
             this.label14.TabIndex = 2;
             this.label14.Text = "All cores";
             this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1068,7 +1070,7 @@ namespace ZenStatesDebugTool
             this.comboBoxACF.Location = new System.Drawing.Point(87, 31);
             this.comboBoxACF.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.comboBoxACF.Name = "comboBoxACF";
-            this.comboBoxACF.Size = new System.Drawing.Size(94, 21);
+            this.comboBoxACF.Size = new System.Drawing.Size(94, 24);
             this.comboBoxACF.TabIndex = 3;
             // 
             // buttonApplyAC
@@ -1077,7 +1079,7 @@ namespace ZenStatesDebugTool
             this.buttonApplyAC.Location = new System.Drawing.Point(361, 30);
             this.buttonApplyAC.Margin = new System.Windows.Forms.Padding(3, 1, 3, 2);
             this.buttonApplyAC.Name = "buttonApplyAC";
-            this.buttonApplyAC.Size = new System.Drawing.Size(76, 23);
+            this.buttonApplyAC.Size = new System.Drawing.Size(76, 25);
             this.buttonApplyAC.TabIndex = 4;
             this.buttonApplyAC.Tag = "secondary";
             this.buttonApplyAC.Text = "Apply";
@@ -1088,9 +1090,9 @@ namespace ZenStatesDebugTool
             // 
             this.label16.AutoSize = true;
             this.label16.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label16.Location = new System.Drawing.Point(7, 55);
+            this.label16.Location = new System.Drawing.Point(7, 57);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(74, 26);
+            this.label16.Size = new System.Drawing.Size(74, 32);
             this.label16.TabIndex = 5;
             this.label16.Text = "Single core";
             this.label16.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1100,10 +1102,10 @@ namespace ZenStatesDebugTool
             this.comboBoxSCF.Dock = System.Windows.Forms.DockStyle.Fill;
             this.comboBoxSCF.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxSCF.FormattingEnabled = true;
-            this.comboBoxSCF.Location = new System.Drawing.Point(87, 57);
+            this.comboBoxSCF.Location = new System.Drawing.Point(87, 59);
             this.comboBoxSCF.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.comboBoxSCF.Name = "comboBoxSCF";
-            this.comboBoxSCF.Size = new System.Drawing.Size(94, 21);
+            this.comboBoxSCF.Size = new System.Drawing.Size(94, 24);
             this.comboBoxSCF.TabIndex = 6;
             // 
             // comboBoxCore
@@ -1111,19 +1113,19 @@ namespace ZenStatesDebugTool
             this.comboBoxCore.Dock = System.Windows.Forms.DockStyle.Left;
             this.comboBoxCore.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxCore.FormattingEnabled = true;
-            this.comboBoxCore.Location = new System.Drawing.Point(187, 57);
+            this.comboBoxCore.Location = new System.Drawing.Point(187, 59);
             this.comboBoxCore.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.comboBoxCore.Name = "comboBoxCore";
-            this.comboBoxCore.Size = new System.Drawing.Size(94, 21);
+            this.comboBoxCore.Size = new System.Drawing.Size(94, 24);
             this.comboBoxCore.TabIndex = 7;
             // 
             // buttonApplySC
             // 
             this.buttonApplySC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonApplySC.Location = new System.Drawing.Point(361, 56);
+            this.buttonApplySC.Location = new System.Drawing.Point(361, 58);
             this.buttonApplySC.Margin = new System.Windows.Forms.Padding(3, 1, 3, 2);
             this.buttonApplySC.Name = "buttonApplySC";
-            this.buttonApplySC.Size = new System.Drawing.Size(76, 23);
+            this.buttonApplySC.Size = new System.Drawing.Size(76, 29);
             this.buttonApplySC.TabIndex = 8;
             this.buttonApplySC.Tag = "secondary";
             this.buttonApplySC.Text = "Apply";
@@ -1134,9 +1136,9 @@ namespace ZenStatesDebugTool
             // 
             this.labelVid.AutoSize = true;
             this.labelVid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelVid.Location = new System.Drawing.Point(7, 81);
+            this.labelVid.Location = new System.Drawing.Point(7, 89);
             this.labelVid.Name = "labelVid";
-            this.labelVid.Size = new System.Drawing.Size(74, 26);
+            this.labelVid.Size = new System.Drawing.Size(74, 32);
             this.labelVid.TabIndex = 9;
             this.labelVid.Text = "Voltage (VID)";
             this.labelVid.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1146,19 +1148,19 @@ namespace ZenStatesDebugTool
             this.comboBoxVid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.comboBoxVid.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxVid.FormattingEnabled = true;
-            this.comboBoxVid.Location = new System.Drawing.Point(87, 83);
+            this.comboBoxVid.Location = new System.Drawing.Point(87, 91);
             this.comboBoxVid.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.comboBoxVid.Name = "comboBoxVid";
-            this.comboBoxVid.Size = new System.Drawing.Size(94, 21);
+            this.comboBoxVid.Size = new System.Drawing.Size(94, 24);
             this.comboBoxVid.TabIndex = 10;
             // 
             // labelVidLimit
             // 
             this.labelVidLimit.AutoSize = true;
             this.labelVidLimit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelVidLimit.Location = new System.Drawing.Point(187, 81);
+            this.labelVidLimit.Location = new System.Drawing.Point(187, 89);
             this.labelVidLimit.Name = "labelVidLimit";
-            this.labelVidLimit.Size = new System.Drawing.Size(168, 26);
+            this.labelVidLimit.Size = new System.Drawing.Size(168, 32);
             this.labelVidLimit.TabIndex = 11;
             this.labelVidLimit.Text = "Max. 1.350 V";
             this.labelVidLimit.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1166,10 +1168,10 @@ namespace ZenStatesDebugTool
             // buttonApplyVid
             // 
             this.buttonApplyVid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonApplyVid.Location = new System.Drawing.Point(361, 82);
+            this.buttonApplyVid.Location = new System.Drawing.Point(361, 90);
             this.buttonApplyVid.Margin = new System.Windows.Forms.Padding(3, 1, 3, 2);
             this.buttonApplyVid.Name = "buttonApplyVid";
-            this.buttonApplyVid.Size = new System.Drawing.Size(76, 23);
+            this.buttonApplyVid.Size = new System.Drawing.Size(76, 29);
             this.buttonApplyVid.TabIndex = 12;
             this.buttonApplyVid.Tag = "secondary";
             this.buttonApplyVid.Text = "Apply";
@@ -1179,7 +1181,7 @@ namespace ZenStatesDebugTool
             // buttonRefreshCpu
             // 
             this.buttonRefreshCpu.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonRefreshCpu.Location = new System.Drawing.Point(361, 108);
+            this.buttonRefreshCpu.Location = new System.Drawing.Point(361, 122);
             this.buttonRefreshCpu.Margin = new System.Windows.Forms.Padding(3, 1, 3, 2);
             this.buttonRefreshCpu.Name = "buttonRefreshCpu";
             this.buttonRefreshCpu.Size = new System.Drawing.Size(76, 23);
@@ -1193,9 +1195,9 @@ namespace ZenStatesDebugTool
             this.labelDangerZone.AutoSize = true;
             this.tableLayoutPanel8.SetColumnSpan(this.labelDangerZone, 2);
             this.labelDangerZone.Dock = System.Windows.Forms.DockStyle.Left;
-            this.labelDangerZone.Location = new System.Drawing.Point(7, 107);
+            this.labelDangerZone.Location = new System.Drawing.Point(7, 121);
             this.labelDangerZone.Name = "labelDangerZone";
-            this.labelDangerZone.Size = new System.Drawing.Size(68, 26);
+            this.labelDangerZone.Size = new System.Drawing.Size(84, 26);
             this.labelDangerZone.TabIndex = 14;
             this.labelDangerZone.Text = "Danger zone";
             this.labelDangerZone.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -1204,10 +1206,10 @@ namespace ZenStatesDebugTool
             // 
             this.tabPageSmu.Controls.Add(this.tableLayoutPanel7);
             this.tabPageSmu.Controls.Add(this.tableLayoutPanel6);
-            this.tabPageSmu.Location = new System.Drawing.Point(4, 40);
+            this.tabPageSmu.Location = new System.Drawing.Point(4, 46);
             this.tabPageSmu.Margin = new System.Windows.Forms.Padding(0);
             this.tabPageSmu.Name = "tabPageSmu";
-            this.tabPageSmu.Size = new System.Drawing.Size(451, 334);
+            this.tabPageSmu.Size = new System.Drawing.Size(451, 328);
             this.tabPageSmu.TabIndex = 0;
             this.tabPageSmu.Text = "SMU";
             this.tabPageSmu.UseVisualStyleBackColor = true;
@@ -1219,7 +1221,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel7.ColumnCount = 1;
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tableLayoutPanel7.Location = new System.Drawing.Point(0, 185);
+            this.tableLayoutPanel7.Location = new System.Drawing.Point(0, 218);
             this.tableLayoutPanel7.Name = "tableLayoutPanel7";
             this.tableLayoutPanel7.RowCount = 1;
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -1240,7 +1242,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.RowCount = 1;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel6.Size = new System.Drawing.Size(451, 185);
+            this.tableLayoutPanel6.Size = new System.Drawing.Size(451, 218);
             this.tableLayoutPanel6.TabIndex = 3;
             // 
             // tableLayoutPanel2
@@ -1347,18 +1349,18 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(200, 179);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(200, 212);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // labelCMDAddress
             // 
             this.labelCMDAddress.AutoSize = true;
             this.labelCMDAddress.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCMDAddress.Location = new System.Drawing.Point(3, 34);
+            this.labelCMDAddress.Location = new System.Drawing.Point(3, 37);
             this.labelCMDAddress.MinimumSize = new System.Drawing.Size(77, 27);
             this.labelCMDAddress.Name = "labelCMDAddress";
             this.labelCMDAddress.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.labelCMDAddress.Size = new System.Drawing.Size(94, 28);
+            this.labelCMDAddress.Size = new System.Drawing.Size(94, 42);
             this.labelCMDAddress.TabIndex = 0;
             this.labelCMDAddress.Text = "CMD Address";
             this.labelCMDAddress.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1367,7 +1369,7 @@ namespace ZenStatesDebugTool
             // 
             this.labelRSP.AutoSize = true;
             this.labelRSP.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelRSP.Location = new System.Drawing.Point(3, 62);
+            this.labelRSP.Location = new System.Drawing.Point(3, 79);
             this.labelRSP.MinimumSize = new System.Drawing.Size(77, 27);
             this.labelRSP.Name = "labelRSP";
             this.labelRSP.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
@@ -1381,7 +1383,7 @@ namespace ZenStatesDebugTool
             this.textBoxCMDAddress.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCMDAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCMDAddress.HideSelection = false;
-            this.textBoxCMDAddress.Location = new System.Drawing.Point(104, 38);
+            this.textBoxCMDAddress.Location = new System.Drawing.Point(104, 41);
             this.textBoxCMDAddress.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxCMDAddress.Name = "textBoxCMDAddress";
             this.textBoxCMDAddress.Size = new System.Drawing.Size(92, 20);
@@ -1392,7 +1394,7 @@ namespace ZenStatesDebugTool
             this.textBoxRSPAddress.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxRSPAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRSPAddress.HideSelection = false;
-            this.textBoxRSPAddress.Location = new System.Drawing.Point(104, 66);
+            this.textBoxRSPAddress.Location = new System.Drawing.Point(104, 83);
             this.textBoxRSPAddress.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxRSPAddress.Name = "textBoxRSPAddress";
             this.textBoxRSPAddress.Size = new System.Drawing.Size(92, 20);
@@ -1402,7 +1404,7 @@ namespace ZenStatesDebugTool
             // 
             this.labelARG0.AutoSize = true;
             this.labelARG0.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelARG0.Location = new System.Drawing.Point(3, 146);
+            this.labelARG0.Location = new System.Drawing.Point(3, 179);
             this.labelARG0.MinimumSize = new System.Drawing.Size(77, 27);
             this.labelARG0.Name = "labelARG0";
             this.labelARG0.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
@@ -1416,7 +1418,7 @@ namespace ZenStatesDebugTool
             this.textBoxARG0.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxARG0.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxARG0.HideSelection = false;
-            this.textBoxARG0.Location = new System.Drawing.Point(104, 150);
+            this.textBoxARG0.Location = new System.Drawing.Point(104, 183);
             this.textBoxARG0.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxARG0.Name = "textBoxARG0";
             this.textBoxARG0.Size = new System.Drawing.Size(92, 20);
@@ -1427,11 +1429,11 @@ namespace ZenStatesDebugTool
             // 
             this.labelCMD.AutoSize = true;
             this.labelCMD.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCMD.Location = new System.Drawing.Point(3, 118);
+            this.labelCMD.Location = new System.Drawing.Point(3, 149);
             this.labelCMD.MinimumSize = new System.Drawing.Size(77, 27);
             this.labelCMD.Name = "labelCMD";
             this.labelCMD.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.labelCMD.Size = new System.Drawing.Size(94, 28);
+            this.labelCMD.Size = new System.Drawing.Size(94, 30);
             this.labelCMD.TabIndex = 8;
             this.labelCMD.Text = "Command ID";
             this.labelCMD.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1440,11 +1442,11 @@ namespace ZenStatesDebugTool
             // 
             this.labelARGAddress.AutoSize = true;
             this.labelARGAddress.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelARGAddress.Location = new System.Drawing.Point(3, 90);
+            this.labelARGAddress.Location = new System.Drawing.Point(3, 107);
             this.labelARGAddress.MinimumSize = new System.Drawing.Size(77, 27);
             this.labelARGAddress.Name = "labelARGAddress";
             this.labelARGAddress.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.labelARGAddress.Size = new System.Drawing.Size(94, 28);
+            this.labelARGAddress.Size = new System.Drawing.Size(94, 42);
             this.labelARGAddress.TabIndex = 10;
             this.labelARGAddress.Text = "ARG Address";
             this.labelARGAddress.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1453,7 +1455,7 @@ namespace ZenStatesDebugTool
             // 
             this.textBoxARGAddress.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxARGAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxARGAddress.Location = new System.Drawing.Point(104, 94);
+            this.textBoxARGAddress.Location = new System.Drawing.Point(104, 111);
             this.textBoxARGAddress.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxARGAddress.Name = "textBoxARGAddress";
             this.textBoxARGAddress.Size = new System.Drawing.Size(92, 20);
@@ -1465,7 +1467,7 @@ namespace ZenStatesDebugTool
             this.label30.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label30.Location = new System.Drawing.Point(3, 5);
             this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(94, 29);
+            this.label30.Size = new System.Drawing.Size(94, 32);
             this.label30.TabIndex = 12;
             this.label30.Text = "Mailbox";
             this.label30.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1481,7 +1483,7 @@ namespace ZenStatesDebugTool
             this.comboBoxMailboxSelect.Location = new System.Drawing.Point(104, 9);
             this.comboBoxMailboxSelect.Margin = new System.Windows.Forms.Padding(4);
             this.comboBoxMailboxSelect.Name = "comboBoxMailboxSelect";
-            this.comboBoxMailboxSelect.Size = new System.Drawing.Size(92, 21);
+            this.comboBoxMailboxSelect.Size = new System.Drawing.Size(92, 24);
             this.comboBoxMailboxSelect.TabIndex = 13;
             this.comboBoxMailboxSelect.SelectedIndexChanged += new System.EventHandler(this.ComboBoxMailboxSelect_SelectedIndexChanged);
             // 
@@ -1489,7 +1491,7 @@ namespace ZenStatesDebugTool
             // 
             this.textBoxCMD.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCMD.Hexadecimal = true;
-            this.textBoxCMD.Location = new System.Drawing.Point(104, 122);
+            this.textBoxCMD.Location = new System.Drawing.Point(104, 153);
             this.textBoxCMD.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxCMD.Maximum = new decimal(new int[] {
             255,
@@ -1497,7 +1499,7 @@ namespace ZenStatesDebugTool
             0,
             0});
             this.textBoxCMD.Name = "textBoxCMD";
-            this.textBoxCMD.Size = new System.Drawing.Size(92, 20);
+            this.textBoxCMD.Size = new System.Drawing.Size(92, 22);
             this.textBoxCMD.TabIndex = 14;
             this.textBoxCMD.Value = new decimal(new int[] {
             1,
@@ -1508,10 +1510,10 @@ namespace ZenStatesDebugTool
             // tabPagePci
             // 
             this.tabPagePci.Controls.Add(this.tableLayoutPanel4);
-            this.tabPagePci.Location = new System.Drawing.Point(4, 40);
+            this.tabPagePci.Location = new System.Drawing.Point(4, 46);
             this.tabPagePci.Name = "tabPagePci";
             this.tabPagePci.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPagePci.Size = new System.Drawing.Size(451, 334);
+            this.tabPagePci.Size = new System.Drawing.Size(451, 328);
             this.tabPagePci.TabIndex = 1;
             this.tabPagePci.Text = "PCI";
             this.tabPagePci.UseVisualStyleBackColor = true;
@@ -1557,7 +1559,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(445, 253);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(445, 257);
             this.tableLayoutPanel4.TabIndex = 0;
             // 
             // buttonPciWrite
@@ -1713,7 +1715,7 @@ namespace ZenStatesDebugTool
             this.label53.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label53.Location = new System.Drawing.Point(3, 196);
             this.label53.Name = "label53";
-            this.label53.Size = new System.Drawing.Size(94, 26);
+            this.label53.Size = new System.Drawing.Size(94, 28);
             this.label53.TabIndex = 13;
             this.label53.Text = "End Address";
             this.label53.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1722,9 +1724,9 @@ namespace ZenStatesDebugTool
             // 
             this.label54.AutoSize = true;
             this.label54.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label54.Location = new System.Drawing.Point(3, 222);
+            this.label54.Location = new System.Drawing.Point(3, 224);
             this.label54.Name = "label54";
-            this.label54.Size = new System.Drawing.Size(94, 26);
+            this.label54.Size = new System.Drawing.Size(94, 28);
             this.label54.TabIndex = 14;
             this.label54.Text = "Dump Name";
             this.label54.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1733,7 +1735,7 @@ namespace ZenStatesDebugTool
             // 
             this.textBoxDumpStartAddress.Location = new System.Drawing.Point(103, 170);
             this.textBoxDumpStartAddress.Name = "textBoxDumpStartAddress";
-            this.textBoxDumpStartAddress.Size = new System.Drawing.Size(94, 20);
+            this.textBoxDumpStartAddress.Size = new System.Drawing.Size(94, 22);
             this.textBoxDumpStartAddress.TabIndex = 15;
             this.textBoxDumpStartAddress.Text = "0xA200000";
             // 
@@ -1741,15 +1743,15 @@ namespace ZenStatesDebugTool
             // 
             this.textBoxDumpEndAddress.Location = new System.Drawing.Point(103, 199);
             this.textBoxDumpEndAddress.Name = "textBoxDumpEndAddress";
-            this.textBoxDumpEndAddress.Size = new System.Drawing.Size(94, 20);
+            this.textBoxDumpEndAddress.Size = new System.Drawing.Size(94, 22);
             this.textBoxDumpEndAddress.TabIndex = 16;
             this.textBoxDumpEndAddress.Text = "0xA2FFFFF";
             // 
             // textBoxDumpName
             // 
-            this.textBoxDumpName.Location = new System.Drawing.Point(103, 225);
+            this.textBoxDumpName.Location = new System.Drawing.Point(103, 227);
             this.textBoxDumpName.Name = "textBoxDumpName";
-            this.textBoxDumpName.Size = new System.Drawing.Size(94, 20);
+            this.textBoxDumpName.Size = new System.Drawing.Size(94, 22);
             this.textBoxDumpName.TabIndex = 17;
             this.textBoxDumpName.Text = "dump.bin";
             // 
@@ -1767,10 +1769,10 @@ namespace ZenStatesDebugTool
             // tabPageMsr
             // 
             this.tabPageMsr.Controls.Add(this.tableLayoutPanel9);
-            this.tabPageMsr.Location = new System.Drawing.Point(4, 40);
+            this.tabPageMsr.Location = new System.Drawing.Point(4, 46);
             this.tabPageMsr.Name = "tabPageMsr";
             this.tabPageMsr.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageMsr.Size = new System.Drawing.Size(451, 334);
+            this.tabPageMsr.Size = new System.Drawing.Size(451, 328);
             this.tabPageMsr.TabIndex = 5;
             this.tabPageMsr.Text = "MSR";
             this.tabPageMsr.UseVisualStyleBackColor = true;
@@ -1960,10 +1962,10 @@ namespace ZenStatesDebugTool
             // tabPageCPUID
             // 
             this.tabPageCPUID.Controls.Add(this.tableLayoutPanel10);
-            this.tabPageCPUID.Location = new System.Drawing.Point(4, 40);
+            this.tabPageCPUID.Location = new System.Drawing.Point(4, 46);
             this.tabPageCPUID.Name = "tabPageCPUID";
             this.tabPageCPUID.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageCPUID.Size = new System.Drawing.Size(451, 334);
+            this.tabPageCPUID.Size = new System.Drawing.Size(451, 328);
             this.tabPageCPUID.TabIndex = 6;
             this.tabPageCPUID.Text = "CPUID";
             this.tabPageCPUID.UseVisualStyleBackColor = true;
@@ -2183,9 +2185,9 @@ namespace ZenStatesDebugTool
             // tabPagePbo
             // 
             this.tabPagePbo.Controls.Add(this.tableLayoutPanel12);
-            this.tabPagePbo.Location = new System.Drawing.Point(4, 40);
+            this.tabPagePbo.Location = new System.Drawing.Point(4, 46);
             this.tabPagePbo.Name = "tabPagePbo";
-            this.tabPagePbo.Size = new System.Drawing.Size(451, 334);
+            this.tabPagePbo.Size = new System.Drawing.Size(451, 328);
             this.tabPagePbo.TabIndex = 7;
             this.tabPagePbo.Text = "PBO";
             this.tabPagePbo.UseVisualStyleBackColor = true;
@@ -2225,7 +2227,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 5F));
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel12.Size = new System.Drawing.Size(451, 334);
+            this.tableLayoutPanel12.Size = new System.Drawing.Size(451, 328);
             this.tableLayoutPanel12.TabIndex = 0;
             // 
             // flowLayoutPanelCcdActions
@@ -2249,17 +2251,17 @@ namespace ZenStatesDebugTool
             this.flowLayoutPanelCOList.Location = new System.Drawing.Point(6, 8);
             this.flowLayoutPanelCOList.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
             this.flowLayoutPanelCOList.Name = "flowLayoutPanelCOList";
-            this.flowLayoutPanelCOList.Size = new System.Drawing.Size(439, 228);
+            this.flowLayoutPanelCOList.Size = new System.Drawing.Size(439, 214);
             this.flowLayoutPanelCOList.TabIndex = 2;
             // 
             // labelPpt
             // 
             this.labelPpt.AutoSize = true;
             this.labelPpt.Dock = System.Windows.Forms.DockStyle.Left;
-            this.labelPpt.Location = new System.Drawing.Point(6, 242);
+            this.labelPpt.Location = new System.Drawing.Point(6, 228);
             this.labelPpt.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.labelPpt.Name = "labelPpt";
-            this.labelPpt.Size = new System.Drawing.Size(48, 13);
+            this.labelPpt.Size = new System.Drawing.Size(58, 16);
             this.labelPpt.TabIndex = 60;
             this.labelPpt.Text = "PPT (W)";
             // 
@@ -2267,10 +2269,10 @@ namespace ZenStatesDebugTool
             // 
             this.labelTdc.AutoSize = true;
             this.labelTdc.Dock = System.Windows.Forms.DockStyle.Left;
-            this.labelTdc.Location = new System.Drawing.Point(95, 242);
+            this.labelTdc.Location = new System.Drawing.Point(95, 228);
             this.labelTdc.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.labelTdc.Name = "labelTdc";
-            this.labelTdc.Size = new System.Drawing.Size(45, 13);
+            this.labelTdc.Size = new System.Drawing.Size(55, 16);
             this.labelTdc.TabIndex = 61;
             this.labelTdc.Text = "TDC (A)";
             // 
@@ -2278,10 +2280,10 @@ namespace ZenStatesDebugTool
             // 
             this.labelEdc.AutoSize = true;
             this.labelEdc.Dock = System.Windows.Forms.DockStyle.Left;
-            this.labelEdc.Location = new System.Drawing.Point(184, 242);
+            this.labelEdc.Location = new System.Drawing.Point(184, 228);
             this.labelEdc.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.labelEdc.Name = "labelEdc";
-            this.labelEdc.Size = new System.Drawing.Size(45, 13);
+            this.labelEdc.Size = new System.Drawing.Size(55, 16);
             this.labelEdc.TabIndex = 62;
             this.labelEdc.Text = "EDC (A)";
             // 
@@ -2289,10 +2291,10 @@ namespace ZenStatesDebugTool
             // 
             this.labelScalar.AutoSize = true;
             this.labelScalar.Dock = System.Windows.Forms.DockStyle.Left;
-            this.labelScalar.Location = new System.Drawing.Point(273, 242);
+            this.labelScalar.Location = new System.Drawing.Point(273, 228);
             this.labelScalar.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.labelScalar.Name = "labelScalar";
-            this.labelScalar.Size = new System.Drawing.Size(51, 13);
+            this.labelScalar.Size = new System.Drawing.Size(63, 16);
             this.labelScalar.TabIndex = 63;
             this.labelScalar.Text = "Scalar (x)";
             // 
@@ -2300,17 +2302,17 @@ namespace ZenStatesDebugTool
             // 
             this.label51.AutoSize = true;
             this.label51.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label51.Location = new System.Drawing.Point(362, 242);
+            this.label51.Location = new System.Drawing.Point(362, 228);
             this.label51.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.label51.Name = "label51";
-            this.label51.Size = new System.Drawing.Size(64, 13);
+            this.label51.Size = new System.Drawing.Size(78, 16);
             this.label51.TabIndex = 56;
             this.label51.Text = "FMax (MHz)";
             // 
             // numericUpDownPpt
             // 
             this.numericUpDownPpt.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.numericUpDownPpt.Location = new System.Drawing.Point(6, 255);
+            this.numericUpDownPpt.Location = new System.Drawing.Point(6, 244);
             this.numericUpDownPpt.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.numericUpDownPpt.Maximum = new decimal(new int[] {
             1000,
@@ -2323,7 +2325,7 @@ namespace ZenStatesDebugTool
             0,
             0});
             this.numericUpDownPpt.Name = "numericUpDownPpt";
-            this.numericUpDownPpt.Size = new System.Drawing.Size(83, 20);
+            this.numericUpDownPpt.Size = new System.Drawing.Size(83, 22);
             this.numericUpDownPpt.TabIndex = 64;
             this.numericUpDownPpt.Value = new decimal(new int[] {
             1,
@@ -2335,7 +2337,7 @@ namespace ZenStatesDebugTool
             // numericUpDownTdc
             // 
             this.numericUpDownTdc.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.numericUpDownTdc.Location = new System.Drawing.Point(95, 255);
+            this.numericUpDownTdc.Location = new System.Drawing.Point(95, 244);
             this.numericUpDownTdc.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.numericUpDownTdc.Maximum = new decimal(new int[] {
             1000,
@@ -2348,7 +2350,7 @@ namespace ZenStatesDebugTool
             0,
             0});
             this.numericUpDownTdc.Name = "numericUpDownTdc";
-            this.numericUpDownTdc.Size = new System.Drawing.Size(83, 20);
+            this.numericUpDownTdc.Size = new System.Drawing.Size(83, 22);
             this.numericUpDownTdc.TabIndex = 65;
             this.numericUpDownTdc.Value = new decimal(new int[] {
             1,
@@ -2360,7 +2362,7 @@ namespace ZenStatesDebugTool
             // numericUpDownEdc
             // 
             this.numericUpDownEdc.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.numericUpDownEdc.Location = new System.Drawing.Point(184, 255);
+            this.numericUpDownEdc.Location = new System.Drawing.Point(184, 244);
             this.numericUpDownEdc.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.numericUpDownEdc.Maximum = new decimal(new int[] {
             1000,
@@ -2373,7 +2375,7 @@ namespace ZenStatesDebugTool
             0,
             0});
             this.numericUpDownEdc.Name = "numericUpDownEdc";
-            this.numericUpDownEdc.Size = new System.Drawing.Size(83, 20);
+            this.numericUpDownEdc.Size = new System.Drawing.Size(83, 22);
             this.numericUpDownEdc.TabIndex = 66;
             this.numericUpDownEdc.Value = new decimal(new int[] {
             1,
@@ -2385,7 +2387,7 @@ namespace ZenStatesDebugTool
             // numericUpDownScalar
             // 
             this.numericUpDownScalar.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.numericUpDownScalar.Location = new System.Drawing.Point(273, 255);
+            this.numericUpDownScalar.Location = new System.Drawing.Point(273, 244);
             this.numericUpDownScalar.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.numericUpDownScalar.Maximum = new decimal(new int[] {
             10,
@@ -2398,7 +2400,7 @@ namespace ZenStatesDebugTool
             0,
             0});
             this.numericUpDownScalar.Name = "numericUpDownScalar";
-            this.numericUpDownScalar.Size = new System.Drawing.Size(83, 20);
+            this.numericUpDownScalar.Size = new System.Drawing.Size(83, 22);
             this.numericUpDownScalar.TabIndex = 67;
             this.numericUpDownScalar.Value = new decimal(new int[] {
             1,
@@ -2415,7 +2417,7 @@ namespace ZenStatesDebugTool
             0,
             0,
             0});
-            this.numericUpDownFmax.Location = new System.Drawing.Point(362, 255);
+            this.numericUpDownFmax.Location = new System.Drawing.Point(362, 244);
             this.numericUpDownFmax.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.numericUpDownFmax.Maximum = new decimal(new int[] {
             9000,
@@ -2423,7 +2425,7 @@ namespace ZenStatesDebugTool
             0,
             0});
             this.numericUpDownFmax.Name = "numericUpDownFmax";
-            this.numericUpDownFmax.Size = new System.Drawing.Size(83, 20);
+            this.numericUpDownFmax.Size = new System.Drawing.Size(83, 22);
             this.numericUpDownFmax.TabIndex = 59;
             this.numericUpDownFmax.ValueChanged += new System.EventHandler(this.MarginControl_ValueChanged);
             // 
@@ -2432,10 +2434,10 @@ namespace ZenStatesDebugTool
             this.checkBoxProfileLimits.AutoSize = true;
             this.tableLayoutPanel12.SetColumnSpan(this.checkBoxProfileLimits, 5);
             this.checkBoxProfileLimits.Dock = System.Windows.Forms.DockStyle.Left;
-            this.checkBoxProfileLimits.Location = new System.Drawing.Point(6, 282);
+            this.checkBoxProfileLimits.Location = new System.Drawing.Point(6, 273);
             this.checkBoxProfileLimits.Margin = new System.Windows.Forms.Padding(3, 4, 3, 2);
             this.checkBoxProfileLimits.Name = "checkBoxProfileLimits";
-            this.checkBoxProfileLimits.Size = new System.Drawing.Size(196, 17);
+            this.checkBoxProfileLimits.Size = new System.Drawing.Size(238, 20);
             this.checkBoxProfileLimits.TabIndex = 56;
             this.checkBoxProfileLimits.Text = "Include limits and FMax in the profile";
             this.checkBoxProfileLimits.UseVisualStyleBackColor = true;
@@ -2455,7 +2457,7 @@ namespace ZenStatesDebugTool
             this.flowLayoutPanelPboActions.Controls.Add(this.btnLoadCOProfile, 3, 0);
             this.flowLayoutPanelPboActions.Controls.Add(this.buttonApplyPbo, 4, 0);
             this.flowLayoutPanelPboActions.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanelPboActions.Location = new System.Drawing.Point(3, 306);
+            this.flowLayoutPanelPboActions.Location = new System.Drawing.Point(3, 300);
             this.flowLayoutPanelPboActions.Margin = new System.Windows.Forms.Padding(0);
             this.flowLayoutPanelPboActions.Name = "flowLayoutPanelPboActions";
             this.flowLayoutPanelPboActions.RowCount = 1;
@@ -2527,9 +2529,9 @@ namespace ZenStatesDebugTool
             // tabPageCS
             // 
             this.tabPageCS.Controls.Add(this.tableLayoutPanel16);
-            this.tabPageCS.Location = new System.Drawing.Point(4, 40);
+            this.tabPageCS.Location = new System.Drawing.Point(4, 46);
             this.tabPageCS.Name = "tabPageCS";
-            this.tabPageCS.Size = new System.Drawing.Size(451, 334);
+            this.tabPageCS.Size = new System.Drawing.Size(451, 328);
             this.tabPageCS.TabIndex = 9;
             this.tabPageCS.Text = "Curve Shaper";
             this.tabPageCS.UseVisualStyleBackColor = true;
@@ -2582,7 +2584,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel16.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel16.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel16.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel16.Size = new System.Drawing.Size(451, 334);
+            this.tableLayoutPanel16.Size = new System.Drawing.Size(451, 328);
             this.tableLayoutPanel16.TabIndex = 0;
             // 
             // cs_min_high
@@ -2599,7 +2601,7 @@ namespace ZenStatesDebugTool
             0,
             -2147483648});
             this.cs_min_high.Name = "cs_min_high";
-            this.cs_min_high.Size = new System.Drawing.Size(54, 20);
+            this.cs_min_high.Size = new System.Drawing.Size(54, 22);
             this.cs_min_high.TabIndex = 10;
             this.cs_min_high.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.cs_min_high.ValueChanged += new System.EventHandler(this.MarginControl_ValueChanged);
@@ -2618,7 +2620,7 @@ namespace ZenStatesDebugTool
             0,
             -2147483648});
             this.cs_min_med.Name = "cs_min_med";
-            this.cs_min_med.Size = new System.Drawing.Size(54, 20);
+            this.cs_min_med.Size = new System.Drawing.Size(54, 22);
             this.cs_min_med.TabIndex = 9;
             this.cs_min_med.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.cs_min_med.ValueChanged += new System.EventHandler(this.MarginControl_ValueChanged);
@@ -2627,9 +2629,9 @@ namespace ZenStatesDebugTool
             // 
             this.label38.AutoSize = true;
             this.label38.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label38.Location = new System.Drawing.Point(6, 131);
+            this.label38.Location = new System.Drawing.Point(6, 139);
             this.label38.Name = "label38";
-            this.label38.Size = new System.Drawing.Size(42, 26);
+            this.label38.Size = new System.Drawing.Size(42, 28);
             this.label38.TabIndex = 7;
             this.label38.Text = "Max";
             this.label38.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -2638,9 +2640,9 @@ namespace ZenStatesDebugTool
             // 
             this.label37.AutoSize = true;
             this.label37.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label37.Location = new System.Drawing.Point(6, 105);
+            this.label37.Location = new System.Drawing.Point(6, 111);
             this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(42, 26);
+            this.label37.Size = new System.Drawing.Size(42, 28);
             this.label37.TabIndex = 6;
             this.label37.Text = "High";
             this.label37.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -2649,9 +2651,9 @@ namespace ZenStatesDebugTool
             // 
             this.label36.AutoSize = true;
             this.label36.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label36.Location = new System.Drawing.Point(6, 79);
+            this.label36.Location = new System.Drawing.Point(6, 83);
             this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(42, 26);
+            this.label36.Size = new System.Drawing.Size(42, 28);
             this.label36.TabIndex = 5;
             this.label36.Text = "Med";
             this.label36.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -2660,9 +2662,9 @@ namespace ZenStatesDebugTool
             // 
             this.label35.AutoSize = true;
             this.label35.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label35.Location = new System.Drawing.Point(6, 53);
+            this.label35.Location = new System.Drawing.Point(6, 55);
             this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(42, 26);
+            this.label35.Size = new System.Drawing.Size(42, 28);
             this.label35.TabIndex = 4;
             this.label35.Text = "Low";
             this.label35.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -2673,7 +2675,7 @@ namespace ZenStatesDebugTool
             this.label34.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label34.Location = new System.Drawing.Point(6, 27);
             this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(42, 26);
+            this.label34.Size = new System.Drawing.Size(42, 28);
             this.label34.TabIndex = 3;
             this.label34.Text = "Min";
             this.label34.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -2725,14 +2727,14 @@ namespace ZenStatesDebugTool
             0,
             -2147483648});
             this.cs_min_low.Name = "cs_min_low";
-            this.cs_min_low.Size = new System.Drawing.Size(54, 20);
+            this.cs_min_low.Size = new System.Drawing.Size(54, 22);
             this.cs_min_low.TabIndex = 8;
             this.cs_min_low.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.cs_min_low.ValueChanged += new System.EventHandler(this.MarginControl_ValueChanged);
             // 
             // cs_low_low
             // 
-            this.cs_low_low.Location = new System.Drawing.Point(54, 56);
+            this.cs_low_low.Location = new System.Drawing.Point(54, 58);
             this.cs_low_low.Maximum = new decimal(new int[] {
             30,
             0,
@@ -2744,14 +2746,14 @@ namespace ZenStatesDebugTool
             0,
             -2147483648});
             this.cs_low_low.Name = "cs_low_low";
-            this.cs_low_low.Size = new System.Drawing.Size(54, 20);
+            this.cs_low_low.Size = new System.Drawing.Size(54, 22);
             this.cs_low_low.TabIndex = 11;
             this.cs_low_low.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.cs_low_low.ValueChanged += new System.EventHandler(this.MarginControl_ValueChanged);
             // 
             // cs_low_med
             // 
-            this.cs_low_med.Location = new System.Drawing.Point(120, 56);
+            this.cs_low_med.Location = new System.Drawing.Point(120, 58);
             this.cs_low_med.Maximum = new decimal(new int[] {
             30,
             0,
@@ -2763,14 +2765,14 @@ namespace ZenStatesDebugTool
             0,
             -2147483648});
             this.cs_low_med.Name = "cs_low_med";
-            this.cs_low_med.Size = new System.Drawing.Size(54, 20);
+            this.cs_low_med.Size = new System.Drawing.Size(54, 22);
             this.cs_low_med.TabIndex = 12;
             this.cs_low_med.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.cs_low_med.ValueChanged += new System.EventHandler(this.MarginControl_ValueChanged);
             // 
             // cs_low_high
             // 
-            this.cs_low_high.Location = new System.Drawing.Point(186, 56);
+            this.cs_low_high.Location = new System.Drawing.Point(186, 58);
             this.cs_low_high.Maximum = new decimal(new int[] {
             30,
             0,
@@ -2782,14 +2784,14 @@ namespace ZenStatesDebugTool
             0,
             -2147483648});
             this.cs_low_high.Name = "cs_low_high";
-            this.cs_low_high.Size = new System.Drawing.Size(54, 20);
+            this.cs_low_high.Size = new System.Drawing.Size(54, 22);
             this.cs_low_high.TabIndex = 13;
             this.cs_low_high.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.cs_low_high.ValueChanged += new System.EventHandler(this.MarginControl_ValueChanged);
             // 
             // cs_med_low
             // 
-            this.cs_med_low.Location = new System.Drawing.Point(54, 82);
+            this.cs_med_low.Location = new System.Drawing.Point(54, 86);
             this.cs_med_low.Maximum = new decimal(new int[] {
             30,
             0,
@@ -2801,14 +2803,14 @@ namespace ZenStatesDebugTool
             0,
             -2147483648});
             this.cs_med_low.Name = "cs_med_low";
-            this.cs_med_low.Size = new System.Drawing.Size(54, 20);
+            this.cs_med_low.Size = new System.Drawing.Size(54, 22);
             this.cs_med_low.TabIndex = 14;
             this.cs_med_low.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.cs_med_low.ValueChanged += new System.EventHandler(this.MarginControl_ValueChanged);
             // 
             // cs_med_med
             // 
-            this.cs_med_med.Location = new System.Drawing.Point(120, 82);
+            this.cs_med_med.Location = new System.Drawing.Point(120, 86);
             this.cs_med_med.Maximum = new decimal(new int[] {
             30,
             0,
@@ -2820,14 +2822,14 @@ namespace ZenStatesDebugTool
             0,
             -2147483648});
             this.cs_med_med.Name = "cs_med_med";
-            this.cs_med_med.Size = new System.Drawing.Size(54, 20);
+            this.cs_med_med.Size = new System.Drawing.Size(54, 22);
             this.cs_med_med.TabIndex = 15;
             this.cs_med_med.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.cs_med_med.ValueChanged += new System.EventHandler(this.MarginControl_ValueChanged);
             // 
             // cs_med_high
             // 
-            this.cs_med_high.Location = new System.Drawing.Point(186, 82);
+            this.cs_med_high.Location = new System.Drawing.Point(186, 86);
             this.cs_med_high.Maximum = new decimal(new int[] {
             30,
             0,
@@ -2839,14 +2841,14 @@ namespace ZenStatesDebugTool
             0,
             -2147483648});
             this.cs_med_high.Name = "cs_med_high";
-            this.cs_med_high.Size = new System.Drawing.Size(54, 20);
+            this.cs_med_high.Size = new System.Drawing.Size(54, 22);
             this.cs_med_high.TabIndex = 16;
             this.cs_med_high.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.cs_med_high.ValueChanged += new System.EventHandler(this.MarginControl_ValueChanged);
             // 
             // cs_high_low
             // 
-            this.cs_high_low.Location = new System.Drawing.Point(54, 108);
+            this.cs_high_low.Location = new System.Drawing.Point(54, 114);
             this.cs_high_low.Maximum = new decimal(new int[] {
             30,
             0,
@@ -2858,14 +2860,14 @@ namespace ZenStatesDebugTool
             0,
             -2147483648});
             this.cs_high_low.Name = "cs_high_low";
-            this.cs_high_low.Size = new System.Drawing.Size(54, 20);
+            this.cs_high_low.Size = new System.Drawing.Size(54, 22);
             this.cs_high_low.TabIndex = 17;
             this.cs_high_low.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.cs_high_low.ValueChanged += new System.EventHandler(this.MarginControl_ValueChanged);
             // 
             // cs_high_med
             // 
-            this.cs_high_med.Location = new System.Drawing.Point(120, 108);
+            this.cs_high_med.Location = new System.Drawing.Point(120, 114);
             this.cs_high_med.Maximum = new decimal(new int[] {
             30,
             0,
@@ -2877,14 +2879,14 @@ namespace ZenStatesDebugTool
             0,
             -2147483648});
             this.cs_high_med.Name = "cs_high_med";
-            this.cs_high_med.Size = new System.Drawing.Size(54, 20);
+            this.cs_high_med.Size = new System.Drawing.Size(54, 22);
             this.cs_high_med.TabIndex = 18;
             this.cs_high_med.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.cs_high_med.ValueChanged += new System.EventHandler(this.MarginControl_ValueChanged);
             // 
             // cs_high_high
             // 
-            this.cs_high_high.Location = new System.Drawing.Point(186, 108);
+            this.cs_high_high.Location = new System.Drawing.Point(186, 114);
             this.cs_high_high.Maximum = new decimal(new int[] {
             30,
             0,
@@ -2896,14 +2898,14 @@ namespace ZenStatesDebugTool
             0,
             -2147483648});
             this.cs_high_high.Name = "cs_high_high";
-            this.cs_high_high.Size = new System.Drawing.Size(54, 20);
+            this.cs_high_high.Size = new System.Drawing.Size(54, 22);
             this.cs_high_high.TabIndex = 19;
             this.cs_high_high.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.cs_high_high.ValueChanged += new System.EventHandler(this.MarginControl_ValueChanged);
             // 
             // cs_max_low
             // 
-            this.cs_max_low.Location = new System.Drawing.Point(54, 134);
+            this.cs_max_low.Location = new System.Drawing.Point(54, 142);
             this.cs_max_low.Maximum = new decimal(new int[] {
             30,
             0,
@@ -2915,14 +2917,14 @@ namespace ZenStatesDebugTool
             0,
             -2147483648});
             this.cs_max_low.Name = "cs_max_low";
-            this.cs_max_low.Size = new System.Drawing.Size(54, 20);
+            this.cs_max_low.Size = new System.Drawing.Size(54, 22);
             this.cs_max_low.TabIndex = 20;
             this.cs_max_low.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.cs_max_low.ValueChanged += new System.EventHandler(this.MarginControl_ValueChanged);
             // 
             // cs_max_med
             // 
-            this.cs_max_med.Location = new System.Drawing.Point(120, 134);
+            this.cs_max_med.Location = new System.Drawing.Point(120, 142);
             this.cs_max_med.Maximum = new decimal(new int[] {
             30,
             0,
@@ -2934,14 +2936,14 @@ namespace ZenStatesDebugTool
             0,
             -2147483648});
             this.cs_max_med.Name = "cs_max_med";
-            this.cs_max_med.Size = new System.Drawing.Size(54, 20);
+            this.cs_max_med.Size = new System.Drawing.Size(54, 22);
             this.cs_max_med.TabIndex = 21;
             this.cs_max_med.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.cs_max_med.ValueChanged += new System.EventHandler(this.MarginControl_ValueChanged);
             // 
             // cs_max_high
             // 
-            this.cs_max_high.Location = new System.Drawing.Point(186, 134);
+            this.cs_max_high.Location = new System.Drawing.Point(186, 142);
             this.cs_max_high.Maximum = new decimal(new int[] {
             30,
             0,
@@ -2953,7 +2955,7 @@ namespace ZenStatesDebugTool
             0,
             -2147483648});
             this.cs_max_high.Name = "cs_max_high";
-            this.cs_max_high.Size = new System.Drawing.Size(54, 20);
+            this.cs_max_high.Size = new System.Drawing.Size(54, 22);
             this.cs_max_high.TabIndex = 22;
             this.cs_max_high.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.cs_max_high.ValueChanged += new System.EventHandler(this.MarginControl_ValueChanged);
@@ -2975,10 +2977,10 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel16.SetColumnSpan(this.labelCsInfo, 5);
             this.labelCsInfo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelCsInfo.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelCsInfo.Location = new System.Drawing.Point(3, 165);
+            this.labelCsInfo.Location = new System.Drawing.Point(3, 175);
             this.labelCsInfo.Margin = new System.Windows.Forms.Padding(0, 8, 0, 6);
             this.labelCsInfo.Name = "labelCsInfo";
-            this.labelCsInfo.Size = new System.Drawing.Size(445, 135);
+            this.labelCsInfo.Size = new System.Drawing.Size(445, 119);
             this.labelCsInfo.TabIndex = 28;
             this.labelCsInfo.Text = "Rows are frequency tiers, columns are temperature bands. Range -50 to +30.\r\n\r\nSav" +
     "e and Load use the same profile as the PBO tab.";
@@ -2999,7 +3001,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanelCsActions.Controls.Add(this.buttonLoadCSProfile, 3, 0);
             this.tableLayoutPanelCsActions.Controls.Add(this.buttonApplyCS, 4, 0);
             this.tableLayoutPanelCsActions.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanelCsActions.Location = new System.Drawing.Point(3, 306);
+            this.tableLayoutPanelCsActions.Location = new System.Drawing.Point(3, 300);
             this.tableLayoutPanelCsActions.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanelCsActions.Name = "tableLayoutPanelCsActions";
             this.tableLayoutPanelCsActions.RowCount = 1;
@@ -3072,9 +3074,9 @@ namespace ZenStatesDebugTool
             // tabPageWmi
             // 
             this.tabPageWmi.Controls.Add(this.tableLayoutPanel13);
-            this.tabPageWmi.Location = new System.Drawing.Point(4, 40);
+            this.tabPageWmi.Location = new System.Drawing.Point(4, 46);
             this.tabPageWmi.Name = "tabPageWmi";
-            this.tabPageWmi.Size = new System.Drawing.Size(451, 334);
+            this.tabPageWmi.Size = new System.Drawing.Size(451, 328);
             this.tabPageWmi.TabIndex = 8;
             this.tabPageWmi.Text = "AMD ACPI";
             this.tabPageWmi.UseVisualStyleBackColor = true;
@@ -3100,16 +3102,16 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel13.Size = new System.Drawing.Size(451, 334);
+            this.tableLayoutPanel13.Size = new System.Drawing.Size(451, 328);
             this.tableLayoutPanel13.TabIndex = 0;
             // 
             // label49
             // 
             this.label49.AutoSize = true;
             this.label49.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label49.Location = new System.Drawing.Point(3, 54);
+            this.label49.Location = new System.Drawing.Point(3, 60);
             this.label49.Name = "label49";
-            this.label49.Size = new System.Drawing.Size(84, 26);
+            this.label49.Size = new System.Drawing.Size(84, 28);
             this.label49.TabIndex = 4;
             this.label49.Text = "Argument";
             this.label49.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3120,7 +3122,7 @@ namespace ZenStatesDebugTool
             this.label47.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label47.Location = new System.Drawing.Point(3, 0);
             this.label47.Name = "label47";
-            this.label47.Size = new System.Drawing.Size(84, 27);
+            this.label47.Size = new System.Drawing.Size(84, 30);
             this.label47.TabIndex = 0;
             this.label47.Text = "Command";
             this.label47.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3132,7 +3134,7 @@ namespace ZenStatesDebugTool
             this.comboBoxAvailableCommands.FormattingEnabled = true;
             this.comboBoxAvailableCommands.Location = new System.Drawing.Point(93, 3);
             this.comboBoxAvailableCommands.Name = "comboBoxAvailableCommands";
-            this.comboBoxAvailableCommands.Size = new System.Drawing.Size(355, 21);
+            this.comboBoxAvailableCommands.Size = new System.Drawing.Size(355, 24);
             this.comboBoxAvailableCommands.TabIndex = 1;
             this.comboBoxAvailableCommands.SelectedIndexChanged += new System.EventHandler(this.ComboBoxAvailableCommands_SelectedIndexChanged);
             // 
@@ -3141,9 +3143,9 @@ namespace ZenStatesDebugTool
             this.comboBoxAvailableValues.Dock = System.Windows.Forms.DockStyle.Fill;
             this.comboBoxAvailableValues.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxAvailableValues.FormattingEnabled = true;
-            this.comboBoxAvailableValues.Location = new System.Drawing.Point(93, 30);
+            this.comboBoxAvailableValues.Location = new System.Drawing.Point(93, 33);
             this.comboBoxAvailableValues.Name = "comboBoxAvailableValues";
-            this.comboBoxAvailableValues.Size = new System.Drawing.Size(355, 21);
+            this.comboBoxAvailableValues.Size = new System.Drawing.Size(355, 24);
             this.comboBoxAvailableValues.TabIndex = 2;
             this.comboBoxAvailableValues.SelectedIndexChanged += new System.EventHandler(this.ComboBoxAvailableValues_SelectedIndexChanged);
             // 
@@ -3151,9 +3153,9 @@ namespace ZenStatesDebugTool
             // 
             this.label48.AutoSize = true;
             this.label48.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label48.Location = new System.Drawing.Point(3, 27);
+            this.label48.Location = new System.Drawing.Point(3, 30);
             this.label48.Name = "label48";
-            this.label48.Size = new System.Drawing.Size(84, 27);
+            this.label48.Size = new System.Drawing.Size(84, 30);
             this.label48.TabIndex = 3;
             this.label48.Text = "Values";
             this.label48.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3161,14 +3163,14 @@ namespace ZenStatesDebugTool
             // textBoxWmiArgument
             // 
             this.textBoxWmiArgument.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBoxWmiArgument.Location = new System.Drawing.Point(93, 57);
+            this.textBoxWmiArgument.Location = new System.Drawing.Point(93, 63);
             this.textBoxWmiArgument.Name = "textBoxWmiArgument";
-            this.textBoxWmiArgument.Size = new System.Drawing.Size(355, 20);
+            this.textBoxWmiArgument.Size = new System.Drawing.Size(355, 22);
             this.textBoxWmiArgument.TabIndex = 5;
             // 
             // buttonWmiCmdSend
             // 
-            this.buttonWmiCmdSend.Location = new System.Drawing.Point(93, 83);
+            this.buttonWmiCmdSend.Location = new System.Drawing.Point(93, 91);
             this.buttonWmiCmdSend.Name = "buttonWmiCmdSend";
             this.buttonWmiCmdSend.Size = new System.Drawing.Size(75, 23);
             this.buttonWmiCmdSend.TabIndex = 6;
@@ -3180,10 +3182,10 @@ namespace ZenStatesDebugTool
             // 
             this.tabPagePstates.Controls.Add(this.tableLayoutPanelBclkInfo);
             this.tabPagePstates.Controls.Add(this.tableLayoutPanel5);
-            this.tabPagePstates.Location = new System.Drawing.Point(4, 40);
+            this.tabPagePstates.Location = new System.Drawing.Point(4, 46);
             this.tabPagePstates.Name = "tabPagePstates";
             this.tabPagePstates.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPagePstates.Size = new System.Drawing.Size(451, 334);
+            this.tabPagePstates.Size = new System.Drawing.Size(451, 328);
             this.tabPagePstates.TabIndex = 3;
             this.tabPagePstates.Text = "PStates";
             this.tabPagePstates.UseVisualStyleBackColor = true;
@@ -3203,7 +3205,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanelBclkInfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanelBclkInfo.Size = new System.Drawing.Size(445, 125);
+            this.tableLayoutPanelBclkInfo.Size = new System.Drawing.Size(445, 119);
             this.tableLayoutPanelBclkInfo.TabIndex = 6;
             this.tableLayoutPanelBclkInfo.Visible = false;
             // 
@@ -3213,22 +3215,23 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanelBclkNotice.ColumnCount = 2;
             this.tableLayoutPanelBclkNotice.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanelBclkNotice.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanelBclkNotice.Controls.Add(this.iconBoxBclkNotice, 0, 0);
-            this.tableLayoutPanelBclkNotice.Controls.Add(this.labelBclkInfo, 1, 0);
+            this.tableLayoutPanelBclkNotice.Controls.Add(this.iconBoxBclkNotice, 0, 1);
+            this.tableLayoutPanelBclkNotice.Controls.Add(this.labelBclkInfo, 1, 1);
             this.tableLayoutPanelBclkNotice.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanelBclkNotice.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanelBclkNotice.Margin = new System.Windows.Forms.Padding(0, 0, 0, 3);
             this.tableLayoutPanelBclkNotice.Name = "tableLayoutPanelBclkNotice";
             this.tableLayoutPanelBclkNotice.Padding = new System.Windows.Forms.Padding(6, 5, 6, 5);
-            this.tableLayoutPanelBclkNotice.RowCount = 1;
+            this.tableLayoutPanelBclkNotice.RowCount = 2;
+            this.tableLayoutPanelBclkNotice.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 5F));
             this.tableLayoutPanelBclkNotice.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelBclkNotice.Size = new System.Drawing.Size(445, 26);
+            this.tableLayoutPanelBclkNotice.Size = new System.Drawing.Size(445, 32);
             this.tableLayoutPanelBclkNotice.TabIndex = 0;
             // 
             // iconBoxBclkNotice
             // 
             this.iconBoxBclkNotice.BackColor = System.Drawing.Color.Transparent;
-            this.iconBoxBclkNotice.Location = new System.Drawing.Point(6, 5);
+            this.iconBoxBclkNotice.Location = new System.Drawing.Point(6, 10);
             this.iconBoxBclkNotice.Margin = new System.Windows.Forms.Padding(0, 0, 6, 0);
             this.iconBoxBclkNotice.Name = "iconBoxBclkNotice";
             this.iconBoxBclkNotice.Size = new System.Drawing.Size(16, 16);
@@ -3240,10 +3243,10 @@ namespace ZenStatesDebugTool
             this.labelBclkInfo.AutoSize = true;
             this.labelBclkInfo.BackColor = System.Drawing.Color.Transparent;
             this.labelBclkInfo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelBclkInfo.Location = new System.Drawing.Point(28, 6);
+            this.labelBclkInfo.Location = new System.Drawing.Point(28, 11);
             this.labelBclkInfo.Margin = new System.Windows.Forms.Padding(0, 1, 0, 0);
             this.labelBclkInfo.Name = "labelBclkInfo";
-            this.labelBclkInfo.Size = new System.Drawing.Size(411, 15);
+            this.labelBclkInfo.Size = new System.Drawing.Size(411, 16);
             this.labelBclkInfo.TabIndex = 0;
             this.labelBclkInfo.Text = "BCLK can\'t be detected, so it can\'t be changed here.";
             // 
@@ -3264,7 +3267,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanelBclkDetails.Controls.Add(this.labelBclkMemCaption, 0, 4);
             this.tableLayoutPanelBclkDetails.Controls.Add(this.labelBclkMem, 1, 4);
             this.tableLayoutPanelBclkDetails.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanelBclkDetails.Location = new System.Drawing.Point(0, 29);
+            this.tableLayoutPanelBclkDetails.Location = new System.Drawing.Point(0, 35);
             this.tableLayoutPanelBclkDetails.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanelBclkDetails.Name = "tableLayoutPanelBclkDetails";
             this.tableLayoutPanelBclkDetails.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
@@ -3274,7 +3277,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanelBclkDetails.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanelBclkDetails.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanelBclkDetails.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelBclkDetails.Size = new System.Drawing.Size(445, 83);
+            this.tableLayoutPanelBclkDetails.Size = new System.Drawing.Size(445, 98);
             this.tableLayoutPanelBclkDetails.TabIndex = 1;
             // 
             // labelBclkStrapCaption
@@ -3284,17 +3287,17 @@ namespace ZenStatesDebugTool
             this.labelBclkStrapCaption.Location = new System.Drawing.Point(9, 5);
             this.labelBclkStrapCaption.Margin = new System.Windows.Forms.Padding(3, 1, 12, 1);
             this.labelBclkStrapCaption.Name = "labelBclkStrapCaption";
-            this.labelBclkStrapCaption.Size = new System.Drawing.Size(108, 13);
+            this.labelBclkStrapCaption.Size = new System.Drawing.Size(135, 16);
             this.labelBclkStrapCaption.TabIndex = 1;
             this.labelBclkStrapCaption.Text = "Clock generator strap";
             // 
             // labelBclkStrap
             // 
             this.labelBclkStrap.AutoSize = true;
-            this.labelBclkStrap.Location = new System.Drawing.Point(153, 5);
+            this.labelBclkStrap.Location = new System.Drawing.Point(188, 5);
             this.labelBclkStrap.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.labelBclkStrap.Name = "labelBclkStrap";
-            this.labelBclkStrap.Size = new System.Drawing.Size(10, 13);
+            this.labelBclkStrap.Size = new System.Drawing.Size(11, 16);
             this.labelBclkStrap.TabIndex = 2;
             this.labelBclkStrap.Text = "-";
             // 
@@ -3302,20 +3305,20 @@ namespace ZenStatesDebugTool
             // 
             this.labelBclkEclkCaption.AutoSize = true;
             this.labelBclkEclkCaption.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelBclkEclkCaption.Location = new System.Drawing.Point(9, 20);
+            this.labelBclkEclkCaption.Location = new System.Drawing.Point(9, 23);
             this.labelBclkEclkCaption.Margin = new System.Windows.Forms.Padding(3, 1, 12, 1);
             this.labelBclkEclkCaption.Name = "labelBclkEclkCaption";
-            this.labelBclkEclkCaption.Size = new System.Drawing.Size(62, 13);
+            this.labelBclkEclkCaption.Size = new System.Drawing.Size(77, 16);
             this.labelBclkEclkCaption.TabIndex = 3;
             this.labelBclkEclkCaption.Text = "eCLK mode";
             // 
             // labelBclkEclk
             // 
             this.labelBclkEclk.AutoSize = true;
-            this.labelBclkEclk.Location = new System.Drawing.Point(153, 20);
+            this.labelBclkEclk.Location = new System.Drawing.Point(188, 23);
             this.labelBclkEclk.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.labelBclkEclk.Name = "labelBclkEclk";
-            this.labelBclkEclk.Size = new System.Drawing.Size(10, 13);
+            this.labelBclkEclk.Size = new System.Drawing.Size(11, 16);
             this.labelBclkEclk.TabIndex = 4;
             this.labelBclkEclk.Text = "-";
             // 
@@ -3323,20 +3326,20 @@ namespace ZenStatesDebugTool
             // 
             this.labelBclkRefClkCaption.AutoSize = true;
             this.labelBclkRefClkCaption.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelBclkRefClkCaption.Location = new System.Drawing.Point(9, 35);
+            this.labelBclkRefClkCaption.Location = new System.Drawing.Point(9, 41);
             this.labelBclkRefClkCaption.Margin = new System.Windows.Forms.Padding(3, 1, 12, 1);
             this.labelBclkRefClkCaption.Name = "labelBclkRefClkCaption";
-            this.labelBclkRefClkCaption.Size = new System.Drawing.Size(106, 13);
+            this.labelBclkRefClkCaption.Size = new System.Drawing.Size(130, 16);
             this.labelBclkRefClkCaption.TabIndex = 5;
             this.labelBclkRefClkCaption.Text = "CPU reference clock";
             // 
             // labelBclkRefClk
             // 
             this.labelBclkRefClk.AutoSize = true;
-            this.labelBclkRefClk.Location = new System.Drawing.Point(153, 35);
+            this.labelBclkRefClk.Location = new System.Drawing.Point(188, 41);
             this.labelBclkRefClk.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.labelBclkRefClk.Name = "labelBclkRefClk";
-            this.labelBclkRefClk.Size = new System.Drawing.Size(10, 13);
+            this.labelBclkRefClk.Size = new System.Drawing.Size(11, 16);
             this.labelBclkRefClk.TabIndex = 6;
             this.labelBclkRefClk.Text = "-";
             // 
@@ -3344,20 +3347,20 @@ namespace ZenStatesDebugTool
             // 
             this.labelBclkCpuCaption.AutoSize = true;
             this.labelBclkCpuCaption.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelBclkCpuCaption.Location = new System.Drawing.Point(9, 50);
+            this.labelBclkCpuCaption.Location = new System.Drawing.Point(9, 59);
             this.labelBclkCpuCaption.Margin = new System.Windows.Forms.Padding(3, 1, 12, 1);
             this.labelBclkCpuCaption.Name = "labelBclkCpuCaption";
-            this.labelBclkCpuCaption.Size = new System.Drawing.Size(114, 13);
+            this.labelBclkCpuCaption.Size = new System.Drawing.Size(143, 16);
             this.labelBclkCpuCaption.TabIndex = 7;
             this.labelBclkCpuCaption.Text = "CPU BCLK (measured)";
             // 
             // labelBclkCpu
             // 
             this.labelBclkCpu.AutoSize = true;
-            this.labelBclkCpu.Location = new System.Drawing.Point(153, 50);
+            this.labelBclkCpu.Location = new System.Drawing.Point(188, 59);
             this.labelBclkCpu.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.labelBclkCpu.Name = "labelBclkCpu";
-            this.labelBclkCpu.Size = new System.Drawing.Size(10, 13);
+            this.labelBclkCpu.Size = new System.Drawing.Size(11, 16);
             this.labelBclkCpu.TabIndex = 8;
             this.labelBclkCpu.Text = "-";
             // 
@@ -3365,20 +3368,20 @@ namespace ZenStatesDebugTool
             // 
             this.labelBclkMemCaption.AutoSize = true;
             this.labelBclkMemCaption.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelBclkMemCaption.Location = new System.Drawing.Point(9, 65);
+            this.labelBclkMemCaption.Location = new System.Drawing.Point(9, 77);
             this.labelBclkMemCaption.Margin = new System.Windows.Forms.Padding(3, 1, 12, 1);
             this.labelBclkMemCaption.Name = "labelBclkMemCaption";
-            this.labelBclkMemCaption.Size = new System.Drawing.Size(129, 13);
+            this.labelBclkMemCaption.Size = new System.Drawing.Size(164, 16);
             this.labelBclkMemCaption.TabIndex = 9;
             this.labelBclkMemCaption.Text = "Memory BCLK (measured)";
             // 
             // labelBclkMem
             // 
             this.labelBclkMem.AutoSize = true;
-            this.labelBclkMem.Location = new System.Drawing.Point(153, 65);
+            this.labelBclkMem.Location = new System.Drawing.Point(188, 77);
             this.labelBclkMem.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.labelBclkMem.Name = "labelBclkMem";
-            this.labelBclkMem.Size = new System.Drawing.Size(10, 13);
+            this.labelBclkMem.Size = new System.Drawing.Size(11, 16);
             this.labelBclkMem.TabIndex = 10;
             this.labelBclkMem.Text = "-";
             // 
@@ -3452,7 +3455,7 @@ namespace ZenStatesDebugTool
             0,
             0});
             this.numericUpDownBclk.Name = "numericUpDownBclk";
-            this.numericUpDownBclk.Size = new System.Drawing.Size(94, 20);
+            this.numericUpDownBclk.Size = new System.Drawing.Size(94, 22);
             this.numericUpDownBclk.TabIndex = 5;
             this.numericUpDownBclk.Value = new decimal(new int[] {
             100,
@@ -3617,10 +3620,10 @@ namespace ZenStatesDebugTool
             // tabPageInfo
             // 
             this.tabPageInfo.Controls.Add(this.tableLayoutPanel3);
-            this.tabPageInfo.Location = new System.Drawing.Point(4, 40);
+            this.tabPageInfo.Location = new System.Drawing.Point(4, 46);
             this.tabPageInfo.Name = "tabPageInfo";
             this.tabPageInfo.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageInfo.Size = new System.Drawing.Size(451, 334);
+            this.tabPageInfo.Size = new System.Drawing.Size(451, 328);
             this.tabPageInfo.TabIndex = 2;
             this.tabPageInfo.Text = "Info";
             this.tabPageInfo.UseVisualStyleBackColor = true;
@@ -3631,33 +3634,36 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel3.ColumnCount = 2;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Controls.Add(this.buttonExport, 0, 11);
-            this.tableLayoutPanel3.Controls.Add(this.checkBoxReportScan, 0, 12);
-            this.tableLayoutPanel3.Controls.Add(this.smuInfoLabel, 1, 9);
+            this.tableLayoutPanel3.Controls.Add(this.buttonExport, 0, 12);
+            this.tableLayoutPanel3.Controls.Add(this.checkBoxReportScan, 0, 13);
+            this.tableLayoutPanel3.Controls.Add(this.smuInfoLabel, 1, 10);
             this.tableLayoutPanel3.Controls.Add(this.biosInfoLabel, 1, 7);
             this.tableLayoutPanel3.Controls.Add(this.mbVendorInfoLabel, 1, 5);
             this.tableLayoutPanel3.Controls.Add(this.labelInfoCpu, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.label1, 0, 5);
-            this.tableLayoutPanel3.Controls.Add(this.label2, 0, 9);
+            this.tableLayoutPanel3.Controls.Add(this.label2, 0, 10);
             this.tableLayoutPanel3.Controls.Add(this.label3, 0, 7);
             this.tableLayoutPanel3.Controls.Add(this.cpuInfoLabel, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.label4, 0, 6);
             this.tableLayoutPanel3.Controls.Add(this.mbModelInfoLabel, 1, 6);
             this.tableLayoutPanel3.Controls.Add(this.label6, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.cpuIdLabel, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.label23, 0, 8);
-            this.tableLayoutPanel3.Controls.Add(this.firmwareInfoLabel, 1, 8);
+            this.tableLayoutPanel3.Controls.Add(this.label23, 0, 9);
+            this.tableLayoutPanel3.Controls.Add(this.firmwareInfoLabel, 1, 9);
             this.tableLayoutPanel3.Controls.Add(this.label24, 0, 2);
             this.tableLayoutPanel3.Controls.Add(this.label28, 0, 3);
             this.tableLayoutPanel3.Controls.Add(this.modelInfoLabel, 1, 2);
             this.tableLayoutPanel3.Controls.Add(this.packageTypeInfoLabel, 1, 3);
             this.tableLayoutPanel3.Controls.Add(this.label29, 0, 4);
             this.tableLayoutPanel3.Controls.Add(this.configInfoLabel, 1, 4);
+            this.tableLayoutPanel3.Controls.Add(this.labelAgesa, 0, 8);
+            this.tableLayoutPanel3.Controls.Add(this.agesaInfoLabel, 1, 8);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.tableLayoutPanel3.RowCount = 13;
+            this.tableLayoutPanel3.RowCount = 14;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -3671,7 +3677,7 @@ namespace ZenStatesDebugTool
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(445, 328);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(445, 322);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // buttonExport
@@ -3679,7 +3685,7 @@ namespace ZenStatesDebugTool
             this.buttonExport.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.buttonExport.AutoSize = true;
             this.tableLayoutPanel3.SetColumnSpan(this.buttonExport, 2);
-            this.buttonExport.Location = new System.Drawing.Point(3, 294);
+            this.buttonExport.Location = new System.Drawing.Point(3, 263);
             this.buttonExport.Name = "buttonExport";
             this.buttonExport.Size = new System.Drawing.Size(102, 26);
             this.buttonExport.TabIndex = 1;
@@ -3691,13 +3697,13 @@ namespace ZenStatesDebugTool
             // 
             this.checkBoxReportScan.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.checkBoxReportScan.AutoSize = true;
-            this.tableLayoutPanel3.SetColumnSpan(this.checkBoxReportScan, 2);
             this.checkBoxReportScan.Checked = true;
             this.checkBoxReportScan.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxReportScan.Location = new System.Drawing.Point(3, 306);
+            this.tableLayoutPanel3.SetColumnSpan(this.checkBoxReportScan, 2);
+            this.checkBoxReportScan.Location = new System.Drawing.Point(3, 294);
             this.checkBoxReportScan.Margin = new System.Windows.Forms.Padding(3, 2, 3, 3);
             this.checkBoxReportScan.Name = "checkBoxReportScan";
-            this.checkBoxReportScan.Size = new System.Drawing.Size(220, 17);
+            this.checkBoxReportScan.Size = new System.Drawing.Size(317, 20);
             this.checkBoxReportScan.TabIndex = 2;
             this.checkBoxReportScan.Text = "Include SMU mailbox scan (can hang the system)";
             this.checkBoxReportScan.UseVisualStyleBackColor = true;
@@ -3707,10 +3713,10 @@ namespace ZenStatesDebugTool
             this.smuInfoLabel.AutoEllipsis = true;
             this.smuInfoLabel.AutoSize = true;
             this.smuInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.smuInfoLabel.Location = new System.Drawing.Point(74, 212);
+            this.smuInfoLabel.Location = new System.Drawing.Point(88, 265);
             this.smuInfoLabel.Name = "smuInfoLabel";
             this.smuInfoLabel.Padding = new System.Windows.Forms.Padding(5);
-            this.smuInfoLabel.Size = new System.Drawing.Size(363, 23);
+            this.smuInfoLabel.Size = new System.Drawing.Size(349, 26);
             this.smuInfoLabel.TabIndex = 7;
             this.smuInfoLabel.Text = "-";
             this.smuInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3720,10 +3726,10 @@ namespace ZenStatesDebugTool
             this.biosInfoLabel.AutoEllipsis = true;
             this.biosInfoLabel.AutoSize = true;
             this.biosInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.biosInfoLabel.Location = new System.Drawing.Point(74, 166);
+            this.biosInfoLabel.Location = new System.Drawing.Point(88, 187);
             this.biosInfoLabel.Name = "biosInfoLabel";
             this.biosInfoLabel.Padding = new System.Windows.Forms.Padding(5);
-            this.biosInfoLabel.Size = new System.Drawing.Size(363, 23);
+            this.biosInfoLabel.Size = new System.Drawing.Size(349, 26);
             this.biosInfoLabel.TabIndex = 6;
             this.biosInfoLabel.Text = "-";
             this.biosInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3733,10 +3739,10 @@ namespace ZenStatesDebugTool
             this.mbVendorInfoLabel.AutoEllipsis = true;
             this.mbVendorInfoLabel.AutoSize = true;
             this.mbVendorInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mbVendorInfoLabel.Location = new System.Drawing.Point(74, 120);
+            this.mbVendorInfoLabel.Location = new System.Drawing.Point(88, 135);
             this.mbVendorInfoLabel.Name = "mbVendorInfoLabel";
             this.mbVendorInfoLabel.Padding = new System.Windows.Forms.Padding(5);
-            this.mbVendorInfoLabel.Size = new System.Drawing.Size(363, 23);
+            this.mbVendorInfoLabel.Size = new System.Drawing.Size(349, 26);
             this.mbVendorInfoLabel.TabIndex = 5;
             this.mbVendorInfoLabel.Text = "-";
             this.mbVendorInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3748,7 +3754,7 @@ namespace ZenStatesDebugTool
             this.labelInfoCpu.Location = new System.Drawing.Point(3, 5);
             this.labelInfoCpu.Name = "labelInfoCpu";
             this.labelInfoCpu.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.labelInfoCpu.Size = new System.Drawing.Size(65, 23);
+            this.labelInfoCpu.Size = new System.Drawing.Size(79, 26);
             this.labelInfoCpu.TabIndex = 0;
             this.labelInfoCpu.Text = "CPU";
             this.labelInfoCpu.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3757,10 +3763,10 @@ namespace ZenStatesDebugTool
             // 
             this.label1.AutoSize = true;
             this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Location = new System.Drawing.Point(3, 120);
+            this.label1.Location = new System.Drawing.Point(3, 135);
             this.label1.Name = "label1";
             this.label1.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.label1.Size = new System.Drawing.Size(65, 23);
+            this.label1.Size = new System.Drawing.Size(79, 26);
             this.label1.TabIndex = 1;
             this.label1.Text = "MB Vendor";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3769,10 +3775,10 @@ namespace ZenStatesDebugTool
             // 
             this.label2.AutoSize = true;
             this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label2.Location = new System.Drawing.Point(3, 212);
+            this.label2.Location = new System.Drawing.Point(3, 265);
             this.label2.Name = "label2";
             this.label2.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.label2.Size = new System.Drawing.Size(65, 23);
+            this.label2.Size = new System.Drawing.Size(79, 26);
             this.label2.TabIndex = 2;
             this.label2.Text = "SMU";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3781,10 +3787,10 @@ namespace ZenStatesDebugTool
             // 
             this.label3.AutoSize = true;
             this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label3.Location = new System.Drawing.Point(3, 166);
+            this.label3.Location = new System.Drawing.Point(3, 187);
             this.label3.Name = "label3";
             this.label3.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.label3.Size = new System.Drawing.Size(65, 23);
+            this.label3.Size = new System.Drawing.Size(79, 26);
             this.label3.TabIndex = 3;
             this.label3.Text = "BIOS";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3794,10 +3800,10 @@ namespace ZenStatesDebugTool
             this.cpuInfoLabel.AutoEllipsis = true;
             this.cpuInfoLabel.AutoSize = true;
             this.cpuInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cpuInfoLabel.Location = new System.Drawing.Point(74, 5);
+            this.cpuInfoLabel.Location = new System.Drawing.Point(88, 5);
             this.cpuInfoLabel.Name = "cpuInfoLabel";
             this.cpuInfoLabel.Padding = new System.Windows.Forms.Padding(5);
-            this.cpuInfoLabel.Size = new System.Drawing.Size(363, 23);
+            this.cpuInfoLabel.Size = new System.Drawing.Size(349, 26);
             this.cpuInfoLabel.TabIndex = 4;
             this.cpuInfoLabel.Text = "-";
             this.cpuInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3806,10 +3812,10 @@ namespace ZenStatesDebugTool
             // 
             this.label4.AutoSize = true;
             this.label4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label4.Location = new System.Drawing.Point(3, 143);
+            this.label4.Location = new System.Drawing.Point(3, 161);
             this.label4.Name = "label4";
             this.label4.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.label4.Size = new System.Drawing.Size(65, 23);
+            this.label4.Size = new System.Drawing.Size(79, 26);
             this.label4.TabIndex = 8;
             this.label4.Text = "MB Model";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3819,10 +3825,10 @@ namespace ZenStatesDebugTool
             this.mbModelInfoLabel.AutoEllipsis = true;
             this.mbModelInfoLabel.AutoSize = true;
             this.mbModelInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mbModelInfoLabel.Location = new System.Drawing.Point(74, 143);
+            this.mbModelInfoLabel.Location = new System.Drawing.Point(88, 161);
             this.mbModelInfoLabel.Name = "mbModelInfoLabel";
             this.mbModelInfoLabel.Padding = new System.Windows.Forms.Padding(5);
-            this.mbModelInfoLabel.Size = new System.Drawing.Size(363, 23);
+            this.mbModelInfoLabel.Size = new System.Drawing.Size(349, 26);
             this.mbModelInfoLabel.TabIndex = 9;
             this.mbModelInfoLabel.Text = "-";
             this.mbModelInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3831,10 +3837,10 @@ namespace ZenStatesDebugTool
             // 
             this.label6.AutoSize = true;
             this.label6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label6.Location = new System.Drawing.Point(3, 28);
+            this.label6.Location = new System.Drawing.Point(3, 31);
             this.label6.Name = "label6";
             this.label6.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
-            this.label6.Size = new System.Drawing.Size(65, 23);
+            this.label6.Size = new System.Drawing.Size(79, 26);
             this.label6.TabIndex = 10;
             this.label6.Text = "CPUID";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3843,10 +3849,10 @@ namespace ZenStatesDebugTool
             // 
             this.cpuIdLabel.AutoSize = true;
             this.cpuIdLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cpuIdLabel.Location = new System.Drawing.Point(74, 28);
+            this.cpuIdLabel.Location = new System.Drawing.Point(88, 31);
             this.cpuIdLabel.Name = "cpuIdLabel";
             this.cpuIdLabel.Padding = new System.Windows.Forms.Padding(5);
-            this.cpuIdLabel.Size = new System.Drawing.Size(363, 23);
+            this.cpuIdLabel.Size = new System.Drawing.Size(349, 26);
             this.cpuIdLabel.TabIndex = 11;
             this.cpuIdLabel.Text = "-";
             this.cpuIdLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3855,9 +3861,9 @@ namespace ZenStatesDebugTool
             // 
             this.label23.AutoSize = true;
             this.label23.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label23.Location = new System.Drawing.Point(3, 189);
+            this.label23.Location = new System.Drawing.Point(3, 239);
             this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(65, 23);
+            this.label23.Size = new System.Drawing.Size(79, 26);
             this.label23.TabIndex = 12;
             this.label23.Text = "Firmware";
             this.label23.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3866,10 +3872,10 @@ namespace ZenStatesDebugTool
             // 
             this.firmwareInfoLabel.AutoSize = true;
             this.firmwareInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.firmwareInfoLabel.Location = new System.Drawing.Point(74, 189);
+            this.firmwareInfoLabel.Location = new System.Drawing.Point(88, 239);
             this.firmwareInfoLabel.Name = "firmwareInfoLabel";
             this.firmwareInfoLabel.Padding = new System.Windows.Forms.Padding(5);
-            this.firmwareInfoLabel.Size = new System.Drawing.Size(363, 23);
+            this.firmwareInfoLabel.Size = new System.Drawing.Size(349, 26);
             this.firmwareInfoLabel.TabIndex = 13;
             this.firmwareInfoLabel.Text = "-";
             this.firmwareInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3878,9 +3884,9 @@ namespace ZenStatesDebugTool
             // 
             this.label24.AutoSize = true;
             this.label24.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label24.Location = new System.Drawing.Point(3, 51);
+            this.label24.Location = new System.Drawing.Point(3, 57);
             this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(65, 23);
+            this.label24.Size = new System.Drawing.Size(79, 26);
             this.label24.TabIndex = 14;
             this.label24.Text = "Model";
             this.label24.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3889,9 +3895,9 @@ namespace ZenStatesDebugTool
             // 
             this.label28.AutoSize = true;
             this.label28.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label28.Location = new System.Drawing.Point(3, 74);
+            this.label28.Location = new System.Drawing.Point(3, 83);
             this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(65, 23);
+            this.label28.Size = new System.Drawing.Size(79, 26);
             this.label28.TabIndex = 15;
             this.label28.Text = "Package";
             this.label28.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3900,10 +3906,10 @@ namespace ZenStatesDebugTool
             // 
             this.modelInfoLabel.AutoSize = true;
             this.modelInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.modelInfoLabel.Location = new System.Drawing.Point(74, 51);
+            this.modelInfoLabel.Location = new System.Drawing.Point(88, 57);
             this.modelInfoLabel.Name = "modelInfoLabel";
             this.modelInfoLabel.Padding = new System.Windows.Forms.Padding(5);
-            this.modelInfoLabel.Size = new System.Drawing.Size(363, 23);
+            this.modelInfoLabel.Size = new System.Drawing.Size(349, 26);
             this.modelInfoLabel.TabIndex = 16;
             this.modelInfoLabel.Text = "-";
             this.modelInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3912,10 +3918,10 @@ namespace ZenStatesDebugTool
             // 
             this.packageTypeInfoLabel.AutoSize = true;
             this.packageTypeInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.packageTypeInfoLabel.Location = new System.Drawing.Point(74, 74);
+            this.packageTypeInfoLabel.Location = new System.Drawing.Point(88, 83);
             this.packageTypeInfoLabel.Name = "packageTypeInfoLabel";
             this.packageTypeInfoLabel.Padding = new System.Windows.Forms.Padding(5);
-            this.packageTypeInfoLabel.Size = new System.Drawing.Size(363, 23);
+            this.packageTypeInfoLabel.Size = new System.Drawing.Size(349, 26);
             this.packageTypeInfoLabel.TabIndex = 17;
             this.packageTypeInfoLabel.Text = "-";
             this.packageTypeInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3924,9 +3930,9 @@ namespace ZenStatesDebugTool
             // 
             this.label29.AutoSize = true;
             this.label29.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label29.Location = new System.Drawing.Point(3, 97);
+            this.label29.Location = new System.Drawing.Point(3, 109);
             this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(65, 23);
+            this.label29.Size = new System.Drawing.Size(79, 26);
             this.label29.TabIndex = 18;
             this.label29.Text = "Config";
             this.label29.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -3935,13 +3941,38 @@ namespace ZenStatesDebugTool
             // 
             this.configInfoLabel.AutoSize = true;
             this.configInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.configInfoLabel.Location = new System.Drawing.Point(74, 97);
+            this.configInfoLabel.Location = new System.Drawing.Point(88, 109);
             this.configInfoLabel.Name = "configInfoLabel";
             this.configInfoLabel.Padding = new System.Windows.Forms.Padding(5);
-            this.configInfoLabel.Size = new System.Drawing.Size(363, 23);
+            this.configInfoLabel.Size = new System.Drawing.Size(349, 26);
             this.configInfoLabel.TabIndex = 19;
             this.configInfoLabel.Text = "-";
             this.configInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // labelAgesa
+            // 
+            this.labelAgesa.AutoSize = true;
+            this.labelAgesa.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelAgesa.Location = new System.Drawing.Point(3, 213);
+            this.labelAgesa.Name = "labelAgesa";
+            this.labelAgesa.Padding = new System.Windows.Forms.Padding(0, 5, 5, 5);
+            this.labelAgesa.Size = new System.Drawing.Size(79, 26);
+            this.labelAgesa.TabIndex = 22;
+            this.labelAgesa.Text = "AGESA";
+            this.labelAgesa.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // agesaInfoLabel
+            // 
+            this.agesaInfoLabel.AutoEllipsis = true;
+            this.agesaInfoLabel.AutoSize = true;
+            this.agesaInfoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.agesaInfoLabel.Location = new System.Drawing.Point(88, 213);
+            this.agesaInfoLabel.Name = "agesaInfoLabel";
+            this.agesaInfoLabel.Padding = new System.Windows.Forms.Padding(5);
+            this.agesaInfoLabel.Size = new System.Drawing.Size(349, 26);
+            this.agesaInfoLabel.TabIndex = 23;
+            this.agesaInfoLabel.Text = "-";
+            this.agesaInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tabPageSettings
             // 
@@ -3956,10 +3987,10 @@ namespace ZenStatesDebugTool
             this.tabPageSettings.Controls.Add(this.comboBoxDriverNotifications);
             this.tabPageSettings.Controls.Add(this.labelDriverNotifications);
             this.tabPageSettings.Controls.Add(this.checkBoxAutoUninstallDriver);
-            this.tabPageSettings.Location = new System.Drawing.Point(4, 40);
+            this.tabPageSettings.Location = new System.Drawing.Point(4, 46);
             this.tabPageSettings.Name = "tabPageSettings";
             this.tabPageSettings.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSettings.Size = new System.Drawing.Size(451, 334);
+            this.tabPageSettings.Size = new System.Drawing.Size(451, 328);
             this.tabPageSettings.TabIndex = 10;
             this.tabPageSettings.Text = "Settings";
             this.tabPageSettings.UseVisualStyleBackColor = true;
@@ -3970,7 +4001,7 @@ namespace ZenStatesDebugTool
             this.comboBoxDefaultTab.FormattingEnabled = true;
             this.comboBoxDefaultTab.Location = new System.Drawing.Point(160, 151);
             this.comboBoxDefaultTab.Name = "comboBoxDefaultTab";
-            this.comboBoxDefaultTab.Size = new System.Drawing.Size(120, 21);
+            this.comboBoxDefaultTab.Size = new System.Drawing.Size(120, 24);
             this.comboBoxDefaultTab.TabIndex = 7;
             this.comboBoxDefaultTab.SelectedIndexChanged += new System.EventHandler(this.SettingsControl_Changed);
             // 
@@ -3979,7 +4010,7 @@ namespace ZenStatesDebugTool
             this.labelDefaultTab.AutoSize = true;
             this.labelDefaultTab.Location = new System.Drawing.Point(9, 154);
             this.labelDefaultTab.Name = "labelDefaultTab";
-            this.labelDefaultTab.Size = new System.Drawing.Size(59, 13);
+            this.labelDefaultTab.Size = new System.Drawing.Size(71, 16);
             this.labelDefaultTab.TabIndex = 7;
             this.labelDefaultTab.Text = "Default tab";
             // 
@@ -3987,7 +4018,7 @@ namespace ZenStatesDebugTool
             // 
             this.buttonDiscardSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonDiscardSettings.Enabled = false;
-            this.buttonDiscardSettings.Location = new System.Drawing.Point(276, 303);
+            this.buttonDiscardSettings.Location = new System.Drawing.Point(276, 297);
             this.buttonDiscardSettings.Name = "buttonDiscardSettings";
             this.buttonDiscardSettings.Size = new System.Drawing.Size(80, 25);
             this.buttonDiscardSettings.TabIndex = 8;
@@ -3999,7 +4030,7 @@ namespace ZenStatesDebugTool
             // 
             this.buttonSaveSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonSaveSettings.Enabled = false;
-            this.buttonSaveSettings.Location = new System.Drawing.Point(362, 303);
+            this.buttonSaveSettings.Location = new System.Drawing.Point(362, 297);
             this.buttonSaveSettings.Name = "buttonSaveSettings";
             this.buttonSaveSettings.Size = new System.Drawing.Size(80, 25);
             this.buttonSaveSettings.TabIndex = 9;
@@ -4027,7 +4058,7 @@ namespace ZenStatesDebugTool
             0,
             196608});
             this.numericUpDownMaxVoltage.Name = "numericUpDownMaxVoltage";
-            this.numericUpDownMaxVoltage.Size = new System.Drawing.Size(70, 20);
+            this.numericUpDownMaxVoltage.Size = new System.Drawing.Size(70, 22);
             this.numericUpDownMaxVoltage.TabIndex = 6;
             this.numericUpDownMaxVoltage.Value = new decimal(new int[] {
             1350,
@@ -4041,7 +4072,7 @@ namespace ZenStatesDebugTool
             this.labelMaxVoltage.AutoSize = true;
             this.labelMaxVoltage.Location = new System.Drawing.Point(9, 124);
             this.labelMaxVoltage.Name = "labelMaxVoltage";
-            this.labelMaxVoltage.Size = new System.Drawing.Size(134, 13);
+            this.labelMaxVoltage.Size = new System.Drawing.Size(167, 16);
             this.labelMaxVoltage.TabIndex = 5;
             this.labelMaxVoltage.Text = "Manual OC voltage limit (V)";
             // 
@@ -4051,7 +4082,7 @@ namespace ZenStatesDebugTool
             this.checkBoxStartupAllUsers.Enabled = false;
             this.checkBoxStartupAllUsers.Location = new System.Drawing.Point(27, 89);
             this.checkBoxStartupAllUsers.Name = "checkBoxStartupAllUsers";
-            this.checkBoxStartupAllUsers.Size = new System.Drawing.Size(172, 17);
+            this.checkBoxStartupAllUsers.Size = new System.Drawing.Size(212, 20);
             this.checkBoxStartupAllUsers.TabIndex = 4;
             this.checkBoxStartupAllUsers.Text = "For all users (runs as SYSTEM)";
             this.checkBoxStartupAllUsers.UseVisualStyleBackColor = true;
@@ -4062,7 +4093,7 @@ namespace ZenStatesDebugTool
             this.checkBoxApplyCOStartup.AutoSize = true;
             this.checkBoxApplyCOStartup.Location = new System.Drawing.Point(9, 66);
             this.checkBoxApplyCOStartup.Name = "checkBoxApplyCOStartup";
-            this.checkBoxApplyCOStartup.Size = new System.Drawing.Size(214, 17);
+            this.checkBoxApplyCOStartup.Size = new System.Drawing.Size(267, 20);
             this.checkBoxApplyCOStartup.TabIndex = 3;
             this.checkBoxApplyCOStartup.Text = "Apply saved profile at logon and resume";
             this.checkBoxApplyCOStartup.UseVisualStyleBackColor = true;
@@ -4074,7 +4105,7 @@ namespace ZenStatesDebugTool
             this.comboBoxDriverNotifications.FormattingEnabled = true;
             this.comboBoxDriverNotifications.Location = new System.Drawing.Point(110, 32);
             this.comboBoxDriverNotifications.Name = "comboBoxDriverNotifications";
-            this.comboBoxDriverNotifications.Size = new System.Drawing.Size(120, 21);
+            this.comboBoxDriverNotifications.Size = new System.Drawing.Size(120, 24);
             this.comboBoxDriverNotifications.TabIndex = 2;
             this.comboBoxDriverNotifications.SelectedIndexChanged += new System.EventHandler(this.ComboBoxDriverNotifications_SelectedIndexChanged);
             // 
@@ -4083,7 +4114,7 @@ namespace ZenStatesDebugTool
             this.labelDriverNotifications.AutoSize = true;
             this.labelDriverNotifications.Location = new System.Drawing.Point(27, 35);
             this.labelDriverNotifications.Name = "labelDriverNotifications";
-            this.labelDriverNotifications.Size = new System.Drawing.Size(65, 13);
+            this.labelDriverNotifications.Size = new System.Drawing.Size(80, 16);
             this.labelDriverNotifications.TabIndex = 1;
             this.labelDriverNotifications.Text = "Notifications";
             // 
@@ -4092,7 +4123,7 @@ namespace ZenStatesDebugTool
             this.checkBoxAutoUninstallDriver.AutoSize = true;
             this.checkBoxAutoUninstallDriver.Location = new System.Drawing.Point(9, 9);
             this.checkBoxAutoUninstallDriver.Name = "checkBoxAutoUninstallDriver";
-            this.checkBoxAutoUninstallDriver.Size = new System.Drawing.Size(178, 17);
+            this.checkBoxAutoUninstallDriver.Size = new System.Drawing.Size(215, 20);
             this.checkBoxAutoUninstallDriver.TabIndex = 0;
             this.checkBoxAutoUninstallDriver.Text = "Remove inpoutx64 driver on exit";
             this.checkBoxAutoUninstallDriver.UseVisualStyleBackColor = true;
@@ -4256,6 +4287,8 @@ namespace ZenStatesDebugTool
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label smuInfoLabel;
         private System.Windows.Forms.Label biosInfoLabel;
+        private System.Windows.Forms.Label labelAgesa;
+        private System.Windows.Forms.Label agesaInfoLabel;
         private System.Windows.Forms.Label mbVendorInfoLabel;
         private System.Windows.Forms.Label cpuInfoLabel;
         private System.Windows.Forms.Label label4;

@@ -143,16 +143,88 @@ namespace ZenStatesDebugTool
             {
                 cpuInfoLabel.Text = cpu.systemInfo.CpuName;
                 modelInfoLabel.Text = $"{cpu.systemInfo.Model:X2}";
-                packageTypeInfoLabel.Text = cpu.info.packageType.ToString();
+                packageTypeInfoLabel.Text = DescribePackage(out string packageDetails);
+                formToolTip.SetToolTip(packageTypeInfoLabel, packageDetails);
                 mbVendorInfoLabel.Text = cpu.systemInfo.MbVendor;
                 mbModelInfoLabel.Text = cpu.systemInfo.MbName;
                 biosInfoLabel.Text = cpu.systemInfo.BiosVersion;
+                agesaInfoLabel.Text = string.IsNullOrWhiteSpace(cpu.systemInfo.AgesaVersion) ? "N/A" : cpu.systemInfo.AgesaVersion;
                 smuInfoLabel.Text = cpu.systemInfo.SmuVersion.ToString();
                 firmwareInfoLabel.Text = $"{cpu.systemInfo.PatchLevel:X8}";
                 cpuIdLabel.Text = $"{cpu.systemInfo.CpuId} ({cpu.info.codeName})";
-                configInfoLabel.Text = $"{cpu.info.topology.ccds} CCD / {cpu.info.topology.ccxs} CCX / {cpu.systemInfo.PhysicalCoreCount} physical cores";
+                configInfoLabel.Text = DescribeCoreConfig(out string configDetails);
+                formToolTip.SetToolTip(configInfoLabel, configDetails);
             }
             catch { }
+        }
+
+        // SMBIOS socket names that are a package (AM5, SP5, sTR5, FP8, FL1...), not a slot label like "CPU 1" or "P0"
+        private static readonly System.Text.RegularExpressions.Regex SocketNamePattern = new System.Text.RegularExpressions.Regex(
+            @"^s?(AM|SP|TR|TRX|WRX|FP|FS|FT|FL|FF)\d+[A-Z0-9]*$", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+        // The package from SMBIOS (processor socket type, else the socket designation when it names a package); without
+        // one, the raw CPUID package type. The CPUID value is decoded only for the packages the core knows, the
+        // encoding differs between generations.
+        private string DescribePackage(out string details)
+        {
+            int raw = (int)cpu.info.packageType;
+            string cpuid = Enum.IsDefined(typeof(PackageType), cpu.info.packageType)
+                ? $"{raw} ({cpu.info.packageType})"
+                : raw.ToString(CultureInfo.InvariantCulture);
+
+            string smbios = null;
+            try
+            {
+                ZenStates.Core.OHWM.ProcessorInformation processor = SystemInfo.SMBios?.Processors?.FirstOrDefault();
+                if (processor != null)
+                {
+                    string socketType = processor.Socket.ToString();
+                    string designation = processor.SocketDesignation;
+                    if (SocketNamePattern.IsMatch(socketType))
+                        smbios = socketType;
+                    else if (!string.IsNullOrWhiteSpace(designation) && SocketNamePattern.IsMatch(designation.Replace(" ", "")))
+                        smbios = designation;
+                }
+            }
+            catch { }
+
+            details = smbios != null
+                ? $"From SMBIOS (processor socket). CPUID package type: {cpuid}."
+                : $"Raw CPUID package type (CPUID 8000_0001 EBX[31:28]); SMBIOS does not name the socket.";
+            return smbios ?? cpuid;
+        }
+
+        // CCDs, CCXs, enabled cores (per CCX when they differ or there is more than one) and threads; the tooltip
+        // has the fuse details from the core
+        private string DescribeCoreConfig(out string details)
+        {
+            CpuTopology topology = cpu.info.topology;
+            uint cores = topology.cores;
+            uint slots = topology.physicalCores;
+
+            var text = new StringBuilder();
+            text.Append($"{topology.ccds} CCD / {topology.ccxs} CCX / ");
+            text.Append(slots > cores ? $"{cores} of {slots} cores" : $"{cores} cores");
+            if (topology.ccxCoreCounts != null && topology.ccxCoreCounts.Length > 1)
+                text.Append($" ({string.Join("+", topology.ccxCoreCounts)})");
+            if (topology.logicalCores > 0)
+                text.Append($" / {topology.logicalCores} threads");
+
+            var info = new StringBuilder();
+            info.AppendLine($"Cores per CCX: {topology.coresPerCcx}, threads per core: {topology.threadsPerCore}");
+            if (slots > cores)
+                info.AppendLine($"Core slots: {slots} ({slots - cores} disabled)");
+            if (topology.ccdEnableMap != 0)
+                info.AppendLine($"CCD enable map: 0x{topology.ccdEnableMap:X}");
+            if (topology.coreDisableMap != null && topology.coreDisableMap.Length > 0)
+                info.AppendLine("Core disable map: " + string.Join(" ", topology.coreDisableMap.Select(m => $"0x{m:X}")));
+            if (topology.coreFuseValues != null && topology.coreFuseValues.Length > 0)
+                info.AppendLine($"Core fuse 0x{topology.coreFuseAddress:X8} [{topology.coreFuseShift}]: " +
+                    string.Join(" ", topology.coreFuseValues.Select(v => $"0x{v:X8}")));
+            if (!string.IsNullOrEmpty(topology.fuseNote))
+                info.AppendLine(topology.fuseNote);
+            details = info.ToString().TrimEnd();
+            return text.ToString();
         }
 
         private void InitForm()
