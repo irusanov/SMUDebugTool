@@ -84,10 +84,31 @@ namespace ZenStatesDebugTool
             PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick);
 
             InitializeComponent();
+            InitColumns();
 
             dataGridView1.DataSource = list;
 
             FillInData(cpu.powerTable.Table);
+        }
+
+        // The max column right aligned like the value (the columns are not generated from the item properties,
+        // so it keeps this style)
+        private void InitColumns()
+        {
+            dataGridView1.AutoGenerateColumns = false;
+
+            var maxColumn = new DataGridViewTextBoxColumn
+            {
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                DataPropertyName = "Max",
+                HeaderText = "Max",
+                Name = "Max",
+                ReadOnly = true,
+                SortMode = DataGridViewColumnSortMode.NotSortable,
+            };
+            maxColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+
+            dataGridView1.Columns.Add(maxColumn);
         }
 
         private void PowerTableMonitor_FormClosing(object sender, FormClosingEventArgs e)

@@ -304,27 +304,94 @@ namespace ZenStatesDebugTool.Theming
 
         private int HitTest(Point point)
         {
-            if (Resizable && WindowState == FormWindowState.Normal)
-            {
-                int edge = ControlStyler.Px(6);
-                bool left = point.X < edge, right = point.X >= ClientSize.Width - edge;
-                bool top = point.Y < edge, bottom = point.Y >= ClientSize.Height - edge;
-
-                if (top && left) return HTTOPLEFT;
-                if (top && right) return HTTOPRIGHT;
-                if (bottom && left) return HTBOTTOMLEFT;
-                if (bottom && right) return HTBOTTOMRIGHT;
-                if (left) return HTLEFT;
-                if (right) return HTRIGHT;
-                if (top) return HTTOP;
-                if (bottom) return HTBOTTOM;
-            }
+            int edgeHit = ResizeEdgeAt(point);
+            if (edgeHit != HTCLIENT)
+                return edgeHit;
 
             if (point.Y < TitleBarHeight)
                 return ButtonAt(point) == CaptionButton.None ? HTCAPTION : HTCLIENT;
 
             // Only reached for the form's own background (child controls answer for themselves)
             return DragAnywhere ? HTCAPTION : HTCLIENT;
+        }
+
+        // The resize border inside the client area: the hit-test code of the edge or corner, HTCLIENT elsewhere
+        private int ResizeEdgeAt(Point point)
+        {
+            if (!chrome || !Resizable || WindowState != FormWindowState.Normal)
+                return HTCLIENT;
+
+            int edge = ControlStyler.Px(6);
+            bool left = point.X < edge, right = point.X >= ClientSize.Width - edge;
+            bool top = point.Y < edge, bottom = point.Y >= ClientSize.Height - edge;
+
+            if (top && left) return HTTOPLEFT;
+            if (top && right) return HTTOPRIGHT;
+            if (bottom && left) return HTBOTTOMLEFT;
+            if (bottom && right) return HTBOTTOMRIGHT;
+            if (left) return HTLEFT;
+            if (right) return HTRIGHT;
+            if (top) return HTTOP;
+            if (bottom) return HTBOTTOM;
+            return HTCLIENT;
+        }
+
+        // ---- resize border over child controls ----
+
+        // The system frame is gone, so the resize border is the outer edge of the client area. Controls docked
+        // to the edges (a grid, a table layout) cover it and answer the hit test themselves, so the window could
+        // only be resized where the form's own background shows (the title bar). Every child answers
+        // HTTRANSPARENT on that border, which passes the hit test down to the form.
+        private const int HTTRANSPARENT = -1;
+        private readonly System.Collections.Generic.HashSet<Control> edgeHooked = new System.Collections.Generic.HashSet<Control>();
+
+        private sealed class EdgeHitTestWindow : NativeWindow
+        {
+            private readonly ThemedForm form;
+
+            public EdgeHitTestWindow(Control control, ThemedForm form)
+            {
+                this.form = form;
+                control.HandleCreated += (s, e) => AssignHandle(control.Handle);
+                control.HandleDestroyed += (s, e) => ReleaseHandle();
+                if (control.IsHandleCreated)
+                    AssignHandle(control.Handle);
+            }
+
+            protected override void WndProc(ref Message m)
+            {
+                if (m.Msg == WM_NCHITTEST && form.IsHandleCreated)
+                {
+                    // LParam holds the screen point as two signed 16-bit values (negative on a left/upper monitor)
+                    int lp = m.LParam.ToInt32();
+                    Point screen = new Point((short)(lp & 0xFFFF), (short)((lp >> 16) & 0xFFFF));
+                    if (form.ResizeEdgeAt(form.PointToClient(screen)) != HTCLIENT)
+                    {
+                        m.Result = new IntPtr(HTTRANSPARENT);
+                        return;
+                    }
+                }
+
+                base.WndProc(ref m);
+            }
+        }
+
+        private void HookResizeEdge(Control control)
+        {
+            if (designTime || control == null || !edgeHooked.Add(control))
+                return;
+
+            new EdgeHitTestWindow(control, this);
+            control.ControlAdded += (s, e) => HookResizeEdge(e.Control);
+            control.Disposed += (s, e) => edgeHooked.Remove(control);
+            foreach (Control child in control.Controls)
+                HookResizeEdge(child);
+        }
+
+        protected override void OnControlAdded(ControlEventArgs e)
+        {
+            base.OnControlAdded(e);
+            HookResizeEdge(e.Control);
         }
 
         // ---- title bar ----
