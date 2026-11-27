@@ -58,6 +58,13 @@ namespace ZenStatesDebugTool
             InitializeComponent();
             InitTabStrip();
             InitLogPanelToggle();
+
+            // DPI diagnostics: the monitor DPI the window got, the system DPI fonts and the theme sizes start from,
+            // and the factor WinForms scaled the designer layout by
+            Shown += (_, __) => Log(string.Format(CultureInfo.InvariantCulture,
+                "DPI: monitor {0}, system {1}, theme scale {2:0.00}, layout scale {3:0.00} x {4:0.00}, font {5:0.##} pt = {6} px",
+                DeviceDpi, ControlStyler.SystemDpi, ControlStyler.DpiScale, AutoScaleFactor.Width, AutoScaleFactor.Height,
+                Font.SizeInPoints, Font.Height));
             InitDangerZone();
             InitLogToolbar();
             _numaUtil = new NUMAUtil();
@@ -716,7 +723,7 @@ namespace ZenStatesDebugTool
                 RowCount = 1,
                 Dock = DockStyle.Fill,
                 Margin = margin,
-                Height = 25,
+                Height = ControlStyler.Px(25),
             };
 
             for (int i = 0; i < columns; i++)
@@ -955,7 +962,7 @@ namespace ZenStatesDebugTool
             flowLayoutPanelCcdActions.AutoSize = false;
             // Full row width, so "Zero all" can sit at the right edge
             flowLayoutPanelCcdActions.Dock = DockStyle.Fill;
-            flowLayoutPanelCcdActions.Height = 27;
+            flowLayoutPanelCcdActions.Height = LogicalToDeviceUnits(27);
 
             Button allDecBtn = CreateActionButton("All \u2212", "Decrease the margin of every enabled core by 1.", AllCcdDecrement_Click);
             Button allIncBtn = CreateActionButton("All +", "Increase the margin of every enabled core by 1.", AllCcdIncrement_Click);
@@ -1241,10 +1248,10 @@ namespace ZenStatesDebugTool
             Button button = new Button
             {
                 AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowOnly,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
                 Margin = new Padding(1, 0, 1, 0),
                 Padding = new Padding(0),
-                Size = new Size(79, 25),
+                Size = new Size(ControlStyler.Px(79), ControlStyler.Px(25)),
                 Text = text,
                 UseVisualStyleBackColor = true,
                 Dock = DockStyle.Fill,
@@ -1290,9 +1297,9 @@ namespace ZenStatesDebugTool
             const int coresPerCcd = 8;
             const int coresPerRow = 2;
 
-            // Sizes follow the font (the blocks are built after the designer layout was scaled to it): the spinner
-            // height is measured, the rest scales from the 8.25pt MS Sans Serif layout this was designed for
-            float scale = Font.Height / 13f;
+            // The blocks are built after the designer layout was scaled, so they scale themselves with the DPI the
+            // same way (the form scales by DPI, not by font); the spinner height is measured
+            float scale = DeviceDpi / 96f;
             int nudHeight;
             using (var probe = new NumericUpDown { Font = Font })
                 nudHeight = probe.PreferredHeight;
@@ -1306,7 +1313,7 @@ namespace ZenStatesDebugTool
 
             // Built at a provisional width; FitCcdBlocks sizes the blocks to the list's real width (two per row)
             // and places the labels and spinners. The label column fits "C127", the spinners take the rest.
-            const int panelWidth = 160;
+            int panelWidth = (int)Math.Round(160 * scale);
             int labelWidth = TextRenderer.MeasureText("C127", Font).Width + 2;
             ccdArrangers.Clear();
             ccdBlockWidth = -1;
@@ -1421,7 +1428,7 @@ namespace ZenStatesDebugTool
                 {
                     int sidePadding = (int)Math.Round(5 * scale);
                     int colSpacing = (int)Math.Round(8 * scale);
-                    int nudWidth = Math.Max(36, (width - 2 * sidePadding - colSpacing) / 2 - labelWidth);
+                    int nudWidth = Math.Max((int)Math.Round(36 * scale), (width - 2 * sidePadding - colSpacing) / 2 - labelWidth);
                     int[] labelX = { sidePadding, sidePadding + labelWidth + nudWidth + colSpacing };
 
                     ccdPanel.Width = width;
@@ -1458,7 +1465,7 @@ namespace ZenStatesDebugTool
 
         private bool fittingCcdBlocks;
 
-        private int CcdBlockWidthFor(int available) => Math.Max(140, available / 2 - 2);
+        private int CcdBlockWidthFor(int available) => Math.Max(LogicalToDeviceUnits(140), available / 2 - 2);
 
         // Two blocks per row filling the list's width (its client width already excludes a visible scroll bar)
         private void FitCcdBlocks() => FitCcdBlocks(1);
@@ -2519,7 +2526,7 @@ namespace ZenStatesDebugTool
 
             TableLayoutPanel row = CreateButtonRow(4, new Padding(0, 3, 0, 0), clear, copy, save);
             tableLayoutPanel11.RowStyles[1].SizeType = SizeType.Absolute;
-            tableLayoutPanel11.RowStyles[1].Height = 28;
+            tableLayoutPanel11.RowStyles[1].Height = LogicalToDeviceUnits(28);
             tableLayoutPanel11.Controls.Add(row, 0, 1);
         }
 
